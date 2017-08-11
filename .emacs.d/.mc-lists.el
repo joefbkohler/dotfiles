@@ -3,8 +3,13 @@
 
 (setq mc/cmds-to-run-for-all
 	'(
+		 beginning-of-visual-line
 		 c-electric-semi&comma
 		 cua-delete-region
+		 end-of-visual-line
+		 isearch-abort
+		 isearch-backward-regexp
+		 isearch-printing-char
 		 smex
 		 ))
 

@@ -1,28 +1,7 @@
-;; Custom functions
-
+;;; package --- Joe's Utils
+;;; Commentary:
+;; My custom functions.  Either made by me or stolen from the internet ;)
 ;;; Code:
-(defun smarter-move-beginning-of-line (arg)
-	"Move point back to indentation of beginning of line.
-
-Move point to the first non-whitespace character on this line.
-If point is already there, move to the beginning of the line.
-Effectively toggle between the first non-whitespace character and
-the beginning of the line.
-
-If ARG is not nil or 1, move forward ARG - 1 lines first.  If
-point reaches the beginning or end of the buffer, stop there."
-	(interactive "^p")
-	(setq arg (or arg 1))
-
-	;; Move lines first
-	(when (/= arg 1)
-		(let ((line-move-visual nil))
-			(forward-line (1- arg))))
-
-	(let ((orig-point (point)))
-		(back-to-indentation)
-		(when (= orig-point (point))
-			(move-beginning-of-line 1))))
 
 (defun indent-or-complete ()
 	"Try to indent.  If line is already indented, invoke company-complete."
@@ -39,9 +18,39 @@ point reaches the beginning or end of the buffer, stop there."
 		)
 	)
 
+(defun vc-dir-delete-marked-files ()
+	"Delete all marked files in a `vc-dir' buffer."
+	(interactive)
+	(let ((files (vc-dir-marked-files)))
+		(if (not files)
+			(message "No marked files.")
+			(when (yes-or-no-p (format "%s %d marked file(s)? "
+								   (if delete-by-moving-to-trash "Trash" "Delete")
+								   (length files)))
+				(unwind-protect
+					(mapcar
+						(lambda (path)
+							(if (and (file-directory-p path)
+									(not (file-symlink-p path)))
+								(when (or (not (directory-files
+												   path nil directory-files-no-dot-files-regexp))
+										  (y-or-n-p
+											  (format "Directory `%s' is not empty, really %s? "
+												  path (if delete-by-moving-to-trash
+														   "trash" "delete"))))
+									(delete-directory path t t))
+								(delete-file path t)))
+						files)
+					(revert-buffer))))))
+
+;; Global adaptive-wrap-prefix-mode. Why doesn't this exist by default??? õO
+(define-global-minor-mode global-adaptive-wrap-prefix-mode
+	adaptive-wrap-prefix-mode
+	(lambda() (adaptive-wrap-prefix-mode 1)))
+
 ;; Omnisharp
-(defun omnisharp-navigate-to-solution-type
-	(&optional other-window)
+(defun omnisharp-navigate-to-solution-type (&optional other-window)
+	"Interactively navigate to a type in the solution.  If OTHER-WINDOW is not nil, navigate in other window."
 	(interactive "P")
 	(require 'omnisharp)
 	(let ((quickfix-response
@@ -52,26 +61,51 @@ point reaches the beginning or end of the buffer, stop there."
 			(mapcar 'omnisharp-format-symbol
 				(cdr (omnisharp--vector-to-list
 						 (cdr (assoc 'QuickFixes quickfix-response)))))
-			other-window)))
+			other-window)
+		))
 
-(defun omnisharp-grep-solution ()
+(defun omnisharp-find-usages-visuals ()
+	"Remove redundant information from omnisharp find usages buffer like the full path of the file."
+	(when (string-match "OmniSharp" (buffer-name))
+		
+		(font-lock-add-keywords nil '(("^/.*/" (0 '(face default display ".../") append))) t)
+		(font-lock-add-keywords nil '(("^[ \t]*" (0 '(face default display "") append))) t)
+		
+		(add-function :before-until (local 'eldoc-documentation-function)
+			(lambda ()
+				"Show the complete filename, line and column of the match."
+				(let* ((line-text (replace-regexp-in-string "\n$" "" (thing-at-point 'line t)))
+						 (current-line-match (string-match "\.cs" line-text)))
+					(when (and (not current-line-match) (not (= (length line-text) 0)))
+						(forward-line -1)
+						(setq line-text (replace-regexp-in-string "\n$" "" (thing-at-point 'line t)))
+						(forward-line 1))
+					line-text)))
+		(eldoc-mode)
+		))
+
+(defun clear-line-end ()
 	(interactive)
-	(require 'omnisharp)
-	(let ((search-query (read-string "Search solution: " "")))
-		(grep (concat "grep -niH --color -e " (concat (concat search-query " ") (mapconcat 'identity (omnisharp--get-solution-files-list-of-strings) " "))))
-		)
-	)
+	(save-excursion
+		(beginning-of-buffer)
+		(while (re-search-forward "" nil t)
+			(replace-match ""))
+		
+		))
 
-;; Fix for strange bug where the message that comes from the server is out of order
-(defun around-omnisharp-format-symbol (orig-fun item)
-	"Remove first item and puts last item as first of the list."
-	(apply orig-fun (list (cons (car (last (cdr item))) (butlast (cdr item)))))
+;;Fix for strange bug where the message that comes from the server is out of order
+(defun around-omnisharp-format-symbol (orig-fun list)
+	"Run ORIG-FUN after swapping first and last item of LIST."
+	(apply orig-fun (list (cons (car (last (cdr list))) (butlast (cdr list)))))
 	)
 
 (advice-add 'omnisharp-format-symbol :around #'around-omnisharp-format-symbol)
 
-;; Grep / usages / compilation mode truncate
-;; (font-lock-add-keywords 'compilation-mode '(("^/.*/" (0 '(face default display "...") append))) t)
+;;Grep / usages / compilation mode truncate
+;;(font-lock-add-keywords 'compilation-mode '(("^/.*/" (0 '(face default display "...") append))) t)
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
+
+;; Method to get links in org file
+;;(org-element-map (org-element-parse-buffer) 'link (lambda (link) (when (string= (org-element-property :type link) "file") (cons (org-element-property :path link) (org-element-property :search-option link)))))

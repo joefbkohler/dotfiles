@@ -4,16 +4,19 @@
 (defun server-log ()
  "Open server log."
   (interactive)
-  (find-file "/cygdrive/c/Devel/Work/leviathan/HMM/unity/EditorLog.txt")
-  (logview-mode)
-  )
+  (find-file "/cygdrive/c/Devel/Work/leviathan/HMM/unity/Editor.log"))
 
 (defun client-log ()
   "Open client log."
   (interactive)
-  (find-file "/cygdrive/c/Devel/Work/leviathan/HMM/env/server/EditorLog.txt")
-  (logview-mode)
-	)
+	(find-file "/cygdrive/c/Devel/Work/leviathan/HMM/env/server/Editor.log"))
+
+(defun user-config ()
+  "Open user.config."
+  (interactive)
+  (find-file "/cygdrive/c/Devel/Work/leviathan/user.config"))
+
+(add-to-list 'auto-mode-alist '("EditorLog\\.txt$" . logview-mode))
 
 (defun logview-omnisharp-navigate-to-name()
 	(interactive)
@@ -30,12 +33,16 @@
 		)
 	)
 
+(defun ido-logs ()
+	(interactive)
+	(ido-find-file-in-dir "~/Downloads/logs"))
+
 (setq logview-additional-level-mappings
 		 (quote
 			 (("Hoplon"
 				  (error "ERROR")
 				  (warning "WARNING")
-				  (information "INFO")
+				  (information "INFO" "EVENT")
 				  (debug "DEBUG")
 				  (trace "STATS")))))
 
@@ -45,12 +52,23 @@
 				  (format . "[TIMESTAMP] - [LEVEL] {NAME}")
 				  (levels . "Hoplon")
 				  (timestamp)))))
+(add-hook
+	'logview-mode-hook
+	(lambda ()
+		(local-set-key (kbd "j") 'logview-omnisharp-navigate-to-name)
+		))
 
 (setq-default find-program "/bin/find")
+(setq-default vc-hg-program "hg.exe")
+(setq-default omnisharp--curl-executable-path "/bin/curl")
+(setq-default flycheck-csharp-omnisharp-curl-executable "/bin/curl")
+(setq-default flycheck-csharp-omnisharp-codecheck-executable "/bin/curl")
+(setq-default diff-command "/bin/diff")
+(setenv "PATH" (concat "/bin:" (getenv "PATH")))
 
 ;; Fix so that vc-dir-find-file will find the file in the cygwin system
 (defun around-vc-dir-find-file (orig-fun &rest args)
-	"Runs cygpath in vc-dir-current-file to allow the windows HG output to work with cygwin."
+	"Run cygpath in vc-dir-current-file to allow the windows HG output to work with cygwin."
 	(find-file (replace-regexp-in-string "\n$" "" (shell-command-to-string (concat (concat "cygpath \"" (vc-dir-current-file)) "\""))))
 	)
 
