@@ -14,7 +14,7 @@
 (require 'adaptive-wrap)
 (require 'logview)
 
-nnnn;; Global variables
+;; Global variables
 ;; -- General
 (setq-default tab-width 4)
 (setq-default visible-bell 1)
@@ -22,7 +22,9 @@ nnnn;; Global variables
 (setq-default scroll-conservatively 10000)
 (setq-default visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 (setq-default adaptive-wrap-extra-indent 1)
+(setq-default python-shell-interpreter "/usr/bin/python3")
 (defvaralias 'lisp-indent-offset 'tab-width)
+
 ;; -- Flycheck
 (setq-default flycheck-check-syntax-automatically '(save mode-enabled))
 (setq-default flycheck-emacs-lisp-load-path 'inherit)
@@ -118,6 +120,7 @@ nnnn;; Global variables
 (global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
 (global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
 (global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-x C-\\") 'toggle-window-split)
 (global-set-key [remap previous-history-element] 'ido-prev-match)
 (global-set-key [remap next-history-element] 'ido-next-match)
 (global-set-key [remap ido-next-work-directory] 'ido-next-match)
@@ -143,8 +146,8 @@ nnnn;; Global variables
 (set-mouse-color "#cca")
 (set-frame-font "-CYEL-Iosevka Term-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1" nil t)
 
-(set-face-attribute 'linum nil :height 120)
-(set-face-attribute 'default nil :background "#181818" :height 120)
+(set-face-attribute 'linum nil :height 130)
+(set-face-attribute 'default nil :background "#181818" :height 130)
 (set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -2 :color "#333"))
 (set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 (set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
@@ -167,7 +170,7 @@ nnnn;; Global variables
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
-			 (yafolding smartparens request-deferred omnisharp expand-region multiple-cursors adaptive-wrap darkburn-theme smex logview ido-vertical-mode company))))
+			 (smartparens request-deferred omnisharp expand-region multiple-cursors adaptive-wrap darkburn-theme smex logview ido-vertical-mode company))))
  
 (provide '.emacs)
 ;;; .emacs ends here

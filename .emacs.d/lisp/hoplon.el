@@ -1,24 +1,29 @@
 ;;; package --- Custom Functions to work at Hoplon
 ;;; Commentary:
 ;;; Code:
-(defun server-log ()
+(defun hoplon-server-log ()
  "Open server log."
   (interactive)
-  (find-file "/cygdrive/c/Devel/Work/leviathan/HMM/unity/Editor.log"))
+	(find-file "/cygdrive/c/Devel/Work/leviathan/HMM/unity/Editor.log"))
 
-(defun client-log ()
+(defun hoplon-client-log ()
   "Open client log."
   (interactive)
 	(find-file "/cygdrive/c/Devel/Work/leviathan/HMM/env/server/Editor.log"))
 
-(defun user-config ()
+(defun hoplon-user-config ()
   "Open user.config."
   (interactive)
-  (find-file "/cygdrive/c/Devel/Work/leviathan/user.config"))
+	(find-file "/cygdrive/c/Devel/Work/leviathan/user.config"))
+
+(add-hook
+	'logview-mode-hook
+	(lambda()
+		(logview-choose-submode "Hoplon" "yyyy-MM-dd HH:mm:ss.SSS")))
 
 (add-to-list 'auto-mode-alist '("EditorLog\\.txt$" . logview-mode))
 
-(defun logview-omnisharp-navigate-to-name()
+(defun hoplon-logview-omnisharp-navigate-to-name()
 	(interactive)
 	(require 'omnisharp)
 	(let ((name (nth 1 (split-string (car (split-string (thing-at-point 'line t) "}")) "{")))
@@ -33,9 +38,24 @@
 		)
 	)
 
-(defun ido-logs ()
+(defun hoplon-downloaded-logs ()
 	(interactive)
-	(ido-find-file-in-dir "~/Downloads/logs"))
+	(ido-find-file-in-dir "~/Downloads/logs")
+	(logview-mode))
+
+(defun hoplon-remote-server-logs ()
+	(interactive)
+	(let* (
+			 (machine-dir (concat "//" (read-string "Machine name: ")))
+			 (builds (directory-files (concat machine-dir "/deploy/HMM/")))
+			 (build-number (read-string "Build Number: "))
+			 (build-dir ""))
+		
+		(mapc (lambda (build)
+				  (when (string-match build-number build)
+					  (setq build-dir build)))
+			builds)
+		(ido-find-file-in-dir (concat machine-dir "/deploy/HMM/" build-dir "/logs"))))
 
 (setq logview-additional-level-mappings
 		 (quote
