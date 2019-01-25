@@ -16,7 +16,7 @@
 				(company-complete)
 				))
 		)
-nn	)
+	)
 
 (defun vc-dir-delete-marked-files ()
 	"Delete all marked files in a `vc-dir' buffer."
@@ -110,21 +110,23 @@ nn	)
 		))
 
 (defun clear-line-end ()
+	"Clear all wrong line ends."
 	(interactive)
 	(save-excursion
-		(beginning-of-buffer)
+		(goto-char (point-min))
 		(while (re-search-forward "" nil t)
 			(replace-match ""))
-		
 		))
 
-;;Fix for strange bug where the message that comes from the server is out of order
-(defun around-omnisharp-format-symbol (orig-fun list)
-	"Run ORIG-FUN after swapping first and last item of LIST."
-	(apply orig-fun (list (cons (car (last (cdr list))) (butlast (cdr list)))))
-	)
+;;(advice-add 'omnisharp--attempt-to-start-server-for-buffer :around (lambda (orig-fun list) ))
 
-(advice-add 'omnisharp-format-symbol :around #'around-omnisharp-format-symbol)
+;;Fix for strange bug where the message that comes from the server is out of order
+;; (defun around-omnisharp-format-symbol (orig-fun list)
+;; 	"Run ORIG-FUN after swapping first and last item of LIST."
+;; 	(apply orig-fun (list (cons (car (last (cdr list))) (butlast (cdr list)))))
+;; 	)
+
+;; (advice-add 'omnisharp-format-symbol :around #'around-omnisharp-format-symbol)
 
 ;;Grep / usages / compilation mode truncate
 ;;(font-lock-add-keywords 'compilation-mode '(("^/.*/" (0 '(face default display "...") append))) t)

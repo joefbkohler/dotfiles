@@ -4,12 +4,14 @@
 (setq mc/cmds-to-run-for-all
 	'(
 		 beginning-of-visual-line
+		 c-electric-delete-forward
 		 c-electric-semi&comma
 		 cua-delete-region
 		 end-of-visual-line
 		 isearch-abort
 		 isearch-backward-regexp
 		 isearch-printing-char
+		 overwrite-mode
 		 smex
 		 ))
 
