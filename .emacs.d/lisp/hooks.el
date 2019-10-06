@@ -12,10 +12,19 @@
 (defun my-csharp-mode-hook ()
 	(require 'company)
 	(require 'omnisharp)
+	(require 'whitespace)
 	
 	(omnisharp-mode 1)
 
 	(setq c-default-style "linux" c-basic-offset 4)
+
+	(setq indent-tabs-mode nil)
+	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark lines))
+	(setq whitespace-line-column 100)
+	(set-face-attribute 'whitespace-line nil :underline '(:color "#990") :background nil :foreground nil)
+	(whitespace-mode 1)
+							   
+	;;(set-buffer-file-coding-system 'dos)
 	
 	(c-set-offset 'inline-open 0)
 	(c-set-offset 'func-decl-cont 0)

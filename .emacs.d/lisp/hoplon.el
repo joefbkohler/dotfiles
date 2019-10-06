@@ -1,6 +1,30 @@
 ;;; package --- Custom Functions to work at Hoplon
 ;;; Commentary:
 ;;; Code:
+
+(defun hoplon-fix-hmm-project ()
+	"Fix all csproj files in unity.sln to work with Omnisharp."
+	(interactive)
+	(with-temp-buffer
+		(insert-file-contents "/mnt/c/Devel/Work/leviathan/HMM/unity/unity.sln")
+		(while
+			(search-forward "csproj" nil t)
+			(let ((eow (point)))
+				(when (search-backward "\"" (line-beginning-position) t)
+					(forward-char)
+					(let ((file-name (concat "/mnt/c/Devel/Work/leviathan/HMM/unity/" (buffer-substring-no-properties (point) eow))))
+						(with-temp-file file-name
+							(progn
+								(insert-file-contents file-name)
+								(when (re-search-forward "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>$" nil t)
+									(replace-match "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion><TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>"))
+								(while
+									(re-search-forward "c:" nil t)
+									(replace-match "/mnt/c" t t))
+								)))))
+			(end-of-line)
+			)))
+
 (defun hoplon-client-log ()
  "Open server log."
   (interactive)
@@ -20,8 +44,9 @@
 	"Load HMM-Repository to omnisharp."
 	(interactive)
 	(require 'omnisharp)
+	(hoplon-fix-hmm-project)
 	(setq omnisharp-server-executable-path "/mnt/c/Devel/omnisharp/stdio/run")
-	(omnisharp--do-server-start (concat "/mnt/c/Devel/Work/leviathan/" (read-string "Repository: ") "/unity/unity.sln")))
+	(omnisharp--do-server-start "/mnt/c/Devel/Work/leviathan/HMM/unity"))
 
 (add-hook
 	'logview-mode-hook
@@ -42,7 +67,7 @@
 			 (builds (directory-files (concat machine-dir "/deploy/HMM/")))
 			 (build-number (read-string "Build Number: "))
 			 (build-dir ""))
-		
+
 		(mapc (lambda (build)
 				  (when (string-match build-number build)
 					  (setq build-dir build)))

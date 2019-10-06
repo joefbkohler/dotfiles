@@ -53,6 +53,7 @@
 (electric-indent-mode 1)
 (global-company-mode 1)
 (global-display-line-numbers-mode 1)
+(delete-selection-mode 1)
 
 ;; Minor modes globally unloaded
 (menu-bar-mode 0)
@@ -79,15 +80,15 @@
 (global-set-key [remap isearch-forward] 'isearch-forward-regexp)
 (global-set-key [remap isearch-backward] 'isearch-backward-regexp)
 (global-set-key (kbd "M-*") 'pop-tag-mark) ;; This should go when emacs is updated!
- 
+
 ;; system configuration
 (setq backup-directory-alist
 	`((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
 	`((".*" ,temporary-file-directory t)))
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
- 
+
 ;; Theme
 (load-theme 'darkburn t)
 
@@ -98,7 +99,7 @@
 (set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#333"))
 (set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 (set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
- 
+
 (set-face-attribute 'flycheck-error nil :underline '(:color "#F00" :style wave))
 (set-face-attribute 'company-tooltip-annotation nil :background 'unspecified)
 
@@ -109,7 +110,7 @@
 
 
 ;; End Theme
- 
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -117,8 +118,8 @@
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
-			 (ivy exwm smartparens request-deferred omnisharp expand-region multiple-cursors adaptive-wrap darkburn-theme smex logview ido-vertical-mode company))))
- 
+			 (gnu-elpa-keyring-update avy ivy exwm smartparens request-deferred omnisharp expand-region multiple-cursors adaptive-wrap darkburn-theme smex logview ido-vertical-mode company))))
+
 (provide '.emacs)
 ;;; .emacs ends here
 
