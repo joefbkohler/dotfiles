@@ -17,6 +17,7 @@
 
 ;; Global variables
 ;; -- General
+(add-to-list 'command-switch-alist '("-exwm" . my-exwm-hook))
 (setq-default tab-width 4)
 (setq-default visible-bell 1)
 (setq-default scroll-step 1)
@@ -86,11 +87,10 @@
 	`((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
 	`((".*" ,temporary-file-directory t)))
-(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 ;; Theme
-(load-theme 'darkburn t)
+(load-theme 'zenburn t)
 
 (add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 (add-to-list 'default-frame-alist '(cursor-color . "#cca"))
@@ -118,7 +118,7 @@
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
-			 (gnu-elpa-keyring-update avy ivy exwm smartparens request-deferred omnisharp expand-region multiple-cursors adaptive-wrap darkburn-theme smex logview ido-vertical-mode company))))
+			 (gnu-elpa-keyring-update avy ivy exwm smartparens request-deferred omnisharp expand-region adaptive-wrap zenburn-theme smex logview ido-vertical-mode company))))
 
 (provide '.emacs)
 ;;; .emacs ends here
