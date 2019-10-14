@@ -1,5 +1,12 @@
 (require 'joes-utils)
 
+(defun my-exwm-hook(switch)
+	(require 'exwm)
+	(require 'exwm-config)
+	(exwm-config-default)
+	(exwm-init)
+	(display-time))
+
 (defun my-ediff-mode-hook()
 	(custom-set-variables '(ediff-split-window-function 'split-window-horizontally))
 	)
