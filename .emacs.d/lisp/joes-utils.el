@@ -118,21 +118,8 @@
 			(replace-match ""))
 		))
 
-;;(advice-add 'omnisharp--attempt-to-start-server-for-buffer :around (lambda (orig-fun list) ))
-
-;;Fix for strange bug where the message that comes from the server is out of order
-;; (defun around-omnisharp-format-symbol (orig-fun list)
-;; 	"Run ORIG-FUN after swapping first and last item of LIST."
-;; 	(apply orig-fun (list (cons (car (last (cdr list))) (butlast (cdr list)))))
-;; 	)
-
-;; (advice-add 'omnisharp-format-symbol :around #'around-omnisharp-format-symbol)
-
 ;;Grep / usages / compilation mode truncate
 ;;(font-lock-add-keywords 'compilation-mode '(("^/.*/" (0 '(face default display "...") append))) t)
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
-
-;; Method to get links in org file
-;;(org-element-map (org-element-parse-buffer) 'link (lambda (link) (when (string= (org-element-property :type link) "file") (cons (org-element-property :path link) (org-element-property :search-option link)))))

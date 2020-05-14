@@ -16,33 +16,53 @@
 	(local-set-key (kbd "r") 'vc-revert)
 	(display-line-numbers-mode 0))
 
+(defun my-typescript-mode-hook ()
+	(require 'tide)
+	(tide-setup)
+	(tide-hl-identifier-mode 1)
+	(eldoc-mode 1))
+
+(defun my-python-mode-hook ()
+	(require 'company)
+
+	(add-hook 'before-save-hook 'delete-trailing-whitespace t)
+	
+	(highlight-indent-guides-mode t)
+	(pyvenv-mode t)
+	(lsp)
+	(lsp-ui-mode t)
+	(setq lsp-signature-auto-activate nil))
+
 (defun my-csharp-mode-hook ()
 	(require 'company)
 	(require 'omnisharp)
 	(require 'whitespace)
-	
+	;;(require 'ligature-mode)
+
 	(omnisharp-mode 1)
 
 	(setq c-default-style "linux" c-basic-offset 4)
 
 	(setq indent-tabs-mode nil)
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark lines))
-	(setq whitespace-line-column 100)
-	(set-face-attribute 'whitespace-line nil :underline '(:color "#990") :background nil :foreground nil)
+	(setq whitespace-line-column 120)
+	(set-face-attribute 'whitespace-line nil :underline '(:color "#990") :background "#181818" :foreground nil)
 	(whitespace-mode 1)
-							   
+
+	;;(ligature-mode 1)
+
 	;;(set-buffer-file-coding-system 'dos)
-	
+
 	(c-set-offset 'inline-open 0)
 	(c-set-offset 'func-decl-cont 0)
-	
+
 	(make-local-variable 'company-idle-delay)
 	;;(setq omnisharp-company-sort-results nil)
 	(setq company-idle-delay nil)
 	(add-to-list 'company-backends 'company-omnisharp)
-	
+
 	(add-hook 'compilation-mode-hook 'omnisharp-find-usages-visuals)
-	
+
 	;; Omnisharp Bindings
 	(local-set-key [remap c-indent-line-or-region] 'indent-or-complete)
 	(local-set-key (kbd "C-<tab>") 'company-complete)

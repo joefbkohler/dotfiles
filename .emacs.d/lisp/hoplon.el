@@ -6,18 +6,16 @@
 	"Fix all csproj files in unity.sln to work with Omnisharp."
 	(interactive)
 	(with-temp-buffer
-		(insert-file-contents "/mnt/c/Devel/Work/leviathan/HMM/unity/unity.sln")
+		(insert-file-contents "/mnt/c/Devel/Work/leviathan/HMM-2017/unity/unity.sln")
 		(while
 			(search-forward "csproj" nil t)
 			(let ((eow (point)))
 				(when (search-backward "\"" (line-beginning-position) t)
 					(forward-char)
-					(let ((file-name (concat "/mnt/c/Devel/Work/leviathan/HMM/unity/" (buffer-substring-no-properties (point) eow))))
+					(let ((file-name (concat "/mnt/c/Devel/Work/leviathan/HMM-2017/unity/" (buffer-substring-no-properties (point) eow))))
 						(with-temp-file file-name
 							(progn
 								(insert-file-contents file-name)
-								(when (re-search-forward "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>$" nil t)
-									(replace-match "<TargetFrameworkVersion>v3.5</TargetFrameworkVersion><TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>"))
 								(while
 									(re-search-forward "c:" nil t)
 									(replace-match "/mnt/c" t t))
@@ -28,12 +26,12 @@
 (defun hoplon-client-log ()
  "Open server log."
   (interactive)
-	(find-file "/mnt/c/Devel/Work/leviathan/HMM/unity/Editor.log"))
+	(find-file "/mnt/c/Devel/Work/leviathan/HMM-2017/unity/Editor.log"))
 
 (defun hoplon-server-log ()
   "Open client log."
   (interactive)
-	(find-file "/mnt/c/Devel/Work/leviathan/HMM/env/server/Editor.log"))
+	(find-file "/mnt/c/Devel/Work/leviathan/HMM-2017/env/server/Editor.log"))
 
 (defun hoplon-user-config ()
   "Open user.config."
@@ -41,12 +39,20 @@
 	(find-file "/mnt/c/Devel/Work/leviathan/user.config"))
 
 (defun hoplon-omnisharp-load-hmm ()
-	"Load HMM-Repository to omnisharp."
+	"Load HMM-2017-Repository to omnisharp."
 	(interactive)
 	(require 'omnisharp)
 	(hoplon-fix-hmm-project)
 	(setq omnisharp-server-executable-path "/mnt/c/Devel/omnisharp/stdio/run")
-	(omnisharp--do-server-start "/mnt/c/Devel/Work/leviathan/HMM/unity"))
+	(omnisharp--do-server-start "/mnt/c/Devel/Work/leviathan/HMM-2017/unity"))
+
+(defun hoplon-omnisharp-load-customws ()
+	"Load CustomWS to omnisharp."
+	(interactive)
+	(require 'omnisharp)
+	(hoplon-fix-hmm-project)
+	(setq omnisharp-server-executable-path "/mnt/c/Devel/omnisharp/stdio/run")
+	(omnisharp--do-server-start "/mnt/c/Devel/Work/leviathan/HMM-2017/tools/"))
 
 (add-hook
 	'logview-mode-hook
@@ -64,7 +70,7 @@
 	(interactive)
 	(let* (
 			 (machine-dir (concat "//" (read-string "Machine name: ")))
-			 (builds (directory-files (concat machine-dir "/deploy/HMM/")))
+			 (builds (directory-files (concat machine-dir "/deploy/HMM-2017/")))
 			 (build-number (read-string "Build Number: "))
 			 (build-dir ""))
 
@@ -72,7 +78,7 @@
 				  (when (string-match build-number build)
 					  (setq build-dir build)))
 			builds)
-		(ido-find-file-in-dir (concat machine-dir "/deploy/HMM/" build-dir "/logs"))))
+		(ido-find-file-in-dir (concat machine-dir "/deploy/HMM-2017/" build-dir "/logs"))))
 
 (setq logview-additional-level-mappings
 		 (quote
@@ -96,7 +102,7 @@
 		))
 
 ;;(setq-default find-program "/bin/find")
-;;(setq-default vc-hg-program "hg.exe")
+;;(setq-default vc-hg-program "/ssh:joe.junior@10.0.2.2:/cygdrive/c/Program Files/TortoiseHg/hg.exe")
 ;;(setq-default omnisharp--curl-executable-path "/bin/curl")
 ;;(setq-default flycheck-csharp-omnisharp-curl-executable "/bin/curl")
 ;;(setq-default flycheck-csharp-omnisharp-codecheck-executable "/bin/curl")
