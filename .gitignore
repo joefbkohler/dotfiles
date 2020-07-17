@@ -1,7 +1,11 @@
+*.extmap
+*lsp-session*
+ido.last
+smex-items
+network-security.data
 .emacs.d/auto-save-list
 elpa/
 .emacs.d/eshell
 .emacs.d/elpa
 .emacs.d/emacs_backtrace.txt 
 .emacs.d/emacs_backtrace.txt
-.emacs.d/emacs-w32.exe.stackdump
