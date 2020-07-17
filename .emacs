@@ -18,8 +18,15 @@
 		 (quote
 			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
 
-(package-refresh-contents)
-(package-install-selected-packages)
+;; Check if all necessary packages are installed
+;; if not, tries to install them
+(catch 'pkg
+	(dolist (pkg package-selected-packages)
+		(unless (package-installed-p pkg)
+			(message "Necessary packages not installed, intalling...")
+			(package-refresh-contents)
+			(package-install-selected-packages)
+			(throw 'pkg pkg))))
 
 ;; Finished package configuration
 
