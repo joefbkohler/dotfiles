@@ -137,7 +137,7 @@
 (add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 (add-to-list 'default-frame-alist '(cursor-color . "#cca"))
 
-(set-face-attribute 'default nil :background "#181818" :height 160 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-attribute 'default nil :background "#181818" :height 180 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 (set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 (set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 (set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
