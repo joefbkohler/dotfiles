@@ -103,20 +103,20 @@
 (global-unset-key (kbd "C-v"))
 (global-unset-key (kbd "M-v"))
 
-(global-set-key (kbd "C-z") 'undo)
-(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
-(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "C-|") 'toggle-window-split)
-
 ;; Linux only keybindings to simulate command of osx
-(if (eq system-type "gnu/linux")
+(if (eq system-type 'gnu/linux)
 	(progn
 		(global-set-key (kbd "s-v") 'yank)
 		(global-set-key (kbd "s-x") 'kill-region)
 		(global-set-key (kbd "s-c") 'kill-ring-save)
 		(global-set-key (kbd "s-u") 'revert-buffer)))
 
+(global-set-key (kbd "C-z") 'undo)
+(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
+(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-|") 'toggle-window-split)
+(global-set-key [remap shell-command] 'async-shell-command)
 (define-key visual-line-mode-map [remap kill-line] nil) ;; Remove remapping of kill-line to kill-visual-line
 (global-set-key [remap ido-toggle-prefix] 'ido-prev-match)
 (global-set-key [remap previous-history-element] 'ido-prev-match)
@@ -141,7 +141,7 @@
 (add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 (add-to-list 'default-frame-alist '(cursor-color . "#cca"))
 
-(set-face-attribute 'default nil :background "#181818" :height 180 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-attribute 'default nil :background "#181818" :height 160 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 (set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 (set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 (set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
