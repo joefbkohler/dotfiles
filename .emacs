@@ -16,7 +16,7 @@
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
-			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode zmq tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens request-deferred omnisharp adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
+			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
 
 (package-refresh-contents)
 (package-install-selected-packages)
@@ -25,11 +25,6 @@
 
 (require 'joes-utils)
 (require 'hooks)
-
-(require 'flycheck)
-(require 'company)
-(require 'adaptive-wrap)
-(require 'logview)
 
 ;; Global variables
 ;; -- General
@@ -149,6 +144,7 @@
 (set-face-attribute 'flycheck-error nil :underline '(:color "#F00" :style wave))
 (set-face-attribute 'company-tooltip-annotation nil :background 'unspecified)
 
+(require 'logview)
 (set-face-attribute 'logview-warning-entry nil :foreground "#B90" :background 'unspecified)
 (set-face-attribute 'logview-error-entry nil :foreground "#A33" :background 'unspecified)
 (set-face-attribute 'logview-trace-entry nil :foreground "#AAC" :background 'unspecified)
