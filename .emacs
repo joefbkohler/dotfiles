@@ -3,8 +3,20 @@
 ;;; Code:
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
+;; Package
 (require 'package)
 (package-initialize)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+	'(package-selected-packages
+		 (quote
+			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode zmq tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens request-deferred omnisharp adaptive-wrap zenburn-theme smex logview ido-vertical-mode company))))
+
+(package-install-selected-packages)
 
 (require 'joes-utils)
 (require 'hoplon)
@@ -79,6 +91,7 @@
 (add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
 (add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
 (add-hook 'python-mode-hook 'my-python-mode-hook)
+(add-hook 'latex-mode-hook 'my-latex-mode-hook)
 
 ;; Custom key bindings
 (global-unset-key (kbd "C-v"))
@@ -88,8 +101,18 @@
 (global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
 (global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
 (global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "C-x C-\\") 'toggle-window-split)
+(global-set-key (kbd "C-|") 'toggle-window-split)
+
+;; Linux only keybindings to simulate command of osx
+(if (eq system-type "gnu/linux")
+	(progn
+		(global-set-key (kbd "s-v") 'yank)
+		(global-set-key (kbd "s-x") 'kill-region)
+		(global-set-key (kbd "s-c") 'kill-ring-save)
+		(global-set-key (kbd "s-u") 'revert-buffer)))
+
 (define-key visual-line-mode-map [remap kill-line] nil) ;; Remove remapping of kill-line to kill-visual-line
+(global-set-key [remap ido-toggle-prefix] 'ido-prev-match)
 (global-set-key [remap previous-history-element] 'ido-prev-match)
 (global-set-key [remap next-history-element] 'ido-next-match)
 (global-set-key [remap ido-next-work-directory] 'ido-next-match)
@@ -112,7 +135,7 @@
 (add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 (add-to-list 'default-frame-alist '(cursor-color . "#cca"))
 
-(set-face-attribute 'default nil :background "#181818" :height 160 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-attribute 'default nil :background "#181818" :height 160 :font "VictorMono semibold")
 (set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 (set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 (set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
@@ -128,15 +151,6 @@
 
 
 ;; End Theme
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-	'(package-selected-packages
-		 (quote
-			 (vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode zmq tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens request-deferred omnisharp adaptive-wrap zenburn-theme smex logview ido-vertical-mode company))))
 
 (provide '.emacs)
 ;;; .emacs ends here
