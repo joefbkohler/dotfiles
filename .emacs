@@ -7,6 +7,8 @@
 (require 'package)
 (package-initialize)
 
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -14,12 +16,12 @@
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
-			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode zmq tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens request-deferred omnisharp adaptive-wrap zenburn-theme smex logview ido-vertical-mode company))))
+			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode zmq tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens request-deferred omnisharp adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
 
+(package-refresh-contents)
 (package-install-selected-packages)
 
 (require 'joes-utils)
-(require 'hoplon)
 (require 'hooks)
 
 (require 'flycheck)
@@ -122,12 +124,12 @@
 (global-set-key [remap isearch-forward] 'isearch-forward-regexp)
 (global-set-key [remap isearch-backward] 'isearch-backward-regexp)
 (global-set-key [remap completion-at-point] 'company-complete)
+
 ;; system configuration
 (setq backup-directory-alist
 	`((".*" . "~/backups")))
 (setq auto-save-file-name-transforms
 	`((".*" "~/backups" t)))
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 ;; Theme
 (load-theme 'zenburn t)
@@ -135,11 +137,12 @@
 (add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 (add-to-list 'default-frame-alist '(cursor-color . "#cca"))
 
-(set-face-attribute 'default nil :background "#181818" :height 160 :font "VictorMono semibold")
+(set-face-attribute 'default nil :background "#181818" :height 160 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 (set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 (set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 (set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
-(set-face-attribute 'font-lock-string-face nil :font "-UKWN-Victor Mono-semibold-italic-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
+(set-face-attribute 'font-lock-string-face nil :italic t)
 
 (set-face-attribute 'flycheck-error nil :underline '(:color "#F00" :style wave))
 (set-face-attribute 'company-tooltip-annotation nil :background 'unspecified)
