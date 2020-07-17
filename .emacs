@@ -21,6 +21,8 @@
 (package-refresh-contents)
 (package-install-selected-packages)
 
+;; Finished package configuration
+
 (require 'joes-utils)
 (require 'hooks)
 
