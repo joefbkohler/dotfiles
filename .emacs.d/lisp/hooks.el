@@ -16,6 +16,11 @@
 	(local-set-key (kbd "r") 'vc-revert)
 	(display-line-numbers-mode 0))
 
+(defun my-latex-mode-hook ()
+	(lsp)
+	(lsp-ui-mode t)
+	(auto-fill-mode 1))
+
 (defun my-typescript-mode-hook ()
 	(require 'tide)
 	(tide-setup)
