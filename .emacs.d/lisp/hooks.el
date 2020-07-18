@@ -8,13 +8,16 @@
 	(display-time))
 
 (defun my-ediff-mode-hook()
-	(custom-set-variables '(ediff-split-window-function 'split-window-horizontally))
-	)
+	(custom-set-variables '(ediff-split-window-function 'split-window-horizontally)))
 
 (defun my-vc-dir-mode-hook()
 	(local-set-key (kbd "k") 'vc-dir-delete-marked-files)
 	(local-set-key (kbd "r") 'vc-revert)
 	(display-line-numbers-mode 0))
+
+(defun my-pdf-view-mode-hook()
+	(pdf-tools-install)
+	(display-line-numbers-mode nil))
 
 (defun my-latex-mode-hook ()
 	(lsp)

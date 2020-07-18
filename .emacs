@@ -92,6 +92,7 @@
 
 ;; Major modes
 (add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
+(add-to-list 'auto-mode-alist '("\\.pdf$" . my-pdf-view-mode-hook))
 (add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
 (add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
 (add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
