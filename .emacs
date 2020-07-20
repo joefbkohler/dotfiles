@@ -16,7 +16,7 @@
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
-			 (pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
+			 (yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
 
 ;; Check if all necessary packages are installed
 ;; if not, tries to install them
@@ -110,6 +110,7 @@
 		(global-set-key (kbd "s-v") 'yank)
 		(global-set-key (kbd "s-x") 'kill-region)
 		(global-set-key (kbd "s-c") 'kill-ring-save)
+		(global-set-key (kbd "s-z") 'undo)
 		(global-set-key (kbd "s-u") 'revert-buffer)))
 
 (global-set-key (kbd "C-z") 'undo)
