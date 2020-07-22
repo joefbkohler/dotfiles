@@ -3,6 +3,12 @@
 ;; My custom functions.  Either made by me or stolen from the internet ;)
 ;;; Code:
 
+(defun blink-minibuffer (&optional time)
+	"Blink the minibuffer for a set TIME."
+	(unless time (setq time 0.1))
+	(invert-face 'mode-line)
+	(run-with-timer time nil #'invert-face 'mode-line))
+
 (defun indent-or-complete ()
 	"Try to indent.  If line is already indented, invoke company-complete."
 	(interactive)
