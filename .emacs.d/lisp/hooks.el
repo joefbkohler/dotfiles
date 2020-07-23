@@ -16,10 +16,11 @@
 	(display-line-numbers-mode 0))
 
 (defun my-pdf-view-mode-hook()
-	(pdf-tools-install)
-	(display-line-numbers-mode nil))
+	(display-line-numbers-mode -1))
 
 (defun my-latex-mode-hook ()
+	(local-set-key [remap tex-compile]
+		(lambda () (interactive) (tex-compile "." "lualatex")))
 	(lsp)
 	(lsp-ui-mode t)
 	(auto-fill-mode 1))
