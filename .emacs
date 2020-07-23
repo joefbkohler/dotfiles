@@ -23,13 +23,11 @@
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.	
+ ;; If there is more than one, they won't work right.
 	'(package-selected-packages
 		 (quote
 			 (yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
 ;; Finished package configuration
-
-(defvar-local initialization-errors "")
 
 ;; -- Keybindings
 (when (eq system-type 'gnu/linux)
@@ -56,7 +54,8 @@
 
 ;; Major modes configuration
 (add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
-(add-to-list 'auto-mode-alist '("\\.pdf$" . my-pdf-view-mode-hook))
+(add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
+(add-hook 'pdf-view-mode-hook 'my-pdf-view-mode-hook)
 (add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
 (add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
 (add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
@@ -80,6 +79,8 @@
 (cua-selection-mode 1)
 
 ;; -- External packages configuration and modes
+
+(defvar-local initialization-errors "")
 
 ;; -- Zenburn
 (condition-case err
