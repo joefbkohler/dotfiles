@@ -19,8 +19,7 @@
 	(display-line-numbers-mode -1))
 
 (defun my-latex-mode-hook ()
-	(local-set-key [remap tex-compile]
-		(lambda () (interactive) (tex-compile "." "lualatex")))
+	(local-set-key [remap tex-compile] 'tex-compile-update)
 	(lsp)
 	(lsp-ui-mode t)
 	(auto-fill-mode 1))
@@ -35,7 +34,7 @@
 	(require 'company)
 
 	(add-hook 'before-save-hook 'delete-trailing-whitespace t)
-	
+
 	(highlight-indent-guides-mode t)
 	(pyvenv-mode t)
 	(lsp)
