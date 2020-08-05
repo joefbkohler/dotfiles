@@ -28,7 +28,6 @@ zmodload -a zsh/zpty zpty
 zmodload -a zsh/zprof zprof
 zmodload -ap zsh/mapfile mapfile
 
-
 PATH="/usr/local/bin:/usr/local/sbin/:/bin:/sbin:/usr/bin:/usr/sbin:$PATH"
 TZ="America/Sao_Paulo"
 HISTFILE=$HOME/.zhistory
@@ -37,16 +36,16 @@ SAVEHIST=1000
 HOSTNAME="`hostname`"
 PAGER='less'
 EDITOR='emacs'
-    autoload colors zsh/terminfo
-    if [[ "$terminfo[colors]" -ge 8 ]]; then
-   colors
-    fi
-    for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
-   eval PR_$color='%{$fg[${(L)color}]%}'
-   eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
-   (( count = $count + 1 ))
-    done
-    PR_NO_COLOR="%{$terminfo[sgr0]%}"
+autoload colors zsh/terminfo
+if [[ "$terminfo[colors]" -ge 8 ]]; then
+	colors
+fi
+for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
+	eval PR_$color='%{$fg[${(L)color}]%}'
+	eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
+	(( count = $count + 1 ))
+done
+PR_NO_COLOR="%{$terminfo[sgr0]%}"
 PS1="[%B%n%b$PR_WHITE@$PR_LIGHT_RED%m%u$PR_NO_COLOR:$PR_RED%2c$PR_NO_COLOR]%(!.#.$) "
 
 if [ $SSH_TTY ]; then
@@ -60,8 +59,7 @@ unsetopt ALL_EXPORT
 # # aliases
 # # --------------------------------------------------------------------
 
-alias ll='ls -al'
-alias ls='ls --color=auto '
+alias ls='ls -G'
 
 autoload -U compinit
 compinit
@@ -131,12 +129,12 @@ zstyle ':completion:*:*:(^rm):*:*files' ignored-patterns '*?.o' '*?.c~' \
 # ignore completion functions (until the _ignored completer)
 zstyle ':completion:*:functions' ignored-patterns '_*'
 zstyle ':completion:*:*:*:users' ignored-patterns \
-        adm apache bin daemon games gdm halt ident junkbust lp mail mailnull \
-        named news nfsnobody nobody nscd ntp operator pcap postgres radvd \
-        rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs avahi-autoipd\
-        avahi backup messagebus beagleindex debian-tor dhcp dnsmasq fetchmail\
-        firebird gnats haldaemon hplip irc klog list man cupsys postfix\
-        proxy syslog www-data mldonkey sys snort
+       adm apache bin daemon games gdm halt ident junkbust lp mail mailnull \
+       named news nfsnobody nobody nscd ntp operator pcap postgres radvd \
+       rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs avahi-autoipd\
+       avahi backup messagebus beagleindex debian-tor dhcp dnsmasq fetchmail\
+       firebird gnats haldaemon hplip irc klog list man cupsys postfix\
+       proxy syslog www-data mldonkey sys snort
 # SSH Completion
 zstyle ':completion:*:scp:*' tag-order \
    files users 'hosts:-host hosts:-domain:domain hosts:-ipaddr"IP\ Address *'
@@ -147,3 +145,5 @@ zstyle ':completion:*:ssh:*' tag-order \
 zstyle ':completion:*:ssh:*' group-order \
    hosts-domain hosts-host users hosts-ipaddr
 zstyle '*' single-ignored show
+
+(source $HOME/.localrc || true) &> /dev/null
