@@ -25,8 +25,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
 	'(package-selected-packages
-		 (quote
-			 (yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot company-lsp lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck))))
+		 '(company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode tide typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck)))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -37,7 +36,7 @@
 
 ;; Global variables
 ;; -- General
-(defvaralias 'lisp-indent-offset 'tab-width)
+(ignore-error (defvaralias 'lisp-indent-offset 'tab-width))
 (setq-default display-line-numbers-grow-only 1)
 (setq-default python-shell-interpreter "/usr/bin/python3")
 (setq-default ring-bell-function 'blink-minibuffer)
@@ -55,6 +54,7 @@
 ;; Major modes configuration
 (add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
 (add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
+(add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
 (add-hook 'pdf-view-mode-hook 'my-pdf-view-mode-hook)
 (add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
 (add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
