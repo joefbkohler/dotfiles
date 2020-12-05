@@ -146,4 +146,4 @@ zstyle ':completion:*:ssh:*' group-order \
    hosts-domain hosts-host users hosts-ipaddr
 zstyle '*' single-ignored show
 
-(source $HOME/.localrc || true) &> /dev/null
+. ~/.localrc &> /dev/null
