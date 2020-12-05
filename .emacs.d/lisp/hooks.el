@@ -38,14 +38,15 @@
 	(pyvenv-mode t)
 	(lsp)
 	(lsp-ui-mode t)
+	(lsp-ui-doc-mode -1)
 	(setq lsp-signature-auto-activate nil))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
-	;;(require 'ligature-mode)
 
 	(company-box-mode)
 	(lsp)
+	(lsp-ui-doc-mode 0)
 	(yas-minor-mode)
 
 	(setq c-default-style "linux" c-basic-offset 4)
@@ -54,11 +55,6 @@
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
 	(whitespace-mode 1)
 
-	;;(ligature-mode 1)
-
-	;;(set-buffer-file-coding-system 'dos)
-
-	
 	(c-set-offset 'inline-open 0)
 	(c-set-offset 'func-decl-cont 0)
 

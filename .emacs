@@ -26,8 +26,9 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
+ '(ediff-split-window-function 'split-window-horizontally)
  '(package-selected-packages
-   '(magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme smex logview ido-vertical-mode company flycheck)))
+   '(smex doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -98,15 +99,16 @@
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
-;; -- Ido configuration
+;; -- Ivy configuration
 (condition-case err
 	(progn
-		(setq-default ido-enable-regexp 1)
-		(ido-mode 1)
-		(ido-vertical-mode 1)
-		(set-ido-keybindings))
-	(error
-		(setq-local initialization-errors (error-message-string err))))
+	  (require 'counsel)
+	  (require 'smex)
+	  (ivy-mode 1)
+	  (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+	  (set-ivy-keybindings))
+  (error
+   (setq-local initialization-errors (error-message-string err))))
 
 ;; -- Company configuration
 (condition-case err

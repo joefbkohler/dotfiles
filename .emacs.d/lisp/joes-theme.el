@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (defun apply-zenburn-theme()
-	(load-theme 'zenburn)
+	(load-theme 'zenburn t)
 	(set-face-attribute 'default nil :background "#181818" :height 180 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 	(set-face-attribute 'region nil :foreground 'unspecified :background "#334")
