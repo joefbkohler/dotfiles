@@ -39,7 +39,7 @@
 
 ;; Global variables
 ;; -- General
-(ignore-error (defvaralias 'lisp-indent-offset 'tab-width))
+(ignore-errors (defvaralias 'lisp-indent-offset 'tab-width))
 (setq-default display-line-numbers-grow-only 1)
 (setq-default python-shell-interpreter "/usr/bin/python3")
 (setq-default ring-bell-function 'blink-minibuffer)
