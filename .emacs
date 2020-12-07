@@ -24,11 +24,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
- '(ediff-split-window-function 'split-window-horizontally)
- '(package-selected-packages
-   '(smex doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
+	'(custom-safe-themes
+		 (quote
+			 ("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default)))
+ '(ediff-split-window-function (quote split-window-horizontally))
+	'(package-selected-packages
+		 (quote
+			 (doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck))))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -39,13 +41,13 @@
 
 ;; Global variables
 ;; -- General
-(ignore-errors (defvaralias 'lisp-indent-offset 'tab-width))
 (setq-default display-line-numbers-grow-only 1)
 (setq-default python-shell-interpreter "/usr/bin/python3")
 (setq-default ring-bell-function 'blink-minibuffer)
 (setq-default scroll-conservatively 10000)
 (setq-default scroll-step 1)
 (setq-default tab-width 4)
+(setq-default lisp-indent-offset 4)
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 (put 'narrow-to-region 'disabled nil)
@@ -102,13 +104,12 @@
 ;; -- Ivy configuration
 (condition-case err
 	(progn
-	  (require 'counsel)
-	  (require 'smex)
-	  (ivy-mode 1)
-	  (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
-	  (set-ivy-keybindings))
-  (error
-   (setq-local initialization-errors (error-message-string err))))
+		(require 'counsel)
+		(ivy-mode 1)
+		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+		(set-ivy-keybindings))
+	(error
+		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- Company configuration
 (condition-case err
