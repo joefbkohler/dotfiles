@@ -5,6 +5,7 @@
 	(require 'exwm-config)
 	(exwm-config-default)
 	(exwm-init)
+	(ido-mode 0)
 	(display-time))
 
 (defun my-ediff-mode-hook()
