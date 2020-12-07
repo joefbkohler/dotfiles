@@ -22,15 +22,17 @@
 	(when (< (count-windows) 2)
 		(split-window-right))
 
+	;; Gotta run twice to create table of contents. But first time can be draft mode.
+	(shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
 	(shell-command (concat "lualatex --halt-on-error" " " (tex-main-file)))
 	
-	(let* ((pdf-file (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
-			  (pdf-buffer (get-buffer pdf-file)))
+	(let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
+			  (pdf-buffer (get-buffer pdf-file-name)))
 		(if pdf-buffer
 			(progn
 				(switch-to-buffer-other-window pdf-buffer)
 				(revert-buffer :noconfirm t))
-			(find-file-other-window pdf-file))))
+			(find-file-other-window pdf-file-name))))
 
 (defun indent-or-complete ()
 	"Try to indent.  If line is already indented, invoke company-complete."
