@@ -1,10 +1,13 @@
 (require 'joes-utils)
+(require 'joes-keybindings)
 
 (defun my-exwm-hook(switch)
 	(require 'exwm)
 	(require 'exwm-config)
+	(set-exwm-keybindings)
 	(exwm-config-default)
 	(exwm-init)
+	(set-common-exwm-simulation-keys)
 	(ido-mode 0)
 	(display-time))
 

@@ -8,6 +8,20 @@
 	(global-set-key (kbd "s-c") 'kill-ring-save)
 	(global-set-key (kbd "s-u") 'revert-buffer))
 
+(defun set-exwm-keybindings()
+	(exwm-input-set-key (kbd "s-k") 'exwm-input-release-keyboard))
+
+(defun set-common-exwm-simulation-keys()
+	(exwm-input-set-simulation-key (kbd "s-c") (kbd "C-<insert>"))
+	(exwm-input-set-simulation-key (kbd "s-v") (kbd "S-<insert>"))
+	(exwm-input-set-simulation-key (kbd "s-x") (kbd "C-x"))
+	(exwm-input-set-simulation-key (kbd "C-s") (kbd "C-f"))
+	(exwm-input-set-simulation-key (kbd "C-g") (kbd "<escape>"))
+	(exwm-input-set-simulation-key (kbd "M-p") (kbd "<up>"))
+	(exwm-input-set-simulation-key (kbd "M-n") (kbd "<down>"))
+	(exwm-input-set-simulation-key (kbd "M-b") (kbd "C-<left>"))
+	(exwm-input-set-simulation-key (kbd "M-f") (kbd "C-<right>")))
+
 (defun set-common-keybindings()
 	;; Unset some keybindings that I hate!
 	(global-unset-key (kbd "C-v"))
