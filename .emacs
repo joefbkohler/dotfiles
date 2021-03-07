@@ -17,7 +17,7 @@
 (require 'package)
 (package-initialize)
 
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa-stable.milkbox.net/packages/"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -25,12 +25,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
 	'(custom-safe-themes
-		 (quote
-			 ("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default)))
- '(ediff-split-window-function (quote split-window-horizontally))
+		 '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
+ '(ediff-split-window-function 'split-window-horizontally)
 	'(package-selected-packages
-		 (quote
-			 (doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck))))
+		 '(go-mode smex doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -54,7 +52,9 @@
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))
 (setq auto-save-file-name-transforms `((".*" "~/backups" t)))
-(setq-default lsp-signature-auto-activate nil)
+
+;; Local envinronment configuration
+(ignore-errors (load-file "~/.emacs-local"))
 
 ;; Major modes configuration
 (add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
@@ -66,6 +66,7 @@
 (add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (add-hook 'latex-mode-hook 'my-latex-mode-hook)
+(add-hook 'go-mode-hook 'my-go-mode-hook)
 
 ;; Minor modes globally unloaded
 (menu-bar-mode 0)
@@ -82,10 +83,20 @@
 (global-display-line-numbers-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
+(global-so-long-mode 1)
 
 ;; -- External packages configuration and modes
 
 (defvar-local initialization-errors "")
+
+;; -- LSP
+(condition-case err
+	(progn
+		(require 'lsp)
+		(setq-default lsp-signature-auto-activate nil)
+		(setq-default lsp-enable-file-watchers nil))
+	(error
+		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- Zenburn
 (condition-case err

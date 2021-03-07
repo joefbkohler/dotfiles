@@ -28,6 +28,11 @@
 	(lsp-ui-mode t)
 	(auto-fill-mode 1))
 
+(defun my-go-mode-hook ()
+	(company-box-mode)
+	(lsp)
+	(local-set-key [remap indent-for-tab-command] 'indent-or-complete))
+
 (defun my-typescript-mode-hook ()
 	(require 'tide)
 	(tide-setup)
@@ -54,6 +59,8 @@
 	(yas-minor-mode)
 
 	(setq c-default-style "linux" c-basic-offset 4)
+
+	(setq company-idle-delay nil)
 
 	(setq indent-tabs-mode nil)
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
