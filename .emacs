@@ -115,13 +115,12 @@
 ;; -- Ivy configuration
 (condition-case err
 	(progn
-	  (require 'counsel)
-	  (require 'smex)
-	  (ivy-mode 1)
-	  (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
-	  (set-ivy-keybindings))
-  (error
-   (setq-local initialization-errors (error-message-string err))))
+		(require 'counsel)
+		(ivy-mode 1)
+		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+		(set-ivy-keybindings))
+	(error
+		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- Company configuration
 (condition-case err
