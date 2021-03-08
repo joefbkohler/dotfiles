@@ -47,6 +47,10 @@
 	(lsp-ui-doc-mode -1)
 	(setq lsp-signature-auto-activate nil))
 
+(defun my-lsp-hook ()
+	(require 'ivy)
+	(set-lsp-keybinding 'lsp-ivy-workspace-symbol))
+
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
 
