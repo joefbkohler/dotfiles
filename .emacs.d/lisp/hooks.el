@@ -56,7 +56,8 @@
 	(yas-minor-mode)
 
 	(setq c-default-style "linux" c-basic-offset 4)
-
+	
+	(make-local-variable 'company-idle-delay)
 	(setq company-idle-delay nil)
 
 	(setq indent-tabs-mode nil)
