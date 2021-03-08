@@ -3,6 +3,10 @@
 ;; My custom functions.  Either made by me or stolen from the internet ;)
 ;;; Code:
 
+(defvar project-file-extensions
+	'("cs" "py" "c" "cpp")
+	"File extensions that can be used by find-project function.")
+
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
 	(unless time (setq time 0.1))
@@ -13,14 +17,12 @@
 	"Find the 'first' file recursively with an extesions and opens it."
 	(interactive)
 	(require 'ivy)
-	(let ((path (read-directory-name "Project root:" "~/"))
-			 (file-ext (ivy-read "File ext:" '("cs" "go" "py") :require-match t)))
+	(let ((root-path (read-directory-name "Project root: " "~/"))
+	 		 (file-ext (ivy-read "File ext: " project-file-extensions :require-match t)))
 		(find-file
-			(car (directory-files-recursively
-					 path (concat "\\." file-ext "$") nil
-					 (lambda (dir-name)
-						 "Checks if a directory starts with a ."
-						 (not (char-equal (string-to-char (file-name-nondirectory (directory-file-name (file-name-directory dir-name)))) ?.))))))))
+			(string-trim
+				(shell-command-to-string
+					(concat "find " root-path " -iname '*." file-ext "' -print -quit"))))))
 
 (defun tex-compile-update()
 	(interactive)
