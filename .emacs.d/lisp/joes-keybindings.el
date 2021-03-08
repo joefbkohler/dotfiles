@@ -32,6 +32,13 @@
 	(global-set-key [remap ivy-done] 'ivy-alt-done)
 	(global-set-key [remap ivy-partial-or-done] 'ivy-restrict-to-matches))
 
+(defun set-lsp-keybinding (lsp-workspace-symbol)
+	(local-set-key (kbd "C-c C-t") lsp-workspace-symbol)
+	(local-set-key (kbd "C-c C-r") 'lsp-find-references)
+	(local-set-key (kbd "C-c C-i") 'lsp-find-implementation)
+	(local-set-key (kbd "C-c C-d") 'lsp-find-declaration)
+	(local-set-key (kbd "C-c C-j") 'lsp-find-definition))
+
 (defun set-company-keybindings()
 	(global-set-key [remap completion-at-point] 'company-complete))
 
