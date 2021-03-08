@@ -139,8 +139,7 @@
 	(progn
 		(setq-default flycheck-emacs-lisp-load-path 'inherit)
 		(setq-default flycheck-navigation-minimum-level 'error)
-		(setq-default flycheck-check-syntax-automatically '(save idle-change mode-enabled))
-		(setq-default flycheck-idle-change-delay 5)
+		(setq-default flycheck-check-syntax-automatically '(save new-line idle-buffer-switch mode-enabled))
 		(global-flycheck-mode 1)
 		(apply-flycheck-theme))
 	(error
