@@ -23,14 +23,17 @@
 	(exwm-input-set-simulation-key (kbd "M-f") (kbd "C-<right>")))
 
 (defun set-common-keybindings()
+	"Set keys used everywhere."
 	;; Unset some keybindings that I hate!
 	(global-unset-key (kbd "C-v"))
 	(global-unset-key (kbd "M-v"))
+	(global-unset-key (kbd "C-x C-z"))
 	
 	(global-set-key (kbd "C-z") 'undo)
 	(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
 	(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
 	(global-set-key (kbd "C-|") 'toggle-window-split)
+	(global-set-key (kbd "C-x <tab>") (lambda () (interactive) (insert-tab)))
 	(global-set-key [remap shell-command] 'async-shell-command)
 	
 	;; Remove remapping of kill-line to kill-visual-line
