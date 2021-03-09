@@ -29,6 +29,7 @@
  '(ediff-split-window-function 'split-window-horizontally)
 	'(package-selected-packages
 		 '(go-mode smex doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
+(package-install-selected-packages)
 ;; Finished package configuration
 
 ;; -- Keybindings
