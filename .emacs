@@ -33,7 +33,7 @@
 ;; Finished package configuration
 
 ;; -- Keybindings
-(when (eq system-type 'gnu/linux)
+(when (not (eq system-type 'darwin))
 	(simulate-command-key))
 
 (set-common-keybindings)
