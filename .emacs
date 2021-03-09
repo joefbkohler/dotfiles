@@ -48,6 +48,7 @@
 (setq-default lisp-indent-offset 4)
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
+(setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
 (put 'narrow-to-region 'disabled nil)
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))
@@ -94,7 +95,8 @@
 	(progn
 		(require 'lsp)
 		(setq-default lsp-signature-auto-activate nil)
-		(setq-default lsp-enable-file-watchers nil))
+		(setq-default lsp-enable-file-watchers nil)
+		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
@@ -118,6 +120,7 @@
 		(require 'counsel)
 		(ivy-mode 1)
 		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 		(set-ivy-keybindings))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
@@ -139,8 +142,7 @@
 	(progn
 		(setq-default flycheck-emacs-lisp-load-path 'inherit)
 		(setq-default flycheck-navigation-minimum-level 'error)
-		(setq-default flycheck-check-syntax-automatically '(save idle-change mode-enabled))
-		(setq-default flycheck-idle-change-delay 5)
+		(setq-default flycheck-check-syntax-automatically '(save new-line idle-buffer-switch mode-enabled))
 		(global-flycheck-mode 1)
 		(apply-flycheck-theme))
 	(error

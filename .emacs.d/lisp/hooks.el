@@ -50,6 +50,10 @@
 	(lsp-ui-doc-mode -1)
 	(setq lsp-signature-auto-activate nil))
 
+(defun my-lsp-hook ()
+	(require 'ivy)
+	(set-lsp-keybinding 'lsp-ivy-workspace-symbol))
+
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
 
@@ -59,7 +63,8 @@
 	(yas-minor-mode)
 
 	(setq c-default-style "linux" c-basic-offset 4)
-
+	
+	(make-local-variable 'company-idle-delay)
 	(setq company-idle-delay nil)
 
 	(setq indent-tabs-mode nil)
