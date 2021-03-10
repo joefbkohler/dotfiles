@@ -137,16 +137,16 @@
 	(let ((buffer (get-buffer buffer-name))
 			 (result buffer-name))
 		(if buffer
-			(let ((buffer-major-mode (symbol-name (with-current-buffer buffer major-mode)))
+			(let ((buffer-major-mode (string-remove-suffix "-mode" (symbol-name (with-current-buffer buffer major-mode))))
 					 (buffer-path (buffer-file-name buffer))
 					 (name-size (string-width result)))
 				(let ((result (concat result
-								  (make-string (- ivy-switch-buffer-major-mode-column name-size) ? )
+								  (make-string (max 1 (- ivy-switch-buffer-major-mode-column name-size)) ? )
 								  (propertize (concat "" buffer-major-mode) 'face 'font-lock-type-face))))
 					(let ((result (concat result
-									  (make-string (- ivy-switch-buffer-path-column (string-width result)) ? )
+									  (make-string (max 1 (- ivy-switch-buffer-path-column (string-width result))) ? )
 									  (propertize (concat "" buffer-path) 'face 'font-lock-comment-face))))
-						(truncate-string-to-width result (window-width) nil nil t t))))
+						(truncate-string-to-width result (frame-width) nil nil t t))))
 			result)))
 
 (defun ivy-counsel-mx-doc-transformer (function-name)
@@ -155,9 +155,9 @@
 		(car (split-string
 			(concat
 				function-name
-				(make-string (- ivy-counsel-mx-doc-column (string-width function-name)) ? )
+				(make-string (max 1 (- ivy-counsel-mx-doc-column (string-width function-name))) ? )
 				(propertize (concat "" (documentation (car (read-from-string function-name)))) 'face 'font-lock-comment-face)) "\n"))
-		(window-width) nil nil t t))
+		(frame-width) nil nil t t))
 
 ;; Global adaptive-wrap-prefix-mode. Why doesn't this exist by default??? õO
 (define-global-minor-mode global-adaptive-wrap-prefix-mode
