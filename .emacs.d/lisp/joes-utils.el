@@ -28,6 +28,11 @@
 	(invert-face 'mode-line)
 	(run-with-timer time nil #'invert-face 'mode-line))
 
+(defun create-scratch-buffer ()
+	"Create a new scratch buffer if one does not exist."
+	(switch-to-buffer (get-buffer-create "*scratch*"))
+	(lisp-interaction-mode))
+
 (defun find-project()
 	"Find the 'first' file recursively with an extesions and opens it using gnu find."
 	(interactive)
