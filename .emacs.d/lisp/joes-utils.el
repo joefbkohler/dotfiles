@@ -30,6 +30,7 @@
 
 (defun create-scratch-buffer ()
 	"Create a new scratch buffer if one does not exist."
+	(interactive)
 	(switch-to-buffer (get-buffer-create "*scratch*"))
 	(lisp-interaction-mode))
 
