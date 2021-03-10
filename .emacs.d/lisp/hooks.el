@@ -51,15 +51,16 @@
 	(setq lsp-signature-auto-activate nil))
 
 (defun my-lsp-hook ()
-	(require 'ivy)
-	(set-lsp-keybinding 'lsp-ivy-workspace-symbol))
+	(set-lsp-keybinding))
+
+(defun my-company-hook ()
+	(company-box-mode))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
-
-	(company-box-mode)
 	(lsp)
 	(lsp-ui-doc-mode 0)
+	(lsp-ui-sideline-mode 0)
 	(yas-minor-mode)
 
 	(setq c-default-style "linux" c-basic-offset 4)
@@ -74,10 +75,7 @@
 	(c-set-offset 'inline-open 0)
 	(c-set-offset 'func-decl-cont 0)
 
-	;; Omnisharp Bindings
-	(local-set-key [remap c-indent-line-or-region] 'indent-or-complete)
-	(local-set-key (kbd "C-<tab>") 'company-complete)
-	)
+	(local-set-key [remap c-indent-line-or-region] 'indent-or-complete))
 
 (provide 'hooks)
 ;;; hooks.el ends here

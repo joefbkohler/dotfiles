@@ -38,26 +38,30 @@
 	
 	;; Remove remapping of kill-line to kill-visual-line
 	(define-key visual-line-mode-map [remap kill-line] nil)
+	
 	(global-set-key [remap isearch-forward] 'isearch-forward-regexp)
-	(global-set-key [remap isearch-backward] 'isearch-backward-regexp)
-	(global-set-key [remap isearch-forward-regexp] 'occur))
+	(global-set-key [remap isearch-backward] 'isearch-backward-regexp))
 
 (defun set-ivy-keybindings()
 	(global-set-key (kbd "M-x") 'counsel-M-x)
+	(global-set-key (kbd "C-x C-y") 'counsel-yank-pop)
+	(global-set-key (kbd "C-c C-f") 'counsel-git)
+	(global-set-key [remap isearch-forward-regexp] 'swiper)
 	(global-set-key [remap ivy-previous-history-element] 'ivy-previous-line)
 	(global-set-key [remap ivy-next-history-element] 'ivy-next-line)
 	(global-set-key [remap ivy-done] 'ivy-alt-done)
-	(global-set-key [remap ivy-partial-or-done] 'ivy-restrict-to-matches))
+	(global-set-key [remap ivy-partial-or-done] 'ivy-partial))
 
-(defun set-lsp-keybinding (lsp-workspace-symbol)
-	(local-set-key (kbd "C-c C-t") lsp-workspace-symbol)
+(defun set-lsp-keybinding ()
+	(require 'ivy)
+	(local-set-key (kbd "C-c C-t") 'lsp-ivy-workspace-symbol)
 	(local-set-key (kbd "C-c C-r") 'lsp-find-references)
 	(local-set-key (kbd "C-c C-i") 'lsp-find-implementation)
 	(local-set-key (kbd "C-c C-d") 'lsp-find-declaration)
 	(local-set-key (kbd "C-c C-j") 'lsp-find-definition))
 
 (defun set-company-keybindings()
-	(global-set-key [remap completion-at-point] 'company-complete))
+	(global-set-key [remap completion-at-point] 'company-other-backend))
 
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here

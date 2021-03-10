@@ -3,9 +3,24 @@
 ;; My custom functions.  Either made by me or stolen from the internet ;)
 ;;; Code:
 
-(defvar project-file-extensions
+(defgroup joe nil
+	"My little functions"
+	:group 'convenience)
+
+(defcustom project-file-extensions
 	'("cs" "py" "c" "cpp")
-	"File extensions that can be used by find-project function.")
+	"File extensions that can be used by find-project function."
+	:type 'list)
+
+(defcustom ivy-switch-buffer-major-mode-column 40
+	"Column where the Major Mode of the buffer should show in `ivy-switch-buffer'."
+	:type 'integer)
+(defcustom ivy-switch-buffer-path-column 70
+	"Column where the Path of the file visited by the buffer should show in `ivy-switch-buffer'."
+	:type 'integer)
+(defcustom ivy-counsel-mx-doc-column 40
+	"Column where the documentation should show in `counsel'."
+	:type 'integer)
 
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
@@ -14,7 +29,7 @@
 	(run-with-timer time nil #'invert-face 'mode-line))
 
 (defun find-project()
-	"Find the 'first' file recursively with an extesions and opens it."
+	"Find the 'first' file recursively with an extesions and opens it using gnu find."
 	(interactive)
 	(require 'ivy)
 	(let ((root-path (read-directory-name "Project root: " "~/"))
@@ -52,17 +67,15 @@
 (defun indent-or-complete ()
 	"Try to indent.  If line is already indented, invoke company-complete."
 	(interactive)
+	(require 'company)
 	(if mark-active
 
 		(indent-for-tab-command)
 
-		(let ((initial-point (point)))
+		(let ((initial-indentation (current-indentation)))
 			(indent-for-tab-command)
-			(when (eq initial-point (point))
-				(company-complete)
-				))
-		)
-	)
+			(when (eq initial-indentation (current-indentation))
+					(company-other-backend)))))
 
 (defun vc-dir-delete-marked-files ()
 	"Delete all marked files in a `vc-dir' buffer."
@@ -113,6 +126,34 @@
 				(set-window-buffer (next-window) next-win-buffer)
 				(select-window first-win)
 				(if this-win-2nd (other-window 1))))))
+
+;; Ivy prettify ;)
+(defun ivy-switch-buffer-mode-path-transformer (buffer-name)
+	"Transformer for `ivy-switch-buffer' that add major mode and path for BUFFER-NAME."
+	(let ((buffer (get-buffer buffer-name))
+			 (result buffer-name))
+		(if buffer
+			(let ((buffer-major-mode (symbol-name (with-current-buffer buffer major-mode)))
+					 (buffer-path (buffer-file-name buffer))
+					 (name-size (string-width result)))
+				(let ((result (concat result
+								  (make-string (- ivy-switch-buffer-major-mode-column name-size) ? )
+								  (propertize (concat "" buffer-major-mode) 'face 'font-lock-type-face))))
+					(let ((result (concat result
+									  (make-string (- ivy-switch-buffer-path-column (string-width result)) ? )
+									  (propertize (concat "" buffer-path) 'face 'font-lock-comment-face))))
+						(truncate-string-to-width result (window-width) nil nil t t))))
+			result)))
+
+(defun ivy-counsel-mx-doc-transformer (function-name)
+	"Transformer for `counsel-M-x' that add doc string to FUNCTION-NAME."
+	(truncate-string-to-width
+		(car (split-string
+			(concat
+				function-name
+				(make-string (- ivy-counsel-mx-doc-column (string-width function-name)) ? )
+				(propertize (concat "" (documentation (car (read-from-string function-name)))) 'face 'font-lock-comment-face)) "\n"))
+		(window-width) nil nil t t))
 
 ;; Global adaptive-wrap-prefix-mode. Why doesn't this exist by default??? õO
 (define-global-minor-mode global-adaptive-wrap-prefix-mode

@@ -17,7 +17,8 @@
 (require 'package)
 (package-initialize)
 
-(add-to-list 'package-archives '("melpa" . "http://melpa-stable.milkbox.net/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -28,8 +29,7 @@
 		 '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
  '(ediff-split-window-function 'split-window-horizontally)
 	'(package-selected-packages
-		 '(go-mode smex doom-modeline lsp-ivy lsp-treemacs counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode exec-path-from-shell dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
-(package-install-selected-packages)
+		 '(ivy-xref go-mode smex lsp-ivy counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -95,6 +95,7 @@
 (condition-case err
 	(progn
 		(require 'lsp)
+		(require 'ivy)
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
@@ -118,10 +119,19 @@
 ;; -- Ivy configuration
 (condition-case err
 	(progn
+		(require 'ivy)
 		(require 'counsel)
+		(require 'ivy-xref)
 		(ivy-mode 1)
 		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+		(setq-default ivy-use-virtual-buffers t)
 		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
+		(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
+
+		(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
+		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-mx-doc-transformer)
+
 		(set-ivy-keybindings))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
@@ -132,6 +142,10 @@
 		(setq-default company-idle-delay 0)
 		(setq-default company-dabbrev-downcase nil)
 		(setq-default company-tooltip-align-annotations t)
+		(setq-default company-tooltip-minimum-width 70)
+		(setq-default company-box-doc-delay 0)
+		(setq-default company-tooltip-maximum-width 70)
+		(add-hook 'company-mode-hook 'my-company-hook)
 		(global-company-mode 1)
 		(apply-company-theme)
 		(set-company-keybindings))
@@ -150,7 +164,7 @@
 		(setq-local initialization-errors (error-message-string err))))
 
 (when (not (= (length initialization-errors) 0))
-	(error "%s" "Some error occurred during initialization."))
+	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages" initialization-errors))
 
 (provide '.emacs)
 ;;; .emacs ends here
@@ -160,3 +174,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; TODO:
+;; History for Ivy
+;; Modeline
+;; Try to fix lsp Ivy workspace Symbol
