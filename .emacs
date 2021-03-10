@@ -19,7 +19,6 @@
 
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -86,7 +85,6 @@
 (delete-selection-mode 1)
 (cua-selection-mode 1)
 (global-so-long-mode 1)
-
 ;; -- External packages configuration and modes
 
 (defvar-local initialization-errors "")
@@ -104,7 +102,6 @@
 
 ;; -- Zenburn
 (condition-case err
-	(require 'zenburn)
 	(apply-zenburn-theme)
 	(error
 		(setq-local initialization-errors (error-message-string err))))
