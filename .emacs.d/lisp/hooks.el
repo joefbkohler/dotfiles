@@ -29,9 +29,8 @@
 	(auto-fill-mode 1))
 
 (defun my-go-mode-hook ()
-	(company-box-mode)
 	(lsp)
-	(local-set-key [remap indent-for-tab-command] 'indent-or-complete))
+	(setq indent-tabs-mode nil))
 
 (defun my-typescript-mode-hook ()
 	(require 'tide)
@@ -40,9 +39,6 @@
 	(eldoc-mode 1))
 
 (defun my-python-mode-hook ()
-	(add-hook 'before-save-hook 'delete-trailing-whitespace t)
-	(company-box-mode)
-
 	(highlight-indent-guides-mode t)
 	(pyvenv-mode t)
 	(lsp)
@@ -65,17 +61,12 @@
 
 	(setq c-default-style "linux" c-basic-offset 4)
 	
-	(make-local-variable 'company-idle-delay)
-	(setq company-idle-delay nil)
-
 	(setq indent-tabs-mode nil)
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
 	(whitespace-mode 1)
 
 	(c-set-offset 'inline-open 0)
-	(c-set-offset 'func-decl-cont 0)
-
-	(local-set-key [remap c-indent-line-or-region] 'indent-or-complete))
+	(c-set-offset 'func-decl-cont 0))
 
 (provide 'hooks)
 ;;; hooks.el ends here

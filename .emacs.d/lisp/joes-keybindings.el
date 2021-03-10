@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'joes-utils)
+
 (defun simulate-command-key()
 	(global-set-key (kbd "s-v") 'yank)
 	(global-set-key (kbd "s-x") 'kill-region)
@@ -61,7 +63,9 @@
 	(local-set-key (kbd "C-c C-j") 'lsp-find-definition))
 
 (defun set-company-keybindings()
-	(global-set-key [remap completion-at-point] 'company-other-backend))
+	(global-set-key [remap completion-at-point] 'company-other-backend)
+	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
+	(global-set-key [remap indent-for-tab-command] 'indent-or-complete))
 
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here

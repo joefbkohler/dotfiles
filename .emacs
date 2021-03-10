@@ -139,7 +139,7 @@
 ;; -- Company configuration
 (condition-case err
 	(progn
-		(setq-default company-idle-delay 0)
+		(setq-default company-idle-delay nil)
 		(setq-default company-dabbrev-downcase nil)
 		(setq-default company-tooltip-align-annotations t)
 		(setq-default company-tooltip-minimum-width 70)
@@ -179,3 +179,4 @@
 ;; History for Ivy
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
+;; Try to fix company-box when too big signature
