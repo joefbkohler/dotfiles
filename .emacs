@@ -104,12 +104,14 @@
 
 ;; -- Zenburn
 (condition-case err
+	(require 'zenburn)
 	(apply-zenburn-theme)
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- Adaptive wrap
 (condition-case err
+	(require 'adaptive-wrap)
 	(adaptive-wrap-prefix-mode 1)
 	(global-adaptive-wrap-prefix-mode 1)
 	(setq-default adaptive-wrap-extra-indent 1)
@@ -138,7 +140,9 @@
 
 ;; -- Company configuration
 (condition-case err
-	(progn
+    (progn
+      (require 'company)
+      (require 'company-box)
 		(setq-default company-idle-delay nil)
 		(setq-default company-dabbrev-downcase nil)
 		(setq-default company-tooltip-align-annotations t)
@@ -155,6 +159,7 @@
 ;; -- FLycheck configuration
 (condition-case err
 	(progn
+		(require 'flycheck)
 		(setq-default flycheck-emacs-lisp-load-path 'inherit)
 		(setq-default flycheck-navigation-minimum-level 'error)
 		(setq-default flycheck-check-syntax-automatically '(save new-line idle-buffer-switch mode-enabled))
