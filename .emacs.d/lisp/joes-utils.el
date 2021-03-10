@@ -69,11 +69,9 @@
 	(interactive)
 	(require 'company)
 	(if mark-active
-
 		(indent-for-tab-command)
-
 		(let ((initial-indentation (current-indentation)))
-			(indent-for-tab-command)
+			(indent-according-to-mode)
 			(when (eq initial-indentation (current-indentation))
 					(company-other-backend)))))
 
