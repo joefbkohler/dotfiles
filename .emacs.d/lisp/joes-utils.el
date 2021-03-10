@@ -160,42 +160,6 @@
 	adaptive-wrap-prefix-mode
 	(lambda() (adaptive-wrap-prefix-mode 1)))
 
-;; Omnisharp
-(defun omnisharp-navigate-to-solution-type (&optional other-window)
-	"Interactively navigate to a type in the solution.  If OTHER-WINDOW is not nil, navigate in other window."
-	(interactive "P")
-	(require 'omnisharp)
-	(let ((quickfix-response
-			  (omnisharp-post-message-curl-as-json
-				  (concat (omnisharp-get-host) "findtypes")
-				  nil)))
-		(omnisharp--choose-and-go-to-quickfix-ido
-			(mapcar 'omnisharp-format-symbol
-				(cdr (omnisharp--vector-to-list
-						 (cdr (assoc 'QuickFixes quickfix-response)))))
-			other-window)
-		))
-
-(defun omnisharp-find-usages-visuals ()
-	"Remove redundant information from omnisharp find usages buffer like the full path of the file."
-	(when (string-match "OmniSharp" (buffer-name))
-
-		(font-lock-add-keywords nil '(("^/.*/" (0 '(face default display ".../") append))) t)
-		(font-lock-add-keywords nil '(("^[ \t]*" (0 '(face default display "") append))) t)
-
-		(add-function :before-until (local 'eldoc-documentation-function)
-			(lambda ()
-				"Show the complete filename, line and column of the match."
-				(let* ((line-text (replace-regexp-in-string "\n$" "" (thing-at-point 'line t)))
-						 (current-line-match (string-match "\.cs" line-text)))
-					(when (and (not current-line-match) (not (= (length line-text) 0)))
-						(forward-line -1)
-						(setq line-text (replace-regexp-in-string "\n$" "" (thing-at-point 'line t)))
-						(forward-line 1))
-					line-text)))
-		(eldoc-mode)
-		))
-
 (defun clear-line-end ()
 	"Clear all wrong line ends."
 	(interactive)
