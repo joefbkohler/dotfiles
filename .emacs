@@ -84,7 +84,6 @@
 (global-display-line-numbers-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
-(global-so-long-mode 1)
 ;; -- External packages configuration and modes
 
 (defvar-local initialization-errors "")
