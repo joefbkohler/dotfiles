@@ -167,7 +167,7 @@
 		(setq-local initialization-errors (error-message-string err))))
 
 (when (not (= (length initialization-errors) 0))
-	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages" initialization-errors))
+	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages'" initialization-errors))
 
 (provide '.emacs)
 ;;; .emacs ends here
