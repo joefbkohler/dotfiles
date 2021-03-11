@@ -28,7 +28,7 @@
 		 '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
  '(ediff-split-window-function 'split-window-horizontally)
 	'(package-selected-packages
-		 '(ivy-xref go-mode smex lsp-ivy counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
+		 '(ivy-xref tree-sitter go-mode smex lsp-ivy counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -183,4 +183,9 @@
 ;; Try to fix lsp Ivy workspace Symbol
 ;; Try to fix company-box when too big signature
 ;; Yasnippet
+
+;; tree sitter
+;; (require 'tree-sitter)
+;; (require 'tree-sitter-langs)
+;; (global-tree-sitter-mode)
 ;; tree-sitter colors: (tree-sitter-hl-add-patterns 'c-sharp [(name_colon (identifier)* @label)])
