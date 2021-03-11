@@ -46,13 +46,16 @@
 
 (defun set-ivy-keybindings()
 	(global-set-key (kbd "M-x") 'counsel-M-x)
-	(global-set-key (kbd "C-x C-y") 'counsel-yank-pop)
+	(global-set-key (kbd "C-M-y") 'counsel-yank-pop)
 	(global-set-key (kbd "C-c C-f") 'counsel-git)
-	(global-set-key [remap isearch-forward-regexp] 'swiper)
-	(global-set-key [remap ivy-previous-history-element] 'ivy-previous-line)
-	(global-set-key [remap ivy-next-history-element] 'ivy-next-line)
+	(global-set-key [remap isearch-forward-regexp] 'counsel-grep-or-swiper)		
 	(global-set-key [remap ivy-done] 'ivy-alt-done)
-	(global-set-key [remap ivy-partial-or-done] 'ivy-partial))
+	(global-set-key [remap ivy-partial-or-done] 'ivy-partial)
+	;; minibuffer keys
+	(ivy-define-key ivy-minibuffer-map (kbd "M-p") 'ivy-previous-line)
+	(ivy-define-key ivy-minibuffer-map (kbd "M-n") 'ivy-next-line)
+	(ivy-define-key ivy-minibuffer-map (kbd "C-p") 'ivy-previous-history-element)
+	(ivy-define-key ivy-minibuffer-map (kbd "C-n") 'ivy-next-history-element))
 
 (defun set-lsp-keybinding ()
 	(require 'ivy)

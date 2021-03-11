@@ -95,7 +95,9 @@
 		(require 'ivy)
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
-		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
+		(setq-default lsp-ui-doc-enable nil)
+		(setq-default lsp-ui-sideline-enable nil)
+		(add-hook 'lsp-mode-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
@@ -129,7 +131,7 @@
 
 		(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
 		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-mx-doc-transformer)
-
+		
 		(set-ivy-keybindings))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
@@ -177,7 +179,8 @@
  )
 
 ;; TODO:
-;; History for Ivy
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
 ;; Try to fix company-box when too big signature
+;; Yasnippet
+;; tree-sitter colors: (tree-sitter-hl-add-patterns 'c-sharp [(name_colon (identifier)* @label)])
