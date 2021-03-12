@@ -28,7 +28,7 @@
 		 '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
  '(ediff-split-window-function 'split-window-horizontally)
 	'(package-selected-packages
-		 '(ivy-xref go-mode smex lsp-ivy counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
+		 '(ivy-xref tree-sitter go-mode smex lsp-ivy counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
 ;; Finished package configuration
 
 ;; -- Keybindings
@@ -99,6 +99,8 @@
 		(setq-default lsp-enable-file-watchers nil)
 		(setq-default lsp-completion-show-detail nil)
 		(setq-default lsp-completion-show-kind nil)
+		(setq-default lsp-ui-doc-enable nil)
+		(setq-default lsp-ui-sideline-enable nil)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
@@ -133,7 +135,7 @@
 
 		(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
 		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-mx-doc-transformer)
-
+		
 		(set-ivy-keybindings))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
@@ -168,8 +170,19 @@
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
+;; -- Tree-Sitter configuration
+(condition-case err
+	(progn
+		(require 'tree-sitter)
+		(require 'tree-sitter-langs)
+		(global-tree-sitter-mode)
+		(apply-tree-sitter-theme))
+	(error
+		(setq-local initialization-errors (error-message-string err))))
+
+
 (when (not (= (length initialization-errors) 0))
-	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages" initialization-errors))
+	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages'" initialization-errors))
 
 (provide '.emacs)
 ;;; .emacs ends here
@@ -181,7 +194,7 @@
  )
 
 ;; TODO:
-;; History for Ivy
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
 ;; Try to fix company-box when too big signature
+;; Yasnippet
