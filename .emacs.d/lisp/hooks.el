@@ -54,6 +54,7 @@
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
+	(csharp-tree-sitter-mode)
 	(lsp)
 	(yas-minor-mode)
 

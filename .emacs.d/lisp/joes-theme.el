@@ -10,6 +10,24 @@
 	(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
 	(set-face-attribute 'font-lock-string-face nil :italic t))
 
+(defun apply-tree-sitter-theme()
+	(tree-sitter-hl-add-patterns 'c-sharp [(invocation_expression (member_access_expression (identifier)\? @method.call .))
+											  (invocation_expression (identifier) @method.call)
+											  (using_directive (_) @type.builtin)
+											  (generic_name (identifier) @type)
+											  (type_argument_list (identifier) @type.parameter)
+											  (invocation_expression (*(generic_name (identifier) @method.call)))
+											  (parameter (identifier) @variable.parameter)
+											  (name_colon (identifier) @variable.builtin)
+											  (variable_declarator (identifier) @variable.parameter)
+											  (member_access_expression (identifier) @variable)])
+	
+	(set-face-attribute 'tree-sitter-hl-face:type.builtin nil :foreground "#90649d")
+	(set-face-attribute 'tree-sitter-hl-face:variable.parameter nil :inherit 'font-lock-variable-name-face)
+	(set-face-attribute 'tree-sitter-hl-face:type.parameter nil :inherit 'font-lock-type-face)
+	(set-face-attribute 'tree-sitter-hl-face:method.call nil :inherit 'font-lock-function-name-face)
+	(set-face-attribute 'tree-sitter-hl-face:variable nil :inherit 'default))
+
 (defun apply-company-theme()
 	(set-face-attribute 'company-tooltip-annotation nil :background 'unspecified))
 

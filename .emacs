@@ -166,6 +166,17 @@
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
+;; -- Tree-Sitter configuration
+(condition-case err
+	(progn
+		(require 'tree-sitter)
+		(require 'tree-sitter-langs)
+		(global-tree-sitter-mode)
+		(apply-tree-sitter-theme))
+	(error
+		(setq-local initialization-errors (error-message-string err))))
+
+
 (when (not (= (length initialization-errors) 0))
 	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages'" initialization-errors))
 
@@ -183,9 +194,3 @@
 ;; Try to fix lsp Ivy workspace Symbol
 ;; Try to fix company-box when too big signature
 ;; Yasnippet
-
-;; tree sitter
-;; (require 'tree-sitter)
-;; (require 'tree-sitter-langs)
-;; (global-tree-sitter-mode)
-;; tree-sitter colors: (tree-sitter-hl-add-patterns 'c-sharp [(name_colon (identifier)* @label)])
