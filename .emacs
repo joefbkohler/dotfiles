@@ -84,6 +84,7 @@
 (global-display-line-numbers-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
+
 ;; -- External packages configuration and modes
 
 (defvar-local initialization-errors "")
@@ -93,8 +94,11 @@
 	(progn
 		(require 'lsp)
 		(require 'ivy)
+		(require 'company)
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
+		(setq-default lsp-completion-show-detail nil)
+		(setq-default lsp-completion-show-kind nil)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
