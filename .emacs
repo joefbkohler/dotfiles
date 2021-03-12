@@ -17,7 +17,7 @@
 (require 'package)
 (package-initialize)
 
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(setq-default package-archives '("melpa" . "https://melpa.org/packages/"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -185,6 +185,14 @@
 	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages'" initialization-errors))
 
 (provide '.emacs)
+
+;; TODO:
+;; Modeline
+;; Try to fix lsp Ivy workspace Symbol
+;; Try to fix company-box when too big signature
+;; Yasnippet
+;; company-ispell
+
 ;;; .emacs ends here
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -192,10 +200,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; TODO:
-;; company-ispell
-;; Modeline
-;; Try to fix lsp Ivy workspace Symbol
-;; Try to fix company-box when too big signature
-;; Yasnippet
