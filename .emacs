@@ -194,6 +194,7 @@
  )
 
 ;; TODO:
+;; company-ispell
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
 ;; Try to fix company-box when too big signature
