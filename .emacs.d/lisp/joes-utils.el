@@ -34,6 +34,29 @@
 	(switch-to-buffer (get-buffer-create "*scratch*"))
 	(lisp-interaction-mode))
 
+(defun ispell-change-dictionary-and-words ()
+	"Switch Ispell dictionary and create words file."
+	(interactive)
+	(let ((new-dict
+			  (completing-read
+				  "Use new dictionary: "
+				  (and (fboundp 'ispell-valid-dictionary-list)
+					  (mapcar #'list (ispell-valid-dictionary-list)))
+				  nil t)))
+		(ispell-change-dictionary new-dict)
+		(shell-command
+			(concat
+				ispell-program-name
+				" dump master "
+				new-dict
+				" > "
+				ispell-complete-word-dict))
+		(with-current-buffer
+			(find-file ispell-complete-word-dict)
+			(sort-lines nil (point-min) (point-max))
+			(save-buffer)
+			(kill-buffer))))
+
 (defun find-project()
 	"Find the 'first' file recursively with an extesions and opens it using gnu find."
 	(interactive)

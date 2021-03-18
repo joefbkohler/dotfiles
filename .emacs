@@ -14,22 +14,13 @@
 (require 'hooks)
 
 ;; -- Package configuration
-(require 'package)
-(package-initialize)
 
-(setq-default package-archives '("melpa" . "https://melpa.org/packages/"))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-	'(custom-safe-themes
-		 '("f56eb33cd9f1e49c5df0080a3e8a292e83890a61a89bceeaa481a5f183e8e3ef" default))
- '(ediff-split-window-function 'split-window-horizontally)
-	'(package-selected-packages
-		 '(ivy-xref tree-sitter go-mode smex lsp-ivy counsel magit-lfs company-box csharp-mode magit yasnippet pdf-tools lsp-latex vue-mode lsp-ui jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode typescript-mode eglot lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview company flycheck)))
-;; Finished package configuration
+(require 'joes-packages-manager)
+(my-straight-initialize)
+(setq-default package-enable-at-startup nil)
+(setq-default straight-vc-git-default-protocol 'ssh)
+(my-install-default-packages)
+;;; Finished package configuration
 
 ;; -- Keybindings
 (when (not (eq system-type 'darwin))
@@ -49,7 +40,10 @@
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
+(setq-default ispell-complete-word-dict "/home/joe/.dict/words")
 (put 'narrow-to-region 'disabled nil)
+;; Global hooks
+(add-hook 'before-save-hook 'my-save-hook)
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))
 (setq auto-save-file-name-transforms `((".*" "~/backups" t)))
@@ -135,7 +129,7 @@
 
 		(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
 		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-mx-doc-transformer)
-		
+
 		(set-ivy-keybindings))
 	(error
 		(setq-local initialization-errors (error-message-string err))))

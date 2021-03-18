@@ -26,7 +26,11 @@
 	(local-set-key [remap tex-compile] 'tex-compile-update)
 	(lsp)
 	(lsp-ui-mode t)
-	(auto-fill-mode 1))
+	(auto-fill-mode 1)
+	(setq-local company-backends '(company-capf company-ispell company-dabbrev)))
+
+(defun my-save-hook ()
+	(delete-trailing-whitespace 0))
 
 (defun my-go-mode-hook ()
 	(lsp)
@@ -55,17 +59,13 @@
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
 	(csharp-tree-sitter-mode)
-	(tree-sitter-indent-mode)
-	(lsp)
+	;;(lsp)
 	(yas-minor-mode)
 
 	(setq c-default-style "linux" c-basic-offset 4)
 	(setq indent-tabs-mode nil)
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
-	(whitespace-mode 1)
-
-	(c-set-offset 'inline-open 0)
-	(c-set-offset 'func-decl-cont 0))
+	(whitespace-mode 1))
 
 (provide 'hooks)
 ;;; hooks.el ends here
