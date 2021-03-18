@@ -59,10 +59,9 @@
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
 	(csharp-tree-sitter-mode)
-	;;(lsp)
+	(lsp)
 	(yas-minor-mode)
 
-	(setq c-default-style "linux" c-basic-offset 4)
 	(setq indent-tabs-mode nil)
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
 	(whitespace-mode 1))
