@@ -12,14 +12,11 @@
 
 (defun apply-tree-sitter-theme()
 	(tree-sitter-hl-add-patterns 'c-sharp [(variable_declarator (identifier) @variable.parameter)])
-	
+
 	(set-face-attribute 'tree-sitter-hl-face:type.parameter nil :foreground "#90649d")
 	(set-face-attribute 'tree-sitter-hl-face:variable.parameter nil :inherit 'font-lock-variable-name-face)
 	(set-face-attribute 'tree-sitter-hl-face:method.call nil :inherit 'font-lock-function-name-face)
 	(set-face-attribute 'tree-sitter-hl-face:variable nil :inherit 'default))
-
-(defun apply-company-theme()
-	(set-face-attribute 'company-tooltip-annotation nil :background 'unspecified))
 
 (defun apply-flycheck-theme()
 	(set-face-attribute 'flycheck-error nil :underline '(:color "#F00" :style wave)))

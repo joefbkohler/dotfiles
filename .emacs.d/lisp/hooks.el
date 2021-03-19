@@ -26,8 +26,7 @@
 	(local-set-key [remap tex-compile] 'tex-compile-update)
 	(lsp)
 	(lsp-ui-mode t)
-	(auto-fill-mode 1)
-	(setq-local company-backends '(company-capf company-ispell company-dabbrev)))
+	(auto-fill-mode 1))
 
 (defun my-save-hook ()
 	(delete-trailing-whitespace 0))
@@ -52,9 +51,6 @@
 
 (defun my-lsp-hook ()
 	(set-lsp-keybinding))
-
-(defun my-company-hook ()
-	(company-box-mode))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)

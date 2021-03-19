@@ -94,9 +94,8 @@
 			(find-file-other-window pdf-file-name))))
 
 (defun indent-or-complete ()
-	"Try to indent.  If line is already indented, invoke company-complete."
+	"Try to indent.  If line is already indented, invoke completion-at-point."
 	(interactive)
-	(require 'company)
 	(if mark-active
 		(indent-for-tab-command)
 		(let ((initial-indentation (current-indentation))
@@ -105,7 +104,7 @@
 			(when (and
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))
-				(company-other-backend)))))
+				(completion-at-point)))))
 
 (defun vc-dir-delete-marked-files ()
 	"Delete all marked files in a `vc-dir' buffer."

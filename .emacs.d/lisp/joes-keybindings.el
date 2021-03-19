@@ -37,6 +37,8 @@
 	(global-set-key (kbd "C-|") 'toggle-window-split)
 	(global-set-key (kbd "C-x <tab>") (lambda () (interactive) (insert-tab)))
 	(global-set-key [remap shell-command] 'async-shell-command)
+	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
+	(global-set-key [remap indent-for-tab-command] 'indent-or-complete)
 
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
 
@@ -67,11 +69,6 @@
 	(local-set-key (kbd "C-c C-r") 'lsp-find-references)
 	(local-set-key (kbd "C-c C-i") 'lsp-find-implementation)
 	(local-set-key (kbd "C-c C-d") 'lsp-find-declaration))
-
-(defun set-company-keybindings()
-	(global-set-key [remap completion-at-point] 'company-other-backend)
-	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
-	(global-set-key [remap indent-for-tab-command] 'indent-or-complete))
 
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here

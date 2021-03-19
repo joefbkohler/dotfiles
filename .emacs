@@ -19,6 +19,7 @@
 (my-straight-initialize)
 (setq-default package-enable-at-startup nil)
 (setq-default straight-vc-git-default-protocol 'ssh)
+(my-register-fork-packages)
 (my-install-default-packages)
 ;;; Finished package configuration
 
@@ -88,7 +89,6 @@
 	(progn
 		(require 'lsp)
 		(require 'ivy)
-		(require 'company)
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
 		(setq-default lsp-completion-show-detail nil)
@@ -139,22 +139,22 @@
 		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- Company configuration
-(condition-case err
-    (progn
-      (require 'company)
-      (require 'company-box)
-		(setq-default company-idle-delay nil)
-		(setq-default company-dabbrev-downcase nil)
-		(setq-default company-tooltip-align-annotations t)
-		(setq-default company-tooltip-minimum-width 70)
-		(setq-default company-box-doc-delay 0)
-		(setq-default company-tooltip-maximum-width 70)
-		(add-hook 'company-mode-hook 'my-company-hook)
-		(global-company-mode 1)
-		(apply-company-theme)
-		(set-company-keybindings))
-	(error
-		(setq-local initialization-errors (error-message-string err))))
+;;(condition-case err
+;;    (progn
+;;      (require 'company)
+;;      (require 'company-box)
+;; 		(setq-default company-idle-delay nil)
+;; 		(setq-default company-dabbrev-downcase nil)
+;; 		(setq-default company-tooltip-align-annotations t)
+;; 		(setq-default company-tooltip-minimum-width 70)
+;; 		(setq-default company-box-doc-delay 0)
+;; 		(setq-default company-tooltip-maximum-width 70)
+;; 		(add-hook 'company-mode-hook 'my-company-hook)
+;; 		(global-company-mode 1)
+;; 		(apply-company-theme)
+;; 		(set-company-keybindings))
+;; 	(error
+;; 		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- FLycheck configuration
 (condition-case err
@@ -174,7 +174,8 @@
 		(require 'tree-sitter)
 		(require 'tree-sitter-langs)
 		(global-tree-sitter-mode)
-		(apply-tree-sitter-theme))
+		(apply-tree-sitter-theme)
+		)
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
