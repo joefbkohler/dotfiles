@@ -122,13 +122,17 @@
 		(require 'ivy-xref)
 		(ivy-mode 1)
 		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+		(add-to-list 'ivy-initial-inputs-alist '(counsel-describe-variable . ""))
+		(add-to-list 'ivy-initial-inputs-alist '(counsel-describe-function . ""))
 		(setq-default ivy-use-virtual-buffers t)
 		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
 		(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
 
 		(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
-		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-mx-doc-transformer)
+		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-function-doc-transformer)
+		(ivy-configure 'counsel-describe-variable :display-transformer-fn 'ivy-counsel-variable-doc-transformer)
+		(ivy-configure 'counsel-describe-function :display-transformer-fn 'ivy-counsel-function-doc-transformer)
 
 		(set-ivy-keybindings))
 	(error
@@ -176,7 +180,7 @@
 
 
 (when (not (= (length initialization-errors) 0))
-	(error "%s \n\n error: %s" "Some error occurred during initialization. Try running: `M-x package-refresh-contents' then `M-x package-install-selected-packages'" initialization-errors))
+	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
 
 (provide '.emacs)
 
@@ -185,12 +189,5 @@
 ;; Try to fix lsp Ivy workspace Symbol
 ;; Try to fix company-box when too big signature
 ;; Yasnippet
-;; company-ispell
 
 ;;; .emacs ends here
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

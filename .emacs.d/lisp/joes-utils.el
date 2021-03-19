@@ -175,32 +175,33 @@
 						(truncate-string-to-width result (frame-width) nil nil t t))))
 			result)))
 
-(defun ivy-counsel-doc-transformer (function-name)
-	"Transformer for `counsel-M-x' that add doc string to FUNCTION-NAME."
+(defun ivy-counsel-doc-transformer (symbol-name docstring)
+	"Transformer for ivy commands that add SYMBOL-NAME DOCSTRING."
 	(truncate-string-to-width
 		(car (split-string
 			(concat
-				function-name
-				(make-string (max 1 (- ivy-counsel-doc-column (string-width function-name))) ? )
-				(propertize (concat "" (documentation (car (read-from-string function-name)))) 'face 'font-lock-comment-face)) "\n"))
+				symbol-name
+				(make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
+				(propertize docstring 'face 'font-lock-comment-face)) "\n"))
 		(frame-width) nil nil t t))
+
+(defun ivy-counsel-function-doc-transformer (function-name)
+	"Transformer for ivy commands that add FUNCTION-NAME docstring."
+	(ivy-counsel-doc-transformer function-name
+		(concat ""
+			(documentation (car (read-from-string function-name))))))
+
+(defun ivy-counsel-variable-doc-transformer (variable-name)
+	"Transformer for ivy commands that add VARIABLE-NAME docstring."
+	(ivy-counsel-doc-transformer variable-name
+		(concat ""
+			(documentation-property
+				(car (read-from-string variable-name)) 'variable-documentation))))
 
 ;; Global adaptive-wrap-prefix-mode. Why doesn't this exist by default??? õO
 (define-global-minor-mode global-adaptive-wrap-prefix-mode
 	adaptive-wrap-prefix-mode
 	(lambda() (adaptive-wrap-prefix-mode 1)))
-
-(defun clear-line-end ()
-	"Clear all wrong line ends."
-	(interactive)
-	(save-excursion
-		(goto-char (point-min))
-		(while (re-search-forward "" nil t)
-			(replace-match ""))
-		))
-
-;;Grep / usages / compilation mode truncate
-;;(font-lock-add-keywords 'compilation-mode '(("^/.*/" (0 '(face default display "...") append))) t)
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

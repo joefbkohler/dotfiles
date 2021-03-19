@@ -48,6 +48,8 @@
 
 (defun set-ivy-keybindings()
 	(global-set-key (kbd "M-x") 'counsel-M-x)
+	(global-set-key [remap describe-function] 'counsel-describe-function)
+	(global-set-key [remap describe-variable] 'counsel-describe-variable)
 	(global-set-key (kbd "C-M-y") 'counsel-yank-pop)
 	(global-set-key (kbd "C-c C-f") 'counsel-git)
 	(global-set-key [remap isearch-forward-regexp] 'counsel-grep-or-swiper)
