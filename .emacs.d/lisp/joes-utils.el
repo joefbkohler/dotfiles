@@ -18,7 +18,7 @@
 (defcustom ivy-switch-buffer-path-column 70
 	"Column where the Path of the file visited by the buffer should show in `ivy-switch-buffer'."
 	:type 'integer)
-(defcustom ivy-counsel-mx-doc-column 40
+(defcustom ivy-counsel-doc-column 40
 	"Column where the documentation should show in `counsel'."
 	:type 'integer)
 
@@ -175,13 +175,13 @@
 						(truncate-string-to-width result (frame-width) nil nil t t))))
 			result)))
 
-(defun ivy-counsel-mx-doc-transformer (function-name)
+(defun ivy-counsel-doc-transformer (function-name)
 	"Transformer for `counsel-M-x' that add doc string to FUNCTION-NAME."
 	(truncate-string-to-width
 		(car (split-string
 			(concat
 				function-name
-				(make-string (max 1 (- ivy-counsel-mx-doc-column (string-width function-name))) ? )
+				(make-string (max 1 (- ivy-counsel-doc-column (string-width function-name))) ? )
 				(propertize (concat "" (documentation (car (read-from-string function-name)))) 'face 'font-lock-comment-face)) "\n"))
 		(frame-width) nil nil t t))
 
