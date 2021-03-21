@@ -41,6 +41,7 @@
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
 (setq-default ispell-complete-word-dict "/home/joe/.dict/words")
+(setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
 (put 'narrow-to-region 'disabled nil)
 ;; Global hooks
 (add-hook 'before-save-hook 'my-save-hook)
