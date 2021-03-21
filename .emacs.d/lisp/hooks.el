@@ -14,6 +14,10 @@
 (defun my-ediff-mode-hook()
 	(custom-set-variables '(ediff-split-window-function 'split-window-horizontally)))
 
+(defun my-prog-mode-hook ()
+	(flymake-mode 1)
+	(display-line-numbers-mode 1))
+
 (defun my-vc-dir-mode-hook()
 	(local-set-key (kbd "k") 'vc-dir-delete-marked-files)
 	(local-set-key (kbd "r") 'vc-revert)
@@ -25,7 +29,8 @@
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
 	(lsp)
-	(lsp-ui-mode t)
+	(flymake-mode 1)
+	(message "Hello")
 	(auto-fill-mode 1))
 
 (defun my-save-hook ()
@@ -45,8 +50,6 @@
 	(highlight-indent-guides-mode t)
 	(pyvenv-mode t)
 	(lsp)
-	(lsp-ui-mode t)
-	(lsp-ui-doc-mode -1)
 	(setq lsp-signature-auto-activate nil))
 
 (defun my-lsp-hook ()

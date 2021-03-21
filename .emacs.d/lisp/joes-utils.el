@@ -37,23 +37,31 @@
 (defun ispell-change-dictionary-and-words ()
 	"Switch Ispell dictionary and create words file."
 	(interactive)
-	(let ((new-dict
-			  (completing-read
-				  "Use new dictionary: "
-				  (and (fboundp 'ispell-valid-dictionary-list)
-					  (mapcar #'list (ispell-valid-dictionary-list)))
-				  nil t)))
+	(let* ((new-dict
+			   (completing-read
+				   "Use new dictionary: "
+				   (and (fboundp 'ispell-valid-dictionary-list)
+					   (mapcar #'list (ispell-valid-dictionary-list)))
+				   nil t))
+			  (words
+
+				  (string-join (cl-mapcar
+								   (lambda (word) (replace-regexp-in-string "\/.+" "" word))
+								   (sort
+									   (split-string
+										   (shell-command-to-string
+											   (concat
+												   ispell-program-name
+												   " dump master "
+												   new-dict)))
+									   'string-lessp))
+					  "\n")
+				  ))
 		(ispell-change-dictionary new-dict)
-		(shell-command
-			(concat
-				ispell-program-name
-				" dump master "
-				new-dict
-				" > "
-				ispell-complete-word-dict))
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
-			(sort-lines nil (point-min) (point-max))
+			(erase-buffer)
+			(insert words)
 			(save-buffer)
 			(kill-buffer))))
 
@@ -178,17 +186,19 @@
 	"Transformer for ivy commands that add SYMBOL-NAME DOCSTRING."
 	(truncate-string-to-width
 		(car (split-string
-			(concat
-				symbol-name
-				(make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
-				(propertize docstring 'face 'font-lock-comment-face)) "\n"))
+				 (concat
+					 symbol-name
+					 (make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
+					 (propertize docstring 'face 'font-lock-comment-face)) "\n"))
 		(frame-width) nil nil t t))
 
 (defun ivy-counsel-function-doc-transformer (function-name)
 	"Transformer for ivy commands that add FUNCTION-NAME docstring."
 	(ivy-counsel-doc-transformer function-name
 		(concat ""
-			(documentation (car (read-from-string function-name))))))
+			(let ((func (car (read-from-string function-name))))
+				(when (boundp func)
+					(documentation func))))))
 
 (defun ivy-counsel-variable-doc-transformer (variable-name)
 	"Transformer for ivy commands that add VARIABLE-NAME docstring."

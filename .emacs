@@ -14,7 +14,6 @@
 (require 'hooks)
 
 ;; -- Package configuration
-
 (require 'joes-packages-manager)
 (my-straight-initialize)
 (setq-default package-enable-at-startup nil)
@@ -45,24 +44,13 @@
 (put 'narrow-to-region 'disabled nil)
 ;; Global hooks
 (add-hook 'before-save-hook 'my-save-hook)
+
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))
 (setq auto-save-file-name-transforms `((".*" "~/backups" t)))
 
 ;; Local envinronment configuration
 (ignore-errors (load-file "~/.emacs-local"))
-
-;; Major modes configuration
-(add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
-(add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
-(add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
-(add-hook 'pdf-view-mode-hook 'my-pdf-view-mode-hook)
-(add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
-(add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
-(add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
-(add-hook 'python-mode-hook 'my-python-mode-hook)
-(add-hook 'latex-mode-hook 'my-latex-mode-hook)
-(add-hook 'go-mode-hook 'my-go-mode-hook)
 
 ;; Minor modes globally unloaded
 (menu-bar-mode 0)
@@ -76,7 +64,6 @@
 (global-hl-line-mode 1)
 (electric-pair-mode 1)
 (electric-indent-mode 1)
-(global-display-line-numbers-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
 
@@ -88,14 +75,17 @@
 (condition-case err
 	(progn
 		(require 'lsp)
-		(require 'ivy)
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
 		(setq-default lsp-completion-show-detail nil)
 		(setq-default lsp-completion-show-kind nil)
-		(setq-default lsp-ui-doc-enable nil)
-		(setq-default lsp-ui-sideline-enable nil)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
+	(error
+		(setq-local initialization-errors (error-message-string err))))
+
+;; -- Magit
+(condition-case err
+	(magit-auto-revert-mode -1)
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
@@ -119,8 +109,11 @@
 	(progn
 		(require 'ivy)
 		(require 'counsel)
-		(require 'ivy-xref)
-		(ivy-mode 1)
+	    (require 'ivy-xref)
+	    (require 'ivy-prescient)
+	    (ivy-mode 1)
+	    (ivy-prescient-mode 1)
+	    (prescient-persist-mode 1)
 		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
 		(add-to-list 'ivy-initial-inputs-alist '(counsel-describe-variable . ""))
 		(add-to-list 'ivy-initial-inputs-alist '(counsel-describe-function . ""))
@@ -138,35 +131,17 @@
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
-;; -- Company configuration
+;; -- FLycheck configuration
 ;;(condition-case err
-;;    (progn
-;;      (require 'company)
-;;      (require 'company-box)
-;; 		(setq-default company-idle-delay nil)
-;; 		(setq-default company-dabbrev-downcase nil)
-;; 		(setq-default company-tooltip-align-annotations t)
-;; 		(setq-default company-tooltip-minimum-width 70)
-;; 		(setq-default company-box-doc-delay 0)
-;; 		(setq-default company-tooltip-maximum-width 70)
-;; 		(add-hook 'company-mode-hook 'my-company-hook)
-;; 		(global-company-mode 1)
-;; 		(apply-company-theme)
-;; 		(set-company-keybindings))
+;; 	(progn
+;; 		(require 'flycheck)
+;; 		(setq-default flycheck-emacs-lisp-load-path 'inherit)
+;; 		(setq-default flycheck-navigation-minimum-level 'error)
+;; 		(setq-default flycheck-check-syntax-automatically '(save new-line idle-buffer-switch mode-enabled))
+;; 		(global-flycheck-mode 1)
+;; 		(apply-flycheck-theme))
 ;; 	(error
 ;; 		(setq-local initialization-errors (error-message-string err))))
-
-;; -- FLycheck configuration
-(condition-case err
-	(progn
-		(require 'flycheck)
-		(setq-default flycheck-emacs-lisp-load-path 'inherit)
-		(setq-default flycheck-navigation-minimum-level 'error)
-		(setq-default flycheck-check-syntax-automatically '(save new-line idle-buffer-switch mode-enabled))
-		(global-flycheck-mode 1)
-		(apply-flycheck-theme))
-	(error
-		(setq-local initialization-errors (error-message-string err))))
 
 ;; -- Tree-Sitter configuration
 (condition-case err
@@ -181,14 +156,27 @@
 
 
 (when (not (= (length initialization-errors) 0))
-	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
+    (error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
+
+;; And finally: major modes hooks
+(add-hook 'prog-mode-hook 'my-prog-mode-hook)
+
+(add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
+(add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
+(add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
+(add-hook 'pdf-view-mode-hook 'my-pdf-view-mode-hook)
+(add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
+(add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
+(add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
+(add-hook 'python-mode-hook 'my-python-mode-hook)
+(add-hook 'latex-mode-hook 'my-latex-mode-hook)
+(add-hook 'go-mode-hook 'my-go-mode-hook)
 
 (provide '.emacs)
 
 ;; TODO:
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
-;; Try to fix company-box when too big signature
 ;; Yasnippet
 
 ;;; .emacs ends here
