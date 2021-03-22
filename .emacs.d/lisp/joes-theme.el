@@ -22,7 +22,9 @@
 	(tree-sitter-hl-add-patterns 'c-sharp [(variable_declarator (identifier) @variable.parameter)])
 	(set-face-attribute 'tree-sitter-hl-face:type.parameter nil :foreground "#90649d")
 	(set-face-attribute 'tree-sitter-hl-face:variable.parameter nil :inherit 'font-lock-variable-name-face)
+	(set-face-attribute 'tree-sitter-hl-face:property nil :inherit 'font-lock-variable-name-face :italic nil)
 	(set-face-attribute 'tree-sitter-hl-face:method.call nil :inherit 'font-lock-function-name-face)
+	(set-face-attribute 'tree-sitter-hl-face:method nil :inherit 'font-lock-function-name-face :italic nil)
 	(set-face-attribute 'tree-sitter-hl-face:variable nil :inherit 'default))
 
 (defun apply-flycheck-theme()
