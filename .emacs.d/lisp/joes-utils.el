@@ -102,7 +102,7 @@
 			(find-file-other-window pdf-file-name))))
 
 (defun indent-or-complete ()
-	"Try to indent.  If line is already indented, invoke completion-at-point."
+	"Try to indent.  If line is already indented, invoke `completion-at-point'."
 	(interactive)
 	(if mark-active
 		(indent-for-tab-command)
@@ -112,7 +112,9 @@
 			(when (and
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))
-				(completion-at-point)))))
+				(if (featurep 'company)
+					(company-complete)
+					(completion-at-point))))))
 
 (defun vc-dir-delete-marked-files ()
 	"Delete all marked files in a `vc-dir' buffer."
@@ -194,10 +196,19 @@
 
 (defun ivy-counsel-function-doc-transformer (function-name)
 	"Transformer for ivy commands that add FUNCTION-NAME docstring."
-	(ivy-counsel-doc-transformer function-name
-		(concat ""
-			(let ((func (car (read-from-string function-name))))
-				(when (boundp func)
+	(let* ((func (car (read-from-string function-name)))
+			  (key (where-is-internal func nil t))
+			  (name-with-keys
+				  (concat function-name
+					  (when key
+						  (propertize
+							  (concat " ["
+								  (key-description key)
+								  "]")
+							  'face 'font-lock-type-face)))))
+		(ivy-counsel-doc-transformer name-with-keys
+			(concat ""
+				(when (functionp func)
 					(documentation func))))))
 
 (defun ivy-counsel-variable-doc-transformer (variable-name)
@@ -206,11 +217,6 @@
 		(concat ""
 			(documentation-property
 				(car (read-from-string variable-name)) 'variable-documentation))))
-
-;; Global adaptive-wrap-prefix-mode. Why doesn't this exist by default??? õO
-(define-global-minor-mode global-adaptive-wrap-prefix-mode
-	adaptive-wrap-prefix-mode
-	(lambda() (adaptive-wrap-prefix-mode 1)))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

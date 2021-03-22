@@ -35,7 +35,6 @@
 (setq-default ring-bell-function 'blink-minibuffer)
 (setq-default scroll-conservatively 10000)
 (setq-default scroll-step 1)
-(setq-default tab-always-indent 'complete)
 (setq-default tab-width 4)
 (setq-default lisp-indent-offset 4)
 (setq-default visible-bell nil)
@@ -92,8 +91,7 @@
 	(progn
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
-		(setq-default lsp-completion-show-detail nil)
-		(setq-default lsp-completion-show-kind nil)
+		(setq-default lsp-enable-indentation nil)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
@@ -107,6 +105,17 @@
 ;; -- Zenburn
 (condition-case err
 	(apply-zenburn-theme)
+	(error
+		(setq-local initialization-errors (error-message-string err))))
+
+;; -- Company
+(condition-case err
+	(progn
+		(require 'counsel)
+		(global-company-mode 1)
+		(setq-default company-idle-delay nil)
+		(add-hook 'company-completion-started-hook
+			(lambda (manual)(counsel-company))))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
@@ -161,6 +170,5 @@
 ;; TODO:
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
-;; Yasnippet
 
 ;;; .emacs ends here

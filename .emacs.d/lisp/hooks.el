@@ -48,6 +48,7 @@
 (defun my-python-mode-hook ()
 	(highlight-indent-guides-mode t)
 	(pyvenv-mode t)
+	(push 'indent-or-complete python-indent-trigger-commands)
 	(lsp))
 
 (defun my-lsp-hook ()
