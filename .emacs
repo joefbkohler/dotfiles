@@ -137,6 +137,9 @@
 					 (counsel-describe-variable . "")
 					 (counsel-describe-function . ""))))
 
+		(setq-default ivy-prescient-sort-commands
+			(append ivy-prescient-sort-commands '(lsp-ivy-workspace-symbol)))
+
 		(setq-default ivy-use-virtual-buffers t)
 		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
@@ -157,6 +160,8 @@
 		(require 'tree-sitter)
 		(require 'tree-sitter-langs)
 		(global-tree-sitter-mode)
+		(add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
+		;;(add-hook 'tree-sitter-mode-hook 'tree-sitter-indent-mode)
 		(apply-tree-sitter-theme))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
