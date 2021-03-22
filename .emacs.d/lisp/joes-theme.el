@@ -3,6 +3,7 @@
 ;;; Code:
 (defun apply-zenburn-theme()
 	(require 'flymake)
+	(require 'linum)
 	(load-theme 'zenburn t)
 	(set-face-attribute 'default nil :background "#181818" :height 180 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
@@ -11,7 +12,11 @@
 	(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
 	(set-face-attribute 'font-lock-string-face nil :italic t)
 	(set-face-attribute 'flymake-warning nil :underline '(:color "#FF0" :style wave))
-	(set-face-attribute 'flymake-note nil :underline '(:color "#00F" :style wave)))
+	(set-face-attribute 'flymake-note nil :underline '(:color "#00F" :style wave))
+	(set-face-attribute 'linum nil :foreground "#777")
+	(setq-default flymake-note-bitmap '(right-arrow compilation-note))
+	(setq-default flymake-warning-bitmap '(right-triangle compilation-warning))
+	(setq-default flymake-error-bitmap '(flymake-double-exclamation-mark compilation-error)))
 
 (defun apply-tree-sitter-theme()
 	(tree-sitter-hl-add-patterns 'c-sharp [(variable_declarator (identifier) @variable.parameter)])

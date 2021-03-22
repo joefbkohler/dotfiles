@@ -35,10 +35,9 @@
 	(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
 	(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
 	(global-set-key (kbd "C-|") 'toggle-window-split)
-	(global-set-key (kbd "C-x <tab>") (lambda () (interactive) (insert-tab)))
+	(global-set-key (kbd "C-<tab>") (lambda () (interactive) (insert-tab)))
 	(global-set-key [remap shell-command] 'async-shell-command)
-	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
-	(global-set-key [remap indent-for-tab-command] 'indent-or-complete)
+	;;(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
 
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
 
@@ -57,6 +56,7 @@
 	(global-set-key [remap isearch-forward-regexp] 'counsel-grep-or-swiper)
 	(global-set-key [remap ivy-done] 'ivy-alt-done)
 	(global-set-key [remap ivy-partial-or-done] 'ivy-partial)
+
 	;; minibuffer keys
 	(ivy-define-key ivy-minibuffer-map (kbd "M-p") 'ivy-previous-line)
 	(ivy-define-key ivy-minibuffer-map (kbd "M-n") 'ivy-next-line)

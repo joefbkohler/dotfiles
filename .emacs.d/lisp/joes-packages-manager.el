@@ -36,7 +36,8 @@
 	(straight-use-package 'adaptive-wrap)
 	(straight-use-package 'zenburn-theme)
 	(straight-use-package 'logview)
-	(straight-use-package 'csharp-mode))
+	(straight-use-package 'csharp-mode)
+	(straight-use-package 'company-mode))
 
 (defun my-straight-initialize ()
 	"Initialize straight.el."

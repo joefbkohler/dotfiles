@@ -13,7 +13,7 @@
 (require 'joes-keybindings)
 (require 'hooks)
 
-;; -- Package configuration
+;; -- Package (Straight)configuration
 (require 'joes-packages-manager)
 (my-straight-initialize)
 (setq-default package-enable-at-startup nil)
@@ -35,6 +35,7 @@
 (setq-default ring-bell-function 'blink-minibuffer)
 (setq-default scroll-conservatively 10000)
 (setq-default scroll-step 1)
+(setq-default tab-always-indent 'complete)
 (setq-default tab-width 4)
 (setq-default lisp-indent-offset 4)
 (setq-default visible-bell nil)
@@ -43,8 +44,6 @@
 (setq-default ispell-complete-word-dict "/home/joe/.dict/words")
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
 (put 'narrow-to-region 'disabled nil)
-;; Global hooks
-(add-hook 'before-save-hook 'my-save-hook)
 
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))
@@ -58,6 +57,10 @@
 (ignore-errors (scroll-bar-mode 0))
 (ignore-errors (tool-bar-mode 0))
 
+;; Global hooks
+(add-hook 'prog-mode-hook 'my-prog-mode-hook)
+(add-hook 'before-save-hook 'my-save-hook)
+
 ;; Default minor modes globally pre-loaded
 (column-number-mode 1)
 (global-visual-line-mode 1)
@@ -67,6 +70,18 @@
 (electric-indent-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
+(fringe-mode '(8 . 0))
+
+;; Major modes hooks
+(add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
+(add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
+(add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
+(add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
+(add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
+(add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
+(add-hook 'python-mode-hook 'my-python-mode-hook)
+(add-hook 'latex-mode-hook 'my-latex-mode-hook)
+(add-hook 'go-mode-hook 'my-go-mode-hook)
 
 ;; -- External packages configuration and modes
 
@@ -75,7 +90,6 @@
 ;; -- LSP
 (condition-case err
 	(progn
-		(require 'lsp)
 		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
 		(setq-default lsp-completion-show-detail nil)
@@ -96,28 +110,24 @@
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
-;; -- Adaptive wrap
-(condition-case err
-	(require 'adaptive-wrap)
-	(adaptive-wrap-prefix-mode 1)
-	(global-adaptive-wrap-prefix-mode 1)
-	(setq-default adaptive-wrap-extra-indent 1)
-	(error
-		(setq-local initialization-errors (error-message-string err))))
-
 ;; -- Ivy configuration
 (condition-case err
 	(progn
 		(require 'ivy)
 		(require 'counsel)
-	    (require 'ivy-xref)
-	    (require 'ivy-prescient)
-	    (ivy-mode 1)
-	    (ivy-prescient-mode 1)
-	    (prescient-persist-mode 1)
-		(add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
-		(add-to-list 'ivy-initial-inputs-alist '(counsel-describe-variable . ""))
-		(add-to-list 'ivy-initial-inputs-alist '(counsel-describe-function . ""))
+		(require 'ivy-xref)
+		(require 'ivy-prescient)
+		(ivy-mode 1)
+		(ivy-prescient-mode 1)
+		(prescient-persist-mode 1)
+
+		(setq-default ivy-initial-inputs-alist
+			(append
+				ivy-initial-inputs-alist
+				'((counsel-M-x . "")
+					 (counsel-describe-variable . "")
+					 (counsel-describe-function . ""))))
+
 		(setq-default ivy-use-virtual-buffers t)
 		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
@@ -132,46 +142,19 @@
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
-;; -- FLycheck configuration
-;;(condition-case err
-;; 	(progn
-;; 		(require 'flycheck)
-;; 		(setq-default flycheck-emacs-lisp-load-path 'inherit)
-;; 		(setq-default flycheck-navigation-minimum-level 'error)
-;; 		(setq-default flycheck-check-syntax-automatically '(save new-line idle-buffer-switch mode-enabled))
-;; 		(global-flycheck-mode 1)
-;; 		(apply-flycheck-theme))
-;; 	(error
-;; 		(setq-local initialization-errors (error-message-string err))))
-
 ;; -- Tree-Sitter configuration
 (condition-case err
 	(progn
 		(require 'tree-sitter)
 		(require 'tree-sitter-langs)
 		(global-tree-sitter-mode)
-		(apply-tree-sitter-theme)
-		)
+		(apply-tree-sitter-theme))
 	(error
 		(setq-local initialization-errors (error-message-string err))))
 
 
 (when (not (= (length initialization-errors) 0))
-    (error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
-
-;; And finally: major modes hooks
-(add-hook 'prog-mode-hook 'my-prog-mode-hook)
-
-(add-to-list 'auto-mode-alist '("\\.log$" . logview-mode))
-(add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
-(add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
-(add-hook 'pdf-view-mode-hook 'my-pdf-view-mode-hook)
-(add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
-(add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
-(add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
-(add-hook 'python-mode-hook 'my-python-mode-hook)
-(add-hook 'latex-mode-hook 'my-latex-mode-hook)
-(add-hook 'go-mode-hook 'my-go-mode-hook)
+	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
 
 (provide '.emacs)
 
