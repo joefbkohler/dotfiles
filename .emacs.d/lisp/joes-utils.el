@@ -112,8 +112,9 @@
 			(when (and
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))
-				(if (featurep 'company)
-					(company-complete)
+				(if (and (featurep 'counsel)
+						(featurep 'company))
+					(my-contextual-counsel-company)
 					(completion-at-point))))))
 
 (defun vc-dir-delete-marked-files ()
@@ -217,6 +218,28 @@
 		(concat ""
 			(documentation-property
 				(car (read-from-string variable-name)) 'variable-documentation))))
+
+(defun my-contextual-counsel-company ()
+	"Choose company backend according to context of point."
+	(interactive)
+	(when (or
+			  (nth 3 (syntax-ppss))
+			  (nth 4 (syntax-ppss)))
+		(company-other-backend))
+	(counsel-company))
+
+(defun my-contextual-latex-counsel-company ()
+	"Like `my-contextual-counsel-company' but for `latex-mode'."
+	(interactive)
+	(save-excursion
+		(when (and
+				  (symbol-at-point)
+				  (not (re-search-backward
+						   (concat "\\\\" (pp-to-string (symbol-at-point))) nil t 1))
+				  (not (re-search-backward
+						   (concat "\{" (pp-to-string (symbol-at-point))) nil t 1)))
+			(company-other-backend)))
+	(counsel-company))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

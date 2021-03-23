@@ -38,7 +38,7 @@
 	(global-set-key (kbd "C-<tab>") (lambda () (interactive) (insert-tab)))
 	(global-set-key [remap shell-command] 'async-shell-command)
 	(global-set-key [remap indent-for-tab-command] 'indent-or-complete)
-
+	(global-set-key (kbd "C-c o") 'imenu)
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
 
 	;; Remove remapping of kill-line to kill-visual-line
@@ -56,6 +56,7 @@
 	(global-set-key [remap isearch-forward-regexp] 'counsel-grep-or-swiper)
 	(global-set-key [remap ivy-done] 'ivy-alt-done)
 	(global-set-key [remap ivy-partial-or-done] 'ivy-partial)
+	(global-set-key [remap imenu] 'counsel-imenu)
 
 	;; minibuffer keys
 	(ivy-define-key ivy-minibuffer-map (kbd "M-p") 'ivy-previous-line)

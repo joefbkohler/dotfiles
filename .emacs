@@ -94,38 +94,35 @@
 		(setq-default lsp-enable-indentation nil)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
-		(setq-local initialization-errors (error-message-string err))))
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 ;; -- Magit
 (condition-case err
 	(magit-auto-revert-mode -1)
 	(error
-		(setq-local initialization-errors (error-message-string err))))
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 ;; -- Zenburn
 (condition-case err
 	(apply-zenburn-theme)
 	(error
-		(setq-local initialization-errors (error-message-string err))))
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 ;; -- Company
 (condition-case err
 	(progn
-		(require 'counsel)
 		(global-company-mode 1)
-		(setq-default company-idle-delay nil)
-		(add-hook 'company-completion-started-hook
-			(lambda (manual)(counsel-company))))
+		(setq-default company-dabbrev-downcase t)
+		(setq-default company-dabbrev-ignore-case 'keep-prefix)
+		(setq-default company-idle-delay nil))
 	(error
-		(setq-local initialization-errors (error-message-string err))))
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 ;; -- Ivy configuration
 (condition-case err
 	(progn
-		(require 'ivy)
 		(require 'counsel)
 		(require 'ivy-xref)
-		(require 'ivy-prescient)
 		(ivy-mode 1)
 		(ivy-prescient-mode 1)
 		(prescient-persist-mode 1)
@@ -152,7 +149,8 @@
 
 		(set-ivy-keybindings))
 	(error
-		(setq-local initialization-errors (error-message-string err))))
+		(ido-everywhere 1)
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 ;; -- Tree-Sitter configuration
 (condition-case err
@@ -164,7 +162,7 @@
 		;;(add-hook 'tree-sitter-mode-hook 'tree-sitter-indent-mode)
 		(apply-tree-sitter-theme))
 	(error
-		(setq-local initialization-errors (error-message-string err))))
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 
 (when (not (= (length initialization-errors) 0))
@@ -173,6 +171,7 @@
 (provide '.emacs)
 
 ;; TODO:
+;; Change indent-or-complete to call directly counsel-company and other-backend "if should call other-backend"
 ;; Modeline
 ;; Try to fix lsp Ivy workspace Symbol
 
