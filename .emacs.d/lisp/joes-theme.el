@@ -20,7 +20,7 @@
 	(setq-default flymake-error-bitmap '(flymake-double-exclamation-mark compilation-error)))
 
 (defun apply-tree-sitter-theme()
-	(tree-sitter-hl-add-patterns 'c-sharp [(variable_declarator (identifier) @variable.parameter)])
+	(require 'tree-sitter-hl)
 	(set-face-attribute 'tree-sitter-hl-face:type.parameter nil :foreground "#90649d")
 	(set-face-attribute 'tree-sitter-hl-face:variable.parameter nil :inherit 'font-lock-variable-name-face)
 	(set-face-attribute 'tree-sitter-hl-face:property nil :inherit 'font-lock-variable-name-face :italic nil)

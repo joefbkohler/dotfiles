@@ -1,5 +1,13 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
+;;; TODO:
+;;; Fix list of company-backends for different modes.
+;;; Fix keep-prefix when completing dabbrev with counsel.
+;;; Add a sane initialization to tree-sitter-indent
+;;; Fix damn temp/backup files!
+;;; Modeline
+;;; Try to fix lsp Ivy workspace Symbol
+
 ;;; Code:
 
 (add-to-list 'command-switch-alist '("-exwm" . my-exwm-hook))
@@ -35,6 +43,7 @@
 (setq-default ring-bell-function 'blink-minibuffer)
 (setq-default scroll-conservatively 10000)
 (setq-default scroll-step 1)
+(setq-default lisp-indent-offset 4)
 (setq-default tab-width 4)
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
@@ -80,6 +89,7 @@
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (add-hook 'latex-mode-hook 'my-latex-mode-hook)
 (add-hook 'go-mode-hook 'my-go-mode-hook)
+(add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
 
 ;; -- External packages configuration and modes
 
@@ -111,7 +121,6 @@
 (condition-case err
 	(progn
 		(global-company-mode 1)
-		(setq-default company-dabbrev-downcase t)
 		(setq-default company-dabbrev-ignore-case 'keep-prefix)
 		(setq-default company-idle-delay nil))
 	(error
@@ -155,12 +164,8 @@
 ;; -- Tree-Sitter configuration
 (condition-case err
 	(progn
-		(require 'tree-sitter)
-		(require 'tree-sitter-langs)
 		(global-tree-sitter-mode)
 		(add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
-		(add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
-		;;(add-hook 'tree-sitter-mode-hook 'tree-sitter-indent-mode)
 		(apply-tree-sitter-theme))
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
@@ -170,10 +175,4 @@
 	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
 
 (provide '.emacs)
-
-;; TODO:
-;; Change indent-or-complete to call directly counsel-company and other-backend "if should call other-backend"
-;; Modeline
-;; Try to fix lsp Ivy workspace Symbol
-
 ;;; .emacs ends here

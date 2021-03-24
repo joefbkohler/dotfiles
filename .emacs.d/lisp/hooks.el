@@ -15,12 +15,20 @@
 (defun my-ediff-mode-hook()
 	(custom-set-variables '(ediff-split-window-function 'split-window-horizontally)))
 
+(defun my-elisp-mode-hook ()
+	(setq-local lisp-indent-offset (my-buffer-indentation)))
+
 (defun my-prog-mode-hook ()
+	;; Look for a tab indentation, if found, set indent-tabs-mode
+	(setq indent-tabs-mode (when (string-match "^\t" (buffer-string )) t))
 	(flymake-mode 1)
+	;; use display-line-number-mode instead of linum
+	;; when over 5000 lines for performance reasons.
 	(if (< (count-lines (point-min) (point-max))
 			  5000)
 		(linum-mode 1)
-		(display-line-numbers-mode 1)))
+		(display-line-numbers-mode 1))
+	(setq tab-width 4))
 
 (defun my-vc-dir-mode-hook()
 	(local-set-key (kbd "k") 'vc-dir-delete-marked-files)
@@ -57,14 +65,21 @@
 	(set-lsp-keybinding))
 
 (defun my-tree-sitter-mode-hook()
-	(add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix t))
+	(require 'tree-sitter-indent)
+	(require 'tree-sitter-langs)
+	(add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix t)
+	(tree-sitter-hl-mode)
+	(ignore-errors (tree-sitter-indent-mode)))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
+	(require 'tree-sitter-langs)
 	(csharp-tree-sitter-mode)
 	(lsp)
 
-	(setq indent-tabs-mode nil)
+	(tree-sitter-hl-add-patterns 'c-sharp
+		[(variable_declarator (identifier) @variable.parameter)])
+
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
 	(whitespace-mode 1))
 

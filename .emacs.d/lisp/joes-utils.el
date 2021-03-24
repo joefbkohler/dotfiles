@@ -39,6 +39,14 @@
 	(switch-to-buffer (get-buffer-create "*scratch*"))
 	(lisp-interaction-mode))
 
+(defun my-buffer-indentation ()
+	(save-excursion
+		(if (search-forward-regexp "^\t+[^[:blank:]]" nil t)
+			(current-indentation)
+			(if (search-forward-regexp "^\s+[^[:blank:]]" nil t)
+				(current-indentation)
+				lisp-indent-offset))))
+
 (defun ispell-change-dictionary-and-words ()
 	"Switch Ispell dictionary and create words file."
 	(interactive)
