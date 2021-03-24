@@ -36,7 +36,6 @@
 (setq-default scroll-conservatively 10000)
 (setq-default scroll-step 1)
 (setq-default tab-width 4)
-(setq-default lisp-indent-offset 4)
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
@@ -147,6 +146,7 @@
 		(ivy-configure 'counsel-describe-variable :display-transformer-fn 'ivy-counsel-variable-doc-transformer)
 		(ivy-configure 'counsel-describe-function :display-transformer-fn 'ivy-counsel-function-doc-transformer)
 
+		(apply-ivy-theme)
 		(set-ivy-keybindings))
 	(error
 		(ido-everywhere 1)
@@ -158,6 +158,7 @@
 		(require 'tree-sitter)
 		(require 'tree-sitter-langs)
 		(global-tree-sitter-mode)
+		(add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
 		(add-hook 'tree-sitter-mode-hook 'tree-sitter-hl-mode)
 		;;(add-hook 'tree-sitter-mode-hook 'tree-sitter-indent-mode)
 		(apply-tree-sitter-theme))

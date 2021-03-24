@@ -11,6 +11,7 @@
 	(set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
 	(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
 	(set-face-attribute 'font-lock-string-face nil :italic t)
+	(set-face-attribute 'flymake-error nil :underline '(:color "#F00" :style wave))
 	(set-face-attribute 'flymake-warning nil :underline '(:color "#FF0" :style wave))
 	(set-face-attribute 'flymake-note nil :underline '(:color "#00F" :style wave))
 	(set-face-attribute 'linum nil :foreground "#777")
@@ -27,8 +28,12 @@
 	(set-face-attribute 'tree-sitter-hl-face:method nil :inherit 'font-lock-function-name-face :italic nil)
 	(set-face-attribute 'tree-sitter-hl-face:variable nil :inherit 'default))
 
-(defun apply-flycheck-theme()
-	(set-face-attribute 'flycheck-error nil :underline '(:color "#F00" :style wave)))
+(defun apply-ivy-theme()
+	(set-face-attribute 'ivy-current-match nil
+		:background "#223"
+		:box '(:line-width -1 :color "#080")
+		:foreground 'unspecified
+		:underline 'unspecified))
 
 (defun apply-logview-theme()
 	(require 'logview)

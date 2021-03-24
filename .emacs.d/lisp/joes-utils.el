@@ -22,6 +22,11 @@
 	"Column where the documentation should show in `counsel'."
 	:type 'integer)
 
+(defcustom company-capf-prefix-functions '(my-company-capf-prefix)
+	"List of functions that return t if current position should skip `company-capf'."
+	:type 'list)
+(make-variable-buffer-local 'company-capf-prefix-functions)
+
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
 	(unless time (setq time 0.1))
@@ -114,7 +119,12 @@
 					  (eq initial-indentation (current-indentation)))
 				(if (and (featurep 'counsel)
 						(featurep 'company))
-					(my-contextual-counsel-company)
+					(progn
+						(when (cl-some (lambda (func)
+										   (funcall func))
+								  company-capf-prefix-functions)
+							(company-other-backend))
+						(counsel-company))
 					(completion-at-point))))))
 
 (defun vc-dir-delete-marked-files ()
@@ -182,17 +192,25 @@
 					(let ((result (concat result
 									  (make-string (max 1 (- ivy-switch-buffer-path-column (string-width result))) ? )
 									  (propertize (concat "" buffer-path) 'face 'font-lock-comment-face))))
-						(truncate-string-to-width result (frame-width) nil nil t t))))
+						(truncate-string-to-width
+							(concat
+								result
+								(make-string (max 0 (- (frame-width) (string-width result) 2)) ? ))
+							(- (frame-width) 2) nil nil t t))))
 			result)))
 
 (defun ivy-counsel-doc-transformer (symbol-name docstring)
 	"Transformer for ivy commands that add SYMBOL-NAME DOCSTRING."
 	(truncate-string-to-width
-		(car (split-string
-				 (concat
-					 symbol-name
-					 (make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
-					 (propertize docstring 'face 'font-lock-comment-face)) "\n"))
+		(let ((result
+				  (car (split-string
+						   (concat
+							   symbol-name
+							   (make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
+							   (propertize docstring 'face 'font-lock-comment-face)) "\n"))))
+			(concat
+				result
+				(make-string (max 0 (- (frame-width) (string-width result) 2)) ? )))
 		(frame-width) nil nil t t))
 
 (defun ivy-counsel-function-doc-transformer (function-name)
@@ -219,27 +237,40 @@
 			(documentation-property
 				(car (read-from-string variable-name)) 'variable-documentation))))
 
-(defun my-contextual-counsel-company ()
-	"Choose company backend according to context of point."
-	(interactive)
+(defun my-company-capf-prefix ()
+	"Check if current prefix is a valid `company-capf' prefix."
 	(when (or
 			  (nth 3 (syntax-ppss))
 			  (nth 4 (syntax-ppss)))
-		(company-other-backend))
-	(counsel-company))
+		t))
 
-(defun my-contextual-latex-counsel-company ()
-	"Like `my-contextual-counsel-company' but for `latex-mode'."
-	(interactive)
+(defun my-tree-sitter-company-capf-prefix ()
+	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
+	(when
+		(save-excursion
+			(ignore-errors (backward-char))
+			(let* ((cursor (tsc-make-cursor (tree-sitter-node-at-point)))
+					  (node (tsc-current-node cursor))
+					  (found nil))
+				(while (and node (not found))
+					(when (or (string-match-p "comment" (pp-to-string (ts-node-type node)))
+							  (string-match-p "string" (pp-to-string (ts-node-type node))))
+						(setq found t))
+					(setq node (tsc-get-parent node)))
+				found))
+		t))
+
+(defun my-latex-company-capf-prefix ()
+	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
 	(save-excursion
-		(when (and
-				  (symbol-at-point)
-				  (not (re-search-backward
-						   (concat "\\\\" (pp-to-string (symbol-at-point))) nil t 1))
-				  (not (re-search-backward
-						   (concat "\{" (pp-to-string (symbol-at-point))) nil t 1)))
-			(company-other-backend)))
-	(counsel-company))
+		(when
+			(and
+				(symbol-at-point)
+				(not (re-search-backward
+						 (concat "\\\\" (pp-to-string (symbol-at-point))) nil t 1))
+				(not (re-search-backward
+						 (concat "\{" (pp-to-string (symbol-at-point))) nil t 1)))
+			t)))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

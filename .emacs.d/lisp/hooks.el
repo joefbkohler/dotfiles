@@ -28,6 +28,7 @@
 
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
+	(setq-local company-capf-prefix-functions '(my-latex-company-capf-prefix))
 	(lsp)
 	(flymake-mode 1)
 	(auto-fill-mode 1))
@@ -54,6 +55,9 @@
 (defun my-lsp-hook ()
 	(yas-minor-mode)
 	(set-lsp-keybinding))
+
+(defun my-tree-sitter-mode-hook()
+	(add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix t))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
