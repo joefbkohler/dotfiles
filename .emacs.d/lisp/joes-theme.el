@@ -20,17 +20,28 @@
 	(require 'flymake)
 	(require 'linum)
 	(load-theme 'zenburn t)
-	(set-face-attribute 'default nil :background "#181818" :height 180 :font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+	(set-face-attribute 'default nil
+		:background "#181818"
+		:foreground "#D6D6D6"
+		:height 180
+		:font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 	(set-face-attribute 'region nil :foreground 'unspecified :background "#334")
+	(set-face-attribute 'isearch nil :foreground 'unspecified)
+	(set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
+
 	(set-face-attribute 'font-lock-constant-face nil :foreground "#F0DFAF" :weight 'bold)
 	(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
 	(set-face-attribute 'font-lock-string-face nil :italic t)
+	(set-face-attribute 'font-lock-type-face nil :foreground "#6292A8")
+
 	(set-face-attribute 'flymake-error nil :underline '(:color "#F00" :style wave))
 	(set-face-attribute 'flymake-warning nil :underline '(:color "#FF0" :style wave))
 	(set-face-attribute 'flymake-note nil :underline '(:color "#00F" :style wave))
+
 	(set-face-attribute 'linum nil :foreground "#777")
 	(set-face-attribute 'highlight nil :background 'unspecified :weight 'bold :underline t)
+
 	(setq-default flymake-note-bitmap '(right-arrow compilation-note))
 	(setq-default flymake-warning-bitmap '(right-triangle compilation-warning))
 	(setq-default flymake-error-bitmap '(flymake-double-exclamation-mark compilation-error)))
@@ -51,16 +62,18 @@
 		:foreground 'unspecified
 		:underline 'unspecified
 		:extend t)
-	(set-face-attribute 'ivy-subdir nil :background 'unspecified)
+	(set-face-attribute 'ivy-subdir nil :background 'unspecified :foreground 'unspecified :inherit 'dired-directory)
+	(set-face-attribute 'ivy-minibuffer-match-face-1 nil :background 'unspecified :underline "FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-2 nil :background 'unspecified :underline "FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-3 nil :background 'unspecified :underline "FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-4 nil :background 'unspecified :underline "FFF")
 
 	;; transformers
 	(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
 	(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-function-doc-transformer)
 	(ivy-configure 'counsel-describe-variable :display-transformer-fn 'ivy-counsel-variable-doc-transformer)
 	(ivy-configure 'counsel-describe-function :display-transformer-fn 'ivy-counsel-function-doc-transformer)
-
-	(setq ivy-format-functions-alist (delq (assoc t  ivy-format-functions-alist) ivy-format-functions-alist))
-	(add-to-list 'ivy-format-functions-alist '(t . ivy-format-function-line) t))
+	(ivy-configure t :format-fn 'ivy-format-function-line))
 
 (defun apply-logview-theme()
 	(require 'logview)
