@@ -1,6 +1,21 @@
 ;;; Theme --- My custom theme configuration
 ;;; Commentary:
 ;;; Code:
+
+(defgroup joe nil
+	"My little functions"
+	:group 'convenience)
+
+(defcustom ivy-switch-buffer-major-mode-column 40
+	"Column where the Major Mode of the buffer should show in `ivy-switch-buffer'."
+	:type 'integer)
+(defcustom ivy-switch-buffer-path-column 70
+	"Column where the Path of the file visited by the buffer should show in `ivy-switch-buffer'."
+	:type 'integer)
+(defcustom ivy-counsel-doc-column 40
+	"Column where the documentation should show in `counsel'."
+	:type 'integer)
+
 (defun apply-zenburn-theme()
 	(require 'flymake)
 	(require 'linum)
@@ -15,6 +30,7 @@
 	(set-face-attribute 'flymake-warning nil :underline '(:color "#FF0" :style wave))
 	(set-face-attribute 'flymake-note nil :underline '(:color "#00F" :style wave))
 	(set-face-attribute 'linum nil :foreground "#777")
+	(set-face-attribute 'highlight nil :background 'unspecified :weight 'bold :underline t)
 	(setq-default flymake-note-bitmap '(right-arrow compilation-note))
 	(setq-default flymake-warning-bitmap '(right-triangle compilation-warning))
 	(setq-default flymake-error-bitmap '(flymake-double-exclamation-mark compilation-error)))
@@ -33,7 +49,18 @@
 		:background "#223"
 		:box '(:line-width -1 :color "#080")
 		:foreground 'unspecified
-		:underline 'unspecified))
+		:underline 'unspecified
+		:extend t)
+	(set-face-attribute 'ivy-subdir nil :background 'unspecified)
+
+	;; transformers
+	(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
+	(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-function-doc-transformer)
+	(ivy-configure 'counsel-describe-variable :display-transformer-fn 'ivy-counsel-variable-doc-transformer)
+	(ivy-configure 'counsel-describe-function :display-transformer-fn 'ivy-counsel-function-doc-transformer)
+
+	(setq ivy-format-functions-alist (delq (assoc t  ivy-format-functions-alist) ivy-format-functions-alist))
+	(add-to-list 'ivy-format-functions-alist '(t . ivy-format-function-line) t))
 
 (defun apply-logview-theme()
 	(require 'logview)
@@ -45,6 +72,62 @@
 (defun apply-cursor-theme()
 	(add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 	(add-to-list 'default-frame-alist '(cursor-color . "#cca")))
+
+;; Ivy prettify ;)
+(defun ivy-switch-buffer-mode-path-transformer (buffer-name)
+	"Transformer for `ivy-switch-buffer' that add major mode and path for BUFFER-NAME."
+	(let ((buffer (get-buffer buffer-name))
+			 (result buffer-name))
+		(if buffer
+			(let ((buffer-major-mode (string-remove-suffix "-mode" (symbol-name (with-current-buffer buffer major-mode))))
+					 (buffer-path (buffer-file-name buffer))
+					 (name-size (string-width result)))
+				(let ((result (concat result
+								  (make-string (max 1 (- ivy-switch-buffer-major-mode-column name-size)) ? )
+								  (propertize (concat "" buffer-major-mode) 'face 'font-lock-type-face))))
+					(let ((result (concat result
+									  (make-string (max 1 (- ivy-switch-buffer-path-column (string-width result))) ? )
+									  (propertize (concat "" buffer-path) 'face 'font-lock-comment-face))))
+						(truncate-string-to-width result (frame-width) nil nil t t))))
+			result)))
+
+;; Ivy transformer functions
+(defun ivy-counsel-doc-transformer (symbol-name docstring)
+	"Transformer for ivy commands that add SYMBOL-NAME DOCSTRING."
+	(truncate-string-to-width
+		(let ((result
+				  (car (split-string
+						   (concat
+							   symbol-name
+							   (make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
+							   (propertize docstring 'face 'font-lock-comment-face))
+						   "\n"))))
+				result)
+		(frame-width) nil nil t t))
+
+(defun ivy-counsel-function-doc-transformer (function-name)
+	"Transformer for ivy commands that add FUNCTION-NAME docstring."
+	(let* ((func (car (read-from-string function-name)))
+			  (key (where-is-internal func nil t))
+			  (name-with-keys
+				  (concat function-name
+					  (when key
+						  (propertize
+							  (concat " ["
+								  (key-description key)
+								  "]")
+							  'face 'font-lock-type-face)))))
+		(ivy-counsel-doc-transformer name-with-keys
+			(concat ""
+				(when (functionp func)
+					(documentation func))))))
+
+(defun ivy-counsel-variable-doc-transformer (variable-name)
+	"Transformer for ivy commands that add VARIABLE-NAME docstring."
+	(ivy-counsel-doc-transformer variable-name
+		(concat ""
+			(documentation-property
+				(car (read-from-string variable-name)) 'variable-documentation))))
 
 (provide 'joes-theme)
 ;;; joes-theme.el ends here

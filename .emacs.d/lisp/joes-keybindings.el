@@ -41,6 +41,8 @@
 	(global-set-key (kbd "C-c o") 'imenu)
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
 
+	(global-set-key (kbd "C-c C-r") 'xref-find-references)
+
 	;; Remove remapping of kill-line to kill-visual-line
 	(define-key visual-line-mode-map [remap kill-line] nil)
 

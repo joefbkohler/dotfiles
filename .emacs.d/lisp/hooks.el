@@ -20,7 +20,7 @@
 
 (defun my-prog-mode-hook ()
 	;; Look for a tab indentation, if found, set indent-tabs-mode
-	(setq indent-tabs-mode (when (string-match "^\t" (buffer-string )) t))
+	(setq indent-tabs-mode (when (not (string-match "^\s+[^[:blank:]]" (buffer-string))) t))
 	(flymake-mode 1)
 	;; use display-line-number-mode instead of linum
 	;; when over 5000 lines for performance reasons.

@@ -50,6 +50,7 @@
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
 (setq-default ispell-complete-word-dict "/home/joe/.dict/words")
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
+(setq-default linum-delay 0.1)
 (put 'narrow-to-region 'disabled nil)
 
 ;; Backup configuration
@@ -65,7 +66,7 @@
 (ignore-errors (tool-bar-mode 0))
 
 ;; Global hooks
-(add-hook 'prog-mode-hook 'my-prog-mode-hook)
+(add-hook 'prog-mode-hook 'my-prog-mode-hook 10)
 (add-hook 'before-save-hook 'my-save-hook)
 
 ;; Default minor modes globally pre-loaded
@@ -149,11 +150,6 @@
 		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
 		(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
-
-		(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
-		(ivy-configure 'counsel-M-x :display-transformer-fn 'ivy-counsel-function-doc-transformer)
-		(ivy-configure 'counsel-describe-variable :display-transformer-fn 'ivy-counsel-variable-doc-transformer)
-		(ivy-configure 'counsel-describe-function :display-transformer-fn 'ivy-counsel-function-doc-transformer)
 
 		(apply-ivy-theme)
 		(set-ivy-keybindings))
