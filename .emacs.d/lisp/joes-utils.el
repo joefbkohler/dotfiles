@@ -47,7 +47,6 @@
 					   (mapcar #'list (ispell-valid-dictionary-list)))
 				   nil t))
 			  (words
-
 				  (string-join (cl-mapcar
 								   (lambda (word) (replace-regexp-in-string "\/.+" "" word))
 								   (sort
@@ -58,8 +57,7 @@
 												   " dump master "
 												   new-dict)))
 									   'string-lessp))
-					  "\n")
-				  ))
+					  "\n")))
 		(ispell-change-dictionary new-dict)
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
@@ -121,6 +119,7 @@
 						(when (cl-some (lambda (func)
 										   (funcall func))
 								  company-capf-prefix-functions)
+							(message "%s" "not code")
 							(company-other-backend))
 						(counsel-company))
 					(completion-at-point))))))
@@ -175,15 +174,30 @@
 
 (defun my-latex-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
-	(save-excursion
-		(when
-			(and
-				(symbol-at-point)
-				(not (re-search-backward
-						 (concat "\\\\" (pp-to-string (symbol-at-point))) nil t 1))
-				(not (re-search-backward
-						 (concat "\{" (pp-to-string (symbol-at-point))) nil t 1)))
-			t)))
+	(let ((start-point (point)))
+		(if
+			(or
+				(eq ?\\ (char-after (- (point) 1)))
+				(eq ?{ (char-after (- (point) 1)))
+				(and
+					(not (eq ? (char-after (- (point) 1))))
+					(or
+						(eq ?\\ (char-after (- (point) 2)))
+						(eq ?{ (char-after (- (point) 2)))
+						(save-excursion
+							(and
+								(search-backward "\\" nil t 1)
+								(progn
+									(forward-char 2)
+									(not (re-search-forward "\\b" (- start-point 1) t 1)))))
+						(save-excursion
+							(and
+								(search-backward "{" nil t 1)
+								(progn
+									(forward-char 2)
+									(not (re-search-forward "\\b" (- start-point 1) t 1))))))))
+				nil
+				t)))
 
 (defun toggle-window-split ()
 	(interactive)

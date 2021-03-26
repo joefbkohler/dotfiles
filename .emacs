@@ -1,12 +1,12 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
-;;; Fix list of company-backends for different modes.
 ;;; Fix keep-prefix when completing dabbrev with counsel.
 ;;; Add a sane initialization to tree-sitter-indent
 ;;; Fix damn temp/backup files!
 ;;; Modeline
 ;;; Try to fix lsp Ivy workspace Symbol
+;;; Simplify latex-prefix func.
 
 ;;; Code:
 
@@ -122,8 +122,12 @@
 (condition-case err
 	(progn
 		(global-company-mode 1)
-		(setq-default company-dabbrev-ignore-case 'keep-prefix)
-		(setq-default company-idle-delay nil))
+		(setq-default company-dabbrev-ignore-case nil)
+		(setq-default company-dabbrev-downcase nil)
+		(setq-default company-idle-delay nil)
+		(setq-default company-backends
+			'(company-capf company-files
+				 (company-dabbrev-code company-dabbrev company-keywords company-ispell))))
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 

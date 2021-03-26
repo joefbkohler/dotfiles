@@ -63,10 +63,10 @@
 		:underline 'unspecified
 		:extend t)
 	(set-face-attribute 'ivy-subdir nil :background 'unspecified :foreground 'unspecified :inherit 'dired-directory)
-	(set-face-attribute 'ivy-minibuffer-match-face-1 nil :background 'unspecified :underline "FFF")
-	(set-face-attribute 'ivy-minibuffer-match-face-2 nil :background 'unspecified :underline "FFF")
-	(set-face-attribute 'ivy-minibuffer-match-face-3 nil :background 'unspecified :underline "FFF")
-	(set-face-attribute 'ivy-minibuffer-match-face-4 nil :background 'unspecified :underline "FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-1 nil :background 'unspecified :underline "#FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-2 nil :background 'unspecified :underline "#FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-3 nil :background 'unspecified :underline "#FFF")
+	(set-face-attribute 'ivy-minibuffer-match-face-4 nil :background 'unspecified :underline "#FFF")
 
 	;; transformers
 	(ivy-configure 'ivy-switch-buffer :display-transformer-fn 'ivy-switch-buffer-mode-path-transformer)
