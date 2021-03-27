@@ -119,7 +119,6 @@
 						(when (cl-some (lambda (func)
 										   (funcall func))
 								  company-capf-prefix-functions)
-							(message "%s" "not code")
 							(company-other-backend))
 						(counsel-company))
 					(completion-at-point))))))
@@ -175,29 +174,16 @@
 (defun my-latex-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
 	(let ((start-point (point)))
-		(if
+		(not
 			(or
-				(eq ?\\ (char-after (- (point) 1)))
-				(eq ?{ (char-after (- (point) 1)))
-				(and
-					(not (eq ? (char-after (- (point) 1))))
-					(or
-						(eq ?\\ (char-after (- (point) 2)))
-						(eq ?{ (char-after (- (point) 2)))
-						(save-excursion
-							(and
-								(search-backward "\\" nil t 1)
-								(progn
-									(forward-char 2)
-									(not (re-search-forward "\\b" (- start-point 1) t 1)))))
-						(save-excursion
-							(and
-								(search-backward "{" nil t 1)
-								(progn
-									(forward-char 2)
-									(not (re-search-forward "\\b" (- start-point 1) t 1))))))))
-				nil
-				t)))
+				(save-excursion
+					(and
+						(search-backward "\\" nil t 1)
+						(not (re-search-forward "}" start-point t 1))
+						(or
+							(search-forward "{" start-point t 1)
+							(not (re-search-forward "[^\\]\\b"
+									 (- start-point 1) t 1)))))))))
 
 (defun toggle-window-split ()
 	(interactive)
