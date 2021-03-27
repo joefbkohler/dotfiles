@@ -51,7 +51,9 @@
 (setq-default ispell-complete-word-dict "/home/joe/.dict/words")
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
 (setq-default linum-delay 0.1)
+(setq-default linum-format 'linum-format-function)
 (put 'narrow-to-region 'disabled nil)
+(apply-flymake-theme)
 
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))
@@ -169,7 +171,6 @@
 		(apply-tree-sitter-theme))
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
-
 
 (when (not (= (length initialization-errors) 0))
 	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
