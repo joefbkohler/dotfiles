@@ -7,10 +7,14 @@ network-security.data
 elpa/
 .emacs.d/eshell
 .emacs.d/elpa
-.emacs.d/emacs_backtrace.txt 
+.emacs.d/emacs_backtrace.txt
 .emacs.d/emacs_backtrace.txt
 .emacs.d/.cache
 .emacs.d/transient
 .emacs.d/url
 .emacs.d/projects
 .emacs.d/recentf
+.emacs.d/straight
+.emacs.d/var
+.emacs.d/dict
+.emacs.d/ac-comphist.dat
