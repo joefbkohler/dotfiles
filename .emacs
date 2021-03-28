@@ -1,6 +1,7 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
+;;; counsel-flymake
 ;;; counsel-rgrep
 ;;; Modeline
 ;;; Add a sane initialization to tree-sitter-indent

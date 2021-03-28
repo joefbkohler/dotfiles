@@ -12,8 +12,8 @@
 	(straight-use-package 'tree-sitter)
 	(straight-use-package 'go-mode)
 	(straight-use-package 'lsp-ivy)
-    (straight-use-package 'counsel)
-    (straight-use-package 'ivy-prescient)
+	(straight-use-package 'counsel)
+	(straight-use-package 'ivy-prescient)
 	(straight-use-package 'magit-lfs)
 	(straight-use-package 'magit)
 	(straight-use-package 'yasnippet)
@@ -54,11 +54,11 @@
 		(load bootstrap-file nil 'nomessage)))
 
 (defun my-register-fork-packages()
-	"Register my forks so correct packages are installer."
-	(straight-register-package
-		'(tree-sitter-indent :fork "ssh://git@codeberg.org/joejunior/tree-sitter-indent.el"))
-	(straight-register-package
-		'(csharp-mode :fork "joefbsjr/csharp-mode")))
+    "Register my forks so correct packages are installer."
+    (straight-register-package
+        '(swiper :fork "joefbsjr/swiper"))
+    (straight-register-package
+        '(csharp-mode :fork "joefbsjr/csharp-mode")))
 
 (provide 'joes-packages-manager)
 ;;; joes-packages-manager.el ends here
