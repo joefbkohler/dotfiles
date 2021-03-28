@@ -16,7 +16,7 @@
 	(custom-set-variables '(ediff-split-window-function 'split-window-horizontally)))
 
 (defun my-elisp-mode-hook ()
-	(setq-local lisp-indent-offset (my-buffer-indentation)))
+	(setq-local lisp-indent-offset (my-buffer-indentation-offset)))
 
 (defun my-prog-mode-hook ()
 	;; Look for a tab indentation, if found, set indent-tabs-mode
@@ -66,7 +66,6 @@
 
 (defun my-tree-sitter-mode-hook()
 	(require 'tree-sitter-indent)
-	(require 'tree-sitter-langs)
 	(add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix t)
 	(tree-sitter-hl-mode)
 	(ignore-errors (tree-sitter-indent-mode)))

@@ -1,12 +1,10 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
-;;; Fix keep-prefix when completing dabbrev with counsel.
+;;; Modeline
 ;;; Add a sane initialization to tree-sitter-indent
 ;;; Fix damn temp/backup files!
-;;; Modeline
 ;;; Try to fix lsp Ivy workspace Symbol
-;;; Simplify latex-prefix func.
 
 ;;; Code:
 
@@ -48,7 +46,7 @@
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
-(setq-default ispell-complete-word-dict "/home/joe/.dict/words")
+(setq-default ispell-complete-word-dict "/home/joe/.emacs.d/dict/words")
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
 (setq-default linum-delay 0.1)
 (setq-default linum-format 'linum-format-function)
@@ -124,12 +122,11 @@
 (condition-case err
 	(progn
 		(global-company-mode 1)
-		(setq-default company-dabbrev-ignore-case nil)
-		(setq-default company-dabbrev-downcase nil)
+		(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
+		(setq-default company-dabbrev-ignore-case 'keep-prefix)
 		(setq-default company-idle-delay nil)
 		(setq-default company-backends
-			'(company-capf company-files
-				 (company-dabbrev-code company-dabbrev company-keywords company-ispell))))
+			'(company-capf company-files company-ispell company-dabbrev)))
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
@@ -166,6 +163,7 @@
 ;; -- Tree-Sitter configuration
 (condition-case err
 	(progn
+		(require 'tree-sitter-langs)
 		(global-tree-sitter-mode)
 		(add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
 		(apply-tree-sitter-theme))

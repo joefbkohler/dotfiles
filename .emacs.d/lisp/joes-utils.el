@@ -29,7 +29,7 @@
 	(switch-to-buffer (get-buffer-create "*scratch*"))
 	(lisp-interaction-mode))
 
-(defun my-buffer-indentation ()
+(defun my-buffer-indentation-offset ()
 	(save-excursion
 		(if (search-forward-regexp "^\t+[^[:blank:]]" nil t)
 			(current-indentation)
@@ -48,7 +48,8 @@
 				   nil t))
 			  (words
 				  (string-join (cl-mapcar
-								   (lambda (word) (replace-regexp-in-string "\/.+" "" word))
+								   (lambda (word)
+									   (replace-regexp-in-string "\/.+" "" word))
 								   (sort
 									   (split-string
 										   (shell-command-to-string
@@ -115,49 +116,27 @@
 					  (eq initial-indentation (current-indentation)))
 				(if (and (featurep 'counsel)
 						(featurep 'company))
-					(progn
-						(when (cl-some (lambda (func)
-										   (funcall func))
-								  company-capf-prefix-functions)
-							(company-other-backend))
-						(counsel-company))
+						(counsel-company)
 					(completion-at-point))))))
 
-(defun vc-dir-delete-marked-files ()
-	"Delete all marked files in a `vc-dir' buffer."
-	(interactive)
-	(let ((files (vc-dir-marked-files)))
-		(if (not files)
-			(message "No marked files.")
-			(when (yes-or-no-p (format "%s %d marked file(s)? "
-								   (if delete-by-moving-to-trash "Trash" "Delete")
-								   (length files)))
-				(unwind-protect
-					(mapcar
-						(lambda (path)
-							(if (and (file-directory-p path)
-									(not (file-symlink-p path)))
-								(when (or (not (directory-files
-												   path nil directory-files-no-dot-files-regexp))
-										  (y-or-n-p
-											  (format "Directory `%s' is not empty, really %s? "
-												  path (if delete-by-moving-to-trash
-														   "trash" "delete"))))
-									(delete-directory path t t))
-								(delete-file path t)))
-						files)
-					(revert-buffer))))))
+(defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
+	(when (or
+			  (not (eq command 'prefix))
+			  (not (seq-some (lambda (func)
+								 (not (funcall func)))
+					   company-capf-prefix-functions)))
+		(funcall orig-fun command arg _args)))
 
 (defun my-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix."
-	(when (or
+	(unless (or
 			  (nth 3 (syntax-ppss))
 			  (nth 4 (syntax-ppss)))
 		t))
 
 (defun my-tree-sitter-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
-	(when
+	(unless
 		(save-excursion
 			(ignore-errors (backward-char))
 			(let* ((cursor (tsc-make-cursor (tree-sitter-node-at-point)))
@@ -174,16 +153,14 @@
 (defun my-latex-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
 	(let ((start-point (point)))
-		(not
-			(or
-				(save-excursion
-					(and
-						(search-backward "\\" nil t 1)
-						(not (re-search-forward "}" start-point t 1))
-						(or
-							(search-forward "{" start-point t 1)
-							(not (re-search-forward "[^\\]\\b"
-									 (- start-point 1) t 1)))))))))
+		(save-excursion
+			(and
+				(search-backward "\\" nil t 1)
+				(not (re-search-forward "}" start-point t 1))
+				(or
+					(search-forward "{" start-point t 1)
+					(not (re-search-forward "[^\\]\\b"
+							 (- start-point 1) t 1)))))))
 
 (defun toggle-window-split ()
 	(interactive)
