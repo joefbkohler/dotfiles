@@ -20,7 +20,9 @@
 
 (defun my-prog-mode-hook ()
 	;; Look for a tab indentation, if found, set indent-tabs-mode
-	(setq indent-tabs-mode (when (not (string-match "^\s+[^[:blank:]]" (buffer-string))) t))
+	(setq indent-tabs-mode (when (not (string-match
+										  "^\s+[^[:blank:]]"
+										  (buffer-substring-no-properties 1 (point-max)))) t))
 	(flymake-mode 1)
 	;; use display-line-number-mode instead of linum
 	;; when over 5000 lines for performance reasons.
@@ -57,7 +59,7 @@
 (defun my-python-mode-hook ()
 	(highlight-indent-guides-mode t)
 	(pyvenv-mode t)
-	(push 'indent-or-complete python-indent-trigger-commands)
+	(set-python-keybindings)
 	(lsp))
 
 (defun my-lsp-hook ()
@@ -68,7 +70,10 @@
 	(require 'tree-sitter-indent)
 	(add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix t)
 	(tree-sitter-hl-mode)
-	(ignore-errors (tree-sitter-indent-mode)))
+	(when (boundp
+			  (intern (format "tree-sitter-indent-%s-scopes"
+						  (replace-regexp-in-string (rx "-mode") "" (symbol-name major-mode)))))
+		(tree-sitter-indent-mode)))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
@@ -80,7 +85,8 @@
 		[(variable_declarator (identifier) @variable.parameter)])
 
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
-	(whitespace-mode 1))
+	(whitespace-mode 1)
+	(eldoc-mode -1))
 
 (provide 'hooks)
 ;;; hooks.el ends here

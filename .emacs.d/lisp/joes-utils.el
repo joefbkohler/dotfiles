@@ -110,7 +110,7 @@
 		(indent-for-tab-command)
 		(let ((initial-indentation (current-indentation))
 				 (initial-position (point)))
-			(indent-according-to-mode)
+			(indent-for-tab-command)
 			(when (and
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))

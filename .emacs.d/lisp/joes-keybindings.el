@@ -50,6 +50,11 @@
 	(global-set-key [remap isearch-forward] 'isearch-forward-regexp)
 	(global-set-key [remap isearch-backward] 'isearch-backward-regexp))
 
+(defun set-python-keybindings()
+	(local-set-key (kbd "C-.") (lambda () (interactive)
+								   (python-indent-line)))
+	(local-set-key (kbd "C-,") 'python-indent-shift-left))
+
 (defun set-ivy-keybindings()
 	(global-set-key (kbd "M-x") 'counsel-M-x)
 	(global-set-key [remap describe-function] 'counsel-describe-function)
