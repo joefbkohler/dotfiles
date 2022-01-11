@@ -19,7 +19,7 @@
 (require 'joes-utils)
 (require 'joes-theme)
 (require 'joes-keybindings)
-(require 'hooks)
+(require 'joes-hooks)
 
 ;; -- Package (Straight)configuration
 (require 'joes-packages-manager)

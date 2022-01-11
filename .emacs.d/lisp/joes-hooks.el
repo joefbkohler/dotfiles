@@ -89,5 +89,5 @@
 	(whitespace-mode 1)
 	(eldoc-mode -1))
 
-(provide 'hooks)
+(provide 'joes-hooks)
 ;;; hooks.el ends here
