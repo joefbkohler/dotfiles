@@ -7,7 +7,8 @@
 	"My little functions"
 	:group 'convenience)
 
-(defcustom project-file-extensions
+(defcustom
+	project-file-extensions
 	'("cs" "py" "c" "cpp")
 	"File extensions that can be used by find-project function."
 	:type 'list)
@@ -16,6 +17,10 @@
 	"List of functions that return t if current position should skip `company-capf'."
 	:type 'list)
 (make-variable-buffer-local 'company-capf-prefix-functions)
+
+(defcustom wsl-remote-path "\\\\wsl$\\Arch"
+	"Path to wsl remote folder from Windows"
+	:type 'string)
 
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
@@ -162,22 +167,42 @@
 					(not (re-search-forward "[^\\]\\b"
 							 (- start-point 1) t 1)))))))
 
-(defun my-csproj-fix-windows-path()
+(defun my-create-links-creator-bat-file()
 	(interactive)
-	(let ((root-path (read-directory-name "Project root: " "~/")))
+	(let* ((project-path (read-directory-name "Project root: " "~/")))
+		(with-current-buffer
+			(find-file-noselect (concat project-path "createlinks.bat"))
+			(dolist (original-file-path (directory-files project-path t))
+				(when (and (not (string= (substring (file-name-nondirectory original-file-path) 0 1) ".")))
+					(let ((file-windows-path
+							  (concat wsl-remote-path
+								  (replace-regexp-in-string "/" "\\\\" original-file-path))))
+						(insert (concat "mklink" (when (car (file-attributes original-file-path)) " /d") " \""
+									(file-name-nondirectory original-file-path)
+									"\" \""
+									file-windows-path "\" \n")))))
+			(save-buffer)
+			(kill-current-buffer))))
+
+(defun my-lsp-csproj-fix-windows-path ()
+	(interactive)
+	(let ((root-path (lsp-workspace-root))
+			 (perm-excluded recentf-exclude))
 		(save-excursion
 			(dolist (file (directory-files root-path t ".*\.csproj"))
 				(progn
 					(find-file file)
 					(while (search-forward "c:" nil t)
 						(replace-match "/mnt/c" t t))
-				(goto-char 0)
-				(while (search-forward "\\" nil t)
-							(replace-match "/")))
+					(goto-char 0)
+					(while (search-forward "\\" nil t)
+						(replace-match "/")))
 				(save-buffer)
-				(kill-current-buffer)))))
-
-
+				(kill-current-buffer)))
+		(add-to-list 'recentf-exclude ".*csproj")
+		(add-to-list 'recentf-exclude ".*sln")
+		(recentf-cleanup)
+		(setq recentf-exclude perm-excluded)))
 
 (defun toggle-window-split ()
 	(interactive)
