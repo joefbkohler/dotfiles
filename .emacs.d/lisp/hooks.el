@@ -79,6 +79,7 @@
 	(require 'whitespace)
 	(require 'tree-sitter-langs)
 	(csharp-tree-sitter-mode)
+	(setenv "FrameworkPathOverride" "/usr/lib/mono")
 	(lsp)
 
 	(tree-sitter-hl-add-patterns 'c-sharp
