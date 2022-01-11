@@ -162,6 +162,23 @@
 					(not (re-search-forward "[^\\]\\b"
 							 (- start-point 1) t 1)))))))
 
+(defun my-csproj-fix-windows-path()
+	(interactive)
+	(let ((root-path (read-directory-name "Project root: " "~/")))
+		(save-excursion
+			(dolist (file (directory-files root-path t ".*\.csproj"))
+				(progn
+					(find-file file)
+					(while (search-forward "c:" nil t)
+						(replace-match "/mnt/c" t t))
+				(goto-char 0)
+				(while (search-forward "\\" nil t)
+							(replace-match "/")))
+				(save-buffer)
+				(kill-current-buffer)))))
+
+
+
 (defun toggle-window-split ()
 	(interactive)
 	(if (= (count-windows) 2)
