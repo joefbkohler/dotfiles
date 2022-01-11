@@ -1,6 +1,14 @@
 (require 'joes-utils)
 (require 'joes-keybindings)
 
+(defgroup joe nil
+	"My little hooks"
+	:group 'convenience)
+
+(defcustom framework-path-override "/usr/lib/mono"
+	"Path to .NETFramework"
+	:type 'string)
+
 (defun my-exwm-hook(switch)
 	(require 'exwm)
 	(require 'exwm-config)
@@ -79,7 +87,7 @@
 	(require 'whitespace)
 	(require 'tree-sitter-langs)
 	(csharp-tree-sitter-mode)
-	(setenv "FrameworkPathOverride" "/usr/lib/mono")
+	(setenv "FrameworkPathOverride" framework-path-override)
 	(lsp)
 
 	(tree-sitter-hl-add-patterns 'c-sharp
