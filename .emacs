@@ -61,6 +61,7 @@
 
 ;; Local envinronment configuration
 (ignore-errors (load-file "~/.emacs-local"))
+(setq recentf-save-file "~/.emacs-recentf")
 
 ;; Minor modes globally unloaded
 (menu-bar-mode 0)
