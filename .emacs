@@ -163,7 +163,10 @@
 		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
 		(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
 
-		(apply-ivy-theme)
+		(defadvice completion-at-point (around my-complete act)
+	        (counsel-company))
+
+        (apply-ivy-theme)
 		(set-ivy-keybindings))
 	(error
 		(ido-everywhere 1)
