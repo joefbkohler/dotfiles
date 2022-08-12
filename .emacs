@@ -133,7 +133,8 @@
 	(progn
 		(global-company-mode 1)
 		(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
-		(setq-default company-dabbrev-ignore-case 'keep-prefix)
+		(setq-default company-dabbrev-ignore-case nil)
+        (setq-default company-dabbrev-downcase nil)
 		(setq-default company-idle-delay nil)
 		(setq-default company-backends
 			'(company-capf company-files company-ispell company-dabbrev)))
