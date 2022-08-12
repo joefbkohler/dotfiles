@@ -32,12 +32,7 @@
 										  "^\s+[^[:blank:]]"
 										  (buffer-substring-no-properties 1 (point-max)))) t))
 	(flymake-mode 1)
-	;; use display-line-number-mode instead of linum
-	;; when over 5000 lines for performance reasons.
-	(if (< (count-lines (point-min) (point-max))
-			  5000)
-		(linum-mode 1)
-		(display-line-numbers-mode 1))
+	(display-line-numbers-mode 1)
 	(setq tab-width 4))
 
 (defun my-vc-dir-mode-hook()
