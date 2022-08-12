@@ -50,6 +50,9 @@
 	(global-set-key [remap isearch-forward] 'isearch-forward-regexp)
 	(global-set-key [remap isearch-backward] 'isearch-backward-regexp))
 
+(defun set-git-commit-keybindings()
+	(local-set-key (kbd "<tab>") 'completion-at-point))
+
 (defun set-python-keybindings()
 	(local-set-key (kbd "C-.") (lambda () (interactive)
 								   (python-indent-line)))
