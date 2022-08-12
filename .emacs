@@ -88,11 +88,8 @@
 (add-to-list 'auto-mode-alist '("\\.pdf$" . pdf-tools-install))
 (add-hook 'csharp-mode-hook 'my-csharp-mode-hook)
 (add-hook 'ediff-mode-hook 'my-ediff-mode-hook)
-(add-hook 'vc-dir-mode-hook 'my-vc-dir-mode-hook)
-(add-hook 'typescript-mode-hook 'my-typescript-mode-hook)
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (add-hook 'latex-mode-hook 'my-latex-mode-hook)
-(add-hook 'go-mode-hook 'my-go-mode-hook)
 (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
 
 ;; -- External packages configuration and modes

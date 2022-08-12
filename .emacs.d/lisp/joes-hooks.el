@@ -35,10 +35,6 @@
 	(display-line-numbers-mode 1)
 	(setq tab-width 4))
 
-(defun my-vc-dir-mode-hook()
-	(local-set-key (kbd "k") 'vc-dir-delete-marked-files)
-	(local-set-key (kbd "r") 'vc-revert))
-
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
 	(setq-local company-capf-prefix-functions '(my-latex-company-capf-prefix))
@@ -48,16 +44,6 @@
 
 (defun my-save-hook ()
 	(delete-trailing-whitespace 0))
-
-(defun my-go-mode-hook ()
-	(lsp)
-	(setq indent-tabs-mode nil))
-
-(defun my-typescript-mode-hook ()
-	(require 'tide)
-	(tide-setup)
-	(tide-hl-identifier-mode 1)
-	(eldoc-mode 1))
 
 (defun my-python-mode-hook ()
 	(highlight-indent-guides-mode t)
