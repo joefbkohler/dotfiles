@@ -118,6 +118,7 @@
 (condition-case err
 	(require 'magit)
     (magit-auto-revert-mode -1)
+    (add-hook 'git-commit-mode-hook 'my-git-commit-mode-hook)
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
