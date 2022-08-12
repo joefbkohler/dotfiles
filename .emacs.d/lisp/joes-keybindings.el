@@ -77,7 +77,8 @@
 	(local-set-key (kbd "C-c C-t") 'lsp-ivy-workspace-symbol)
 	(local-set-key (kbd "C-c C-r") 'lsp-find-references)
 	(local-set-key (kbd "C-c C-i") 'lsp-find-implementation)
-	(local-set-key (kbd "C-c C-d") 'lsp-find-declaration))
+	(local-set-key (kbd "C-c C-d") 'lsp-find-declaration)
+	(local-set-key (kbd "C-c C-a") 'lsp-execute-code-action))
 
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here
