@@ -81,5 +81,8 @@
 	(whitespace-mode 1)
 	(eldoc-mode -1))
 
+(defun my-git-commit-mode-hook ()
+	(set-git-commit-keybindings))
+
 (provide 'joes-hooks)
 ;;; hooks.el ends here
