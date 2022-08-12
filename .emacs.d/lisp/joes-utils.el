@@ -119,10 +119,7 @@
 			(when (and
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))
-				(if (and (featurep 'counsel)
-						(featurep 'company))
-						(counsel-company)
-					(completion-at-point))))))
+				(completion-at-point)))))
 
 (defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
 	(when (or
