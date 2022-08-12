@@ -26,8 +26,8 @@
 (my-straight-initialize)
 (setq-default package-enable-at-startup nil)
 (setq-default straight-vc-git-default-protocol 'ssh)
-(my-register-fork-packages)
 (my-install-default-packages)
+(my-register-fork-packages)
 ;;; Finished package configuration
 
 ;; -- Keybindings
