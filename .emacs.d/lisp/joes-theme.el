@@ -32,7 +32,7 @@
 		:background "#181818"
 		:foreground "#D6D0BC"
 		:height 180
-		:font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+		:font "Iosevka Fixed")
 	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 	(set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
@@ -41,7 +41,9 @@
 	(set-face-attribute 'font-lock-keyword-face nil :foreground "#AA6" :weight 'bold)
 	(set-face-attribute 'font-lock-constant-face nil :inherit 'font-lock-keyword-face :foreground "#C66")
 	(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
-	(set-face-attribute 'font-lock-string-face nil :italic t)
+	(set-face-attribute 'font-lock-string-face nil
+		:font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+		:italic t)
 	(set-face-attribute 'font-lock-type-face nil :foreground "#6292A8")
 
 	(set-face-attribute 'linum nil :foreground "#777" :height (face-attribute 'default :height))
