@@ -26,8 +26,8 @@
 (my-straight-initialize)
 (setq-default package-enable-at-startup nil)
 (setq-default straight-vc-git-default-protocol 'ssh)
-(my-install-default-packages)
 (my-register-fork-packages)
+(my-install-default-packages)
 ;;; Finished package configuration
 
 ;; -- Keybindings
@@ -99,19 +99,28 @@
 
 (defvar-local initialization-errors "")
 
+;; -- DAP
+(condition-case err
+	(progn
+	    (require 'dap-mode)
+        (setq-default dap-auto-show-output nil))
+    (error
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+
 ;; -- LSP
 (condition-case err
 	(progn
-		(setq-default lsp-signature-auto-activate nil)
 		(setq-default lsp-enable-file-watchers nil)
-		(setq-default lsp-enable-indentation nil)
+        (setq-default lsp-enable-indentation nil)
+		(setq-default lsp-diagnostic-clean-after-change t)
 		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
 ;; -- Magit
 (condition-case err
-	(magit-auto-revert-mode -1)
+	(require 'magit)
+    (magit-auto-revert-mode -1)
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 

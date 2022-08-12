@@ -10,7 +10,8 @@
 	"Install permanent packages."
 	(straight-use-package 'ivy-xref)
 	(straight-use-package 'tree-sitter)
-	(straight-use-package 'go-mode)
+	(straight-use-package 'tree-sitter-langs)
+    (straight-use-package 'tree-sitter-indent)
 	(straight-use-package 'lsp-ivy)
 	(straight-use-package 'counsel)
 	(straight-use-package 'ivy-prescient)
@@ -19,14 +20,12 @@
 	(straight-use-package 'yasnippet)
 	(straight-use-package 'pdf-tools)
 	(straight-use-package 'lsp-latex)
-	(straight-use-package 'vue-mode)
 	(straight-use-package 'jedi)
 	(straight-use-package 'highlight-indent-guides)
 	(straight-use-package 'pyvenv)
 	(straight-use-package 'yaml-mode)
 	(straight-use-package 'json-mode)
 	(straight-use-package 'dockerfile-mode)
-	(straight-use-package 'typescript-mode)
 	(straight-use-package 'lsp-mode)
 	(straight-use-package 'jupyter)
 	(straight-use-package 'gnu-elpa-keyring-update)
@@ -37,7 +36,9 @@
 	(straight-use-package 'zenburn-theme)
 	(straight-use-package 'logview)
 	(straight-use-package 'csharp-mode)
-	(straight-use-package 'company-mode))
+	(straight-use-package 'company-mode)
+    (straight-use-package 'scad-mode)
+    (straight-use-package 'dap-mode))
 
 (defun my-straight-initialize ()
 	"Initialize straight.el."
@@ -54,11 +55,10 @@
 		(load bootstrap-file nil 'nomessage)))
 
 (defun my-register-fork-packages()
-    "Register my forks so correct packages are installer."
-    (straight-register-package
-        '(swiper :fork "joefbsjr/swiper"))
-    (straight-register-package
-        '(csharp-mode :fork "joefbsjr/csharp-mode")))
+    "Register my forks so correct packages are installed."
+    (straight-override-recipe
+      '(swiper :fork "joefbsjr/swiper" :branch "fix-counsel-company"))
+    )
 
 (provide 'joes-packages-manager)
 ;;; joes-packages-manager.el ends here
