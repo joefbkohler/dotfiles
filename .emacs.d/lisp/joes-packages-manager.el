@@ -38,7 +38,15 @@
 	(straight-use-package 'csharp-mode)
 	(straight-use-package 'company-mode)
     (straight-use-package 'scad-mode)
-    (straight-use-package 'dap-mode))
+    (straight-use-package 'dap-mode)
+    (straight-use-package
+        '(ligature.el :host github :repo "mickeynp/ligature.el")))
+
+(defun my-register-fork-packages()
+    "Register my forks so correct packages are installed."
+    (straight-register-package
+        '(swiper :fork "joefbsjr/swiper" :branch "fix-counsel-company"))
+    )
 
 (defun my-straight-initialize ()
 	"Initialize straight.el."
@@ -53,12 +61,6 @@
 				(goto-char (point-max))
 				(eval-print-last-sexp)))
 		(load bootstrap-file nil 'nomessage)))
-
-(defun my-register-fork-packages()
-    "Register my forks so correct packages are installed."
-    (straight-override-recipe
-      '(swiper :fork "joefbsjr/swiper" :branch "fix-counsel-company"))
-    )
 
 (provide 'joes-packages-manager)
 ;;; joes-packages-manager.el ends here
