@@ -33,7 +33,9 @@
 										  (buffer-substring-no-properties 1 (point-max)))) t))
 	(flymake-mode 1)
 	(display-line-numbers-mode 1)
-	(setq tab-width 4))
+	(setq tab-width 4)
+	(setq-local company-dabbrev-ignore-case nil)
+    (setq-local company-dabbrev-downcase nil))
 
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
@@ -82,6 +84,8 @@
 	(eldoc-mode -1))
 
 (defun my-git-commit-mode-hook ()
+	(setq-local company-dabbrev-ignore-case nil)
+    (setq-local company-dabbrev-downcase nil)
 	(set-git-commit-keybindings))
 
 (provide 'joes-hooks)
