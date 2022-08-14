@@ -59,7 +59,7 @@ unsetopt ALL_EXPORT
 # # aliases
 # # --------------------------------------------------------------------
 
-alias ls='ls -G'
+alias ls='ls -G --color'
 
 autoload -U compinit
 compinit
