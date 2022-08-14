@@ -32,7 +32,7 @@
 		:background "#181818"
 		:foreground "#D6D0BC"
 		:height 180
-		:font "Iosevka Fixed")
+		:font "Iosevka")
 	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 	(set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
