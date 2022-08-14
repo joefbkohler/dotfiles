@@ -183,6 +183,27 @@
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
+;; -- Ligations
+(condition-case err
+    (progn
+        (require 'ligature)
+        (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+												":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+												"!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+												"<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+												"<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+												"..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+												"~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+												"[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+												">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+												"<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+												"##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+												"?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+												"\\\\" "://"))
+        (global-ligature-mode))
+    (error
+		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+
 
 (when (not (= (length initialization-errors) 0))
 	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
