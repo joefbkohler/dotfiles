@@ -22,6 +22,10 @@
 	"Path to wsl remote folder from Windows"
 	:type 'string)
 
+(defcustom dap-path-mapping '()
+	"List of key-values of path mapping for project source from dap."
+	:type 'alist)
+
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
 	(unless time (setq time 0.1))
