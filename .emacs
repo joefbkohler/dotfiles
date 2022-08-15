@@ -1,12 +1,11 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
+;;; Modeline
 ;;; counsel-flymake
 ;;; counsel-rgrep
-;;; Modeline
 ;;; Add a sane initialization to tree-sitter-indent
 ;;; Fix damn temp/backup files!
-;;; Try to fix lsp Ivy workspace Symbol
 
 ;;; Code:
 
@@ -50,8 +49,6 @@
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
 (setq-default ispell-complete-word-dict "/home/joe/.emacs.d/dict/words")
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
-(setq-default linum-delay 0.1)
-(setq-default linum-format 'linum-format-function)
 (put 'narrow-to-region 'disabled nil)
 (apply-flymake-theme)
 

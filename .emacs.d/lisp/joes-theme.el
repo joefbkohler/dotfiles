@@ -145,15 +145,5 @@
 			(documentation-property
 				(car (read-from-string variable-name)) 'variable-documentation))))
 
-(defun linum-format-function (num)
-	(let* ((columns
-			   (string-width
-				   (concat "  " (pp-to-string (count-lines (point-min) (point-max))))))
-			  (num-str (pp-to-string num))
-			  (num-width (string-width num-str))
-			  (left-space-width (- columns num-width 1)))
-		(propertize
-			(concat (make-string left-space-width ? )  num-str " ")	'face 'linum)))
-
 (provide 'joes-theme)
 ;;; joes-theme.el ends here
