@@ -100,7 +100,11 @@
 (condition-case err
 	(progn
 	    (require 'dap-mode)
-        (setq-default dap-auto-show-output nil))
+        (setq-default dap-auto-show-output nil)
+        (defadvice dap--get-path-for-frame (before my-get-path-for-frame-advice act)
+	        (let* ((source (gethash "source" stack-frame))
+			          (path (gethash "path" source)))
+		        (puthash "path" (my-multi-replace-regexp-in-string dap-path-mapping path) source))))
     (error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
