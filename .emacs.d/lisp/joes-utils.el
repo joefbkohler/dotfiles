@@ -181,6 +181,14 @@
 			(save-buffer)
 			(kill-current-buffer))))
 
+(defun my-multi-replace-regexp-in-string (replace-pairs string)
+	"Replace in STRING all keys by the values in REPLACE-PAIRS."
+	(seq-reduce
+		(lambda (string replace-pair)
+			(replace-regexp-in-string (car replace-pair) (cdr replace-pair) string))
+		replace-pairs
+		string))
+
 (defun my-lsp-csproj-fix-windows-path ()
 	(interactive)
 	(let ((root-path (lsp-workspace-root))
