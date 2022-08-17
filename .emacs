@@ -101,6 +101,8 @@
 	(progn
 	    (require 'dap-mode)
         (setq-default dap-auto-show-output nil)
+        ;; Add advice so that dap will use regex to fix source
+        ;; path using regex rules in `my-multi-replace-regexp-in-string'
         (defadvice dap--get-path-for-frame (before my-get-path-for-frame-advice act)
 	        (let* ((source (gethash "source" stack-frame))
 			          (path (gethash "path" source)))
