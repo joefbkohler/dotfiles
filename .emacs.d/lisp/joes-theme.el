@@ -16,6 +16,9 @@
 	"Column where the documentation should show in `counsel'."
 	:type 'integer)
 
+(defface documents-face '((t :font "Iosevka Etoile"))
+	 "Face for text documents.")
+
 (defun apply-flymake-theme()
 	(require 'flymake)
 	(set-face-attribute 'flymake-error nil :underline '(:color "#F00" :style wave))
@@ -89,6 +92,9 @@
 	(add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 	(add-to-list 'default-frame-alist '(cursor-color . "#cca")))
 
+(defun apply-lsp-theme()
+	(setq-default lsp-modeline-code-action-fallback-icon "☼"))
+
 ;; Ivy prettify ;)
 (defun ivy-switch-buffer-mode-path-transformer (buffer-name)
 	"Transformer for `ivy-switch-buffer' that add major mode and path for BUFFER-NAME."
@@ -144,6 +150,24 @@
 		(concat ""
 			(documentation-property
 				(car (read-from-string variable-name)) 'variable-documentation))))
+
+(defun ligature-default-ligatures ()
+	"Set list of ligatures for each mode."
+	(ligature-set-ligatures
+		'prog-mode
+		'("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+			 ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+			 "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+			 "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+			 "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+			 "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+			 "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+			 "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+			 ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+			 "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+			 "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+			 "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+			 "\\\\" "://")))
 
 (provide 'joes-theme)
 ;;; joes-theme.el ends here
