@@ -68,6 +68,7 @@
 
 ;; Global hooks
 (add-hook 'prog-mode-hook 'my-prog-mode-hook 10)
+(add-hook 'text-mode-hook 'my-text-mode-hook 10)
 (add-hook 'before-save-hook 'my-save-hook)
 
 ;; Default minor modes globally pre-loaded

@@ -38,7 +38,7 @@
     (setq-local company-dabbrev-downcase nil))
 
 (defun my-text-mode-hook ()
-    (buffer-face-set 'documents-face))
+    (buffer-face-mode))
 
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
