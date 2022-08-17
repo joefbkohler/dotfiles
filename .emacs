@@ -113,7 +113,8 @@
 		(setq-default lsp-enable-file-watchers nil)
         (setq-default lsp-enable-indentation nil)
 		(setq-default lsp-diagnostic-clean-after-change t)
-		(add-hook 'lsp-after-open-hook 'my-lsp-hook))
+		(apply-lsp-theme)
+        (add-hook 'lsp-after-open-hook 'my-lsp-hook))
 	(error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
