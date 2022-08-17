@@ -37,6 +37,9 @@
 	(setq-local company-dabbrev-ignore-case nil)
     (setq-local company-dabbrev-downcase nil))
 
+(defun my-text-mode-hook ()
+    (buffer-face-set 'documents-face))
+
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
 	(setq-local company-capf-prefix-functions '(my-latex-company-capf-prefix))

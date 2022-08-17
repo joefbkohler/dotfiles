@@ -51,6 +51,7 @@
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
 (put 'narrow-to-region 'disabled nil)
 (apply-flymake-theme)
+(apply-default-theme-faces)
 
 ;; Backup configuration
 (setq backup-directory-alist `((".*" . "~/backups")))

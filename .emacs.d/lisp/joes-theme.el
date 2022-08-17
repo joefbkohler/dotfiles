@@ -28,14 +28,21 @@
 	(setq-default flymake-warning-bitmap '(right-triangle compilation-warning))
 	(setq-default flymake-error-bitmap '(flymake-double-exclamation-mark compilation-error)))
 
+(defun apply-default-theme-faces ()
+	(setq-default buffer-face-mode-face 'documents-face)
+	(set-face-attribute 'default nil
+		:height 180
+		:font "Iosevka")
+	(set-face-attribute 'font-lock-string-face nil
+		:font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+		:italic t))
+
 (defun apply-zenburn-theme()
 	(require 'linum)
 	(load-theme 'zenburn t)
 	(set-face-attribute 'default nil
 		:background "#181818"
-		:foreground "#D6D0BC"
-		:height 180
-		:font "Iosevka")
+		:foreground "#D6D0BC")
 	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 	(set-face-attribute 'region nil :foreground 'unspecified :background "#334")
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
