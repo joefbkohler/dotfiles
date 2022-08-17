@@ -48,7 +48,7 @@
 (setq-default visible-bell nil)
 (setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 (setq-default project-file-extensions (delete-dups (append project-file-extensions '("cs" "go" "py" "tex"))))
-(setq-default ispell-complete-word-dict "/home/joe/.emacs.d/dict/words")
+(setq-default ispell-complete-word-dict (file-truename "~/.words"))
 (setq-default elisp-flymake-byte-compile-load-path (append elisp-flymake-byte-compile-load-path load-path))
 (put 'narrow-to-region 'disabled nil)
 (apply-flymake-theme)
