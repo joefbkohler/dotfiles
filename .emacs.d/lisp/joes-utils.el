@@ -46,29 +46,57 @@
 				(current-indentation)
 				tab-width))))
 
+(defun ispell-aspell-words (dict)
+	"Return all words of an aspell DICT."
+	(string-join
+		(cl-mapcar
+			(lambda (word)
+				(replace-regexp-in-string "\/.+" "" word))
+			(sort
+				(split-string
+					(shell-command-to-string
+						(concat
+							ispell-program-name
+							" dump master "
+							dict)))
+				'string-lessp))
+		"\n"))
+
+(defun ispell-hunspell-words (dict)
+	(let ((dict-path
+			  (car (seq-filter
+					   (lambda (path) (string-equal dict (file-name-nondirectory path)))
+					   (split-string (shell-command-to-string "hunspell -D"))))))
+		(shell-command-to-string (concat "unmunch " dict-path ".dic " dict-path ".aff"))))
+
+
+(defun ispell-words (dict)
+	(if ispell-really-aspell
+		(ispell-aspell-words new-dict)
+		(if ispell-really-hunspell
+			(ispell-hunspell-words new-dict)
+			"")))
+
+(defun ispell-available-dicts ()
+	"If hunspell in use, return only found dicts."
+	(if ispell-really-hunspell
+		(seq-filter (lambda (dict)
+						(string-match-p (regexp-quote dict)
+							(shell-command-to-string "hunspell -D")))
+			(ispell-valid-dictionary-list))
+		(ispell-valid-dictionary-list)))
+
 (defun ispell-change-dictionary-and-words ()
 	"Switch Ispell dictionary and create words file."
 	(interactive)
 	(let* ((new-dict
 			   (completing-read
 				   "Use new dictionary: "
-				   (and (fboundp 'ispell-valid-dictionary-list)
-					   (mapcar #'list (ispell-valid-dictionary-list)))
+				   (mapcar #'list (ispell-available-dicts))
 				   nil t))
 			  (words
-				  (string-join (cl-mapcar
-								   (lambda (word)
-									   (replace-regexp-in-string "\/.+" "" word))
-								   (sort
-									   (split-string
-										   (shell-command-to-string
-											   (concat
-												   ispell-program-name
-												   " dump master "
-												   new-dict)))
-									   'string-lessp))
-					  "\n")))
-		(ispell-change-dictionary new-dict)
+ 				  (ispell-words new-dict))
+			  (ispell-change-dictionary new-dict))
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
 			(erase-buffer)
