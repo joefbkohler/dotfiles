@@ -14,6 +14,7 @@
 ;; Path
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (add-to-list 'exec-path "/usr/local/bin")
+(native-compile-async load-path)
 
 (require 'joes-utils)
 (require 'joes-theme)
