@@ -7,8 +7,7 @@
 	"My little functions"
 	:group 'convenience)
 
-(defcustom
-	project-file-extensions
+(defcustom project-file-extensions
 	'("cs" "py" "c" "cpp")
 	"File extensions that can be used by find-project function."
 	:type 'list)
@@ -22,8 +21,12 @@
 	"Path to wsl remote folder from Windows"
 	:type 'string)
 
-(defcustom dap-path-mapping '()
-	"List of key-values of path mapping for project source from dap."
+(defcustom wsl-mount-points '(("c:" . "/mnt/c"))
+	"WSL mount points for windows drives."
+	:type 'alist)
+
+(defcustom wsl-project-path-mapping '()
+	"List of key-values of path mapping for project source from wsl to windows."
 	:type 'alist)
 
 (defun blink-minibuffer (&optional time)
@@ -54,11 +57,7 @@
 				(replace-regexp-in-string "\/.+" "" word))
 			(sort
 				(split-string
-					(shell-command-to-string
-						(concat
-							ispell-program-name
-							" dump master "
-							dict)))
+					(shell-command-to-string (concat ispell-program-name " dump master " dict)))
 				'string-lessp))
 		"\n"))
 
@@ -217,11 +216,21 @@
 	"Replace in STRING all keys by the values in REPLACE-PAIRS."
 	(seq-reduce
 		(lambda (string replace-pair)
-			(replace-regexp-in-string (car replace-pair) (cdr replace-pair) string))
+			(replace-regexp-in-string (car (concat replace-pair "+")) (cdr replace-pair) string))
 		replace-pairs
 		string))
 
-(defun my-lsp-csproj-fix-windows-path ()
+(defun my-lsp-csproj-copy-windows-files ()
+	"Copy all .csproj and .sln from Windows mount to project root."
+	(interactive)
+	(let* ((root-path (lsp-workspace-root))
+			  (windows-path (car (rassoc root-path wsl-project-path-mapping))))
+		(dolist (file (directory-files windows-path t ".*\.csproj$"))
+			(copy-file file (concat root-path "/" (file-name-nondirectory file)) t))
+		(dolist (file (directory-files windows-path t ".*\.sln$"))
+			(copy-file file (concat root-path "/" (file-name-nondirectory file)) t))))
+
+(defun my-lsp-csproj-fix-windows-wsl-path ()
 	(interactive)
 	(let ((root-path (lsp-workspace-root))
 			 (perm-excluded recentf-exclude))
@@ -229,17 +238,41 @@
 			(dolist (file (directory-files root-path t ".*\.csproj"))
 				(progn
 					(find-file file)
-					(while (search-forward "c:" nil t)
-						(replace-match "/mnt/c" t t))
-					(goto-char 0)
+					(dolist (mount wsl-mount-points)
+						(while (search-forward (car mount) nil t)
+							(replace-match (cdr mount) t t))
+						(goto-char 0))
 					(while (search-forward "\\" nil t)
 						(replace-match "/")))
 				(save-buffer)
-				(kill-current-buffer)))
-		(add-to-list 'recentf-exclude ".*csproj")
-		(add-to-list 'recentf-exclude ".*sln")
+				(kill-current-buffer)
+				(add-to-list 'recentf-exclude file)))
 		(recentf-cleanup)
 		(setq recentf-exclude perm-excluded)))
+
+(defun my-lsp-update-csproj ()
+	(interactive)
+	(my-lsp-csproj-copy-windows-files)
+	(my-lsp-csproj-fix-windows-wsl-path)
+	(lsp-workspace-restart))
+
+(defun my-get-path-for-frame-advice (debug-session stack-frame)
+	"Add advice so that dap will use regex to fix source path.
+Path of STACK-FRAME in a DEBUG-SESSION.
+Uses regex rules in `my-multi-replace-regexp-in-string.'"
+	(let* ((source (gethash "source" stack-frame))
+			  (path (gethash "path" source))
+              (local-source-path (lsp-workspace-root))
+              (path-map (rassoc local-source-path wsl-project-path-mapping)))
+		(puthash "path" (my-multi-replace-regexp-in-string
+                            (replace-regexp-in-string
+                                (car path-map)
+                                (cdr path-map)
+                                (my-multi-replace-regexp-in-string
+                                    'wsl-mount-points
+                                    (replace-regexp-in-string "\\\\+" "/" path)))
+                            path)
+            source)))
 
 (defun toggle-window-split ()
 	(interactive)
