@@ -1,6 +1,7 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
+;;; ispell words file. Generation and switching.
 ;;; Modeline
 ;;; counsel-flymake
 ;;; counsel-rgrep
@@ -59,7 +60,7 @@
 (setq auto-save-file-name-transforms `((".*" "~/backups" t)))
 
 ;; Local envinronment configuration
-(ignore-errors (load-file "~/.emacs-local"))
+(ignore-errors (load-file "~/.emacs-local.el"))
 (setq recentf-save-file "~/.emacs-recentf")
 
 ;; Minor modes globally unloaded
@@ -101,12 +102,7 @@
 	(progn
 	    (require 'dap-mode)
         (setq-default dap-auto-show-output nil)
-        ;; Add advice so that dap will use regex to fix source
-        ;; path using regex rules in `my-multi-replace-regexp-in-string'
-        (defadvice dap--get-path-for-frame (before my-get-path-for-frame-advice act)
-	        (let* ((source (gethash "source" stack-frame))
-			          (path (gethash "path" source)))
-		        (puthash "path" (my-multi-replace-regexp-in-string dap-path-mapping path) source))))
+        (advice-add 'dap--get-path-for-frame :around 'my-get-path-for-frame-advice))
     (error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 
@@ -219,3 +215,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(warning-suppress-types '((comp))))
+(put 'magit-clean 'disabled nil)
