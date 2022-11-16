@@ -33,7 +33,6 @@ TZ="America/Sao_Paulo"
 HISTFILE=$HOME/.zhistory
 HISTSIZE=1000
 SAVEHIST=1000
-HOSTNAME="`hostname`"
 PAGER='less'
 EDITOR='emacs'
 autoload colors zsh/terminfo
