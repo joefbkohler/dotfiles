@@ -29,6 +29,8 @@
 	"List of key-values of path mapping for project source from wsl to windows."
 	:type 'alist)
 
+(defvar dap-session-project-root '())
+
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
 	(unless time (setq time 0.1))
@@ -51,13 +53,13 @@
 
 (defun ispell-aspell-words (dict)
 	"Return all words of an aspell DICT."
-	(string-join
+    (string-join
 		(cl-mapcar
 			(lambda (word)
 				(replace-regexp-in-string "\/.+" "" word))
-			(sort
-				(split-string
-					(shell-command-to-string (concat ispell-program-name " dump master " dict)))
+			(sort (split-string
+					  (shell-command-to-string
+                          (concat "aspell dump master " (car (split-string dict "-")))))
 				'string-lessp))
 		"\n"))
 
@@ -67,14 +69,6 @@
 					   (lambda (path) (string-equal dict (file-name-nondirectory path)))
 					   (split-string (shell-command-to-string "hunspell -D"))))))
 		(shell-command-to-string (concat "unmunch " dict-path ".dic " dict-path ".aff"))))
-
-
-(defun ispell-words (dict)
-	(if ispell-really-aspell
-		(ispell-aspell-words new-dict)
-		(if ispell-really-hunspell
-			(ispell-hunspell-words new-dict)
-			"")))
 
 (defun ispell-available-dicts ()
 	"If hunspell in use, return only found dicts."
@@ -88,20 +82,23 @@
 (defun ispell-change-dictionary-and-words ()
 	"Switch Ispell dictionary and create words file."
 	(interactive)
-	(let* ((new-dict
-			   (completing-read
-				   "Use new dictionary: "
-				   (mapcar #'list (ispell-available-dicts))
-				   nil t))
+	(let* ((perm-excluded recentf-exclude)
+              (new-dict (completing-read
+				            "Use new dictionary: "
+				            (mapcar #'list (ispell-available-dicts))
+				            nil t))
 			  (words
- 				  (ispell-words new-dict))
+ 				  (ispell-aspell-words new-dict))
 			  (ispell-change-dictionary new-dict))
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
 			(erase-buffer)
 			(insert words)
 			(save-buffer)
-			(kill-buffer))))
+			(kill-buffer))
+        (add-to-list 'recentf-exclude ispell-complete-word-dict)
+        (recentf-cleanup)
+		(setq recentf-exclude perm-excluded)))
 
 (defun find-project()
 	"Find the 'first' file recursively with an extesions and opens it using gnu find."
@@ -216,62 +213,67 @@
 	"Replace in STRING all keys by the values in REPLACE-PAIRS."
 	(seq-reduce
 		(lambda (string replace-pair)
-			(replace-regexp-in-string (car (concat replace-pair "+")) (cdr replace-pair) string))
+            (replace-regexp-in-string
+                (concat (car replace-pair) "+")
+                (cdr replace-pair)
+                string
+                t))
 		replace-pairs
 		string))
 
-(defun my-lsp-csproj-copy-windows-files ()
-	"Copy all .csproj and .sln from Windows mount to project root."
-	(interactive)
-	(let* ((root-path (lsp-workspace-root))
-			  (windows-path (car (rassoc root-path wsl-project-path-mapping))))
-		(dolist (file (directory-files windows-path t ".*\.csproj$"))
-			(copy-file file (concat root-path "/" (file-name-nondirectory file)) t))
-		(dolist (file (directory-files windows-path t ".*\.sln$"))
-			(copy-file file (concat root-path "/" (file-name-nondirectory file)) t))))
+(defun my-lsp-csproj-copy-windows-files (workspace)
+	"Copy all .csproj and .sln from Windows mount to WORKSPACE project root."
+	(interactive (list (lsp--read-workspace)))
+	(with-lsp-workspace workspace
+        (let* ((root-path (lsp-workspace-root))
+			      (windows-path (car (rassoc root-path wsl-project-path-mapping))))
+		    (dolist (file (directory-files windows-path t ".*\.csproj$"))
+			    (copy-file file (concat root-path "/" (file-name-nondirectory file)) t))
+		    (dolist (file (directory-files windows-path t ".*\.sln$"))
+			    (copy-file file (concat root-path "/" (file-name-nondirectory file)) t)))))
 
-(defun my-lsp-csproj-fix-windows-wsl-path ()
-	(interactive)
-	(let ((root-path (lsp-workspace-root))
-			 (perm-excluded recentf-exclude))
-		(save-excursion
-			(dolist (file (directory-files root-path t ".*\.csproj"))
-				(progn
-					(find-file file)
-					(dolist (mount wsl-mount-points)
-						(while (search-forward (car mount) nil t)
-							(replace-match (cdr mount) t t))
-						(goto-char 0))
-					(while (search-forward "\\" nil t)
-						(replace-match "/")))
-				(save-buffer)
-				(kill-current-buffer)
-				(add-to-list 'recentf-exclude file)))
-		(recentf-cleanup)
-		(setq recentf-exclude perm-excluded)))
+(defun my-lsp-csproj-fix-windows-wsl-path (workspace)
+	(interactive (list (lsp--read-workspace)))
+    (with-lsp-workspace workspace
+        (let ((root-path (lsp-workspace-root))
+			     (perm-excluded recentf-exclude))
+		    (save-excursion
+			    (dolist (file (directory-files root-path t ".*\.csproj"))
+				    (progn
+					    (find-file file)
+					    (dolist (mount wsl-mount-points)
+						    (while (search-forward (car mount) nil t)
+							    (replace-match (cdr mount) t t))
+						    (goto-char 0))
+					    (while (search-forward "\\" nil t)
+						    (replace-match "/")))
+				    (save-buffer)
+				    (kill-current-buffer)
+				    (add-to-list 'recentf-exclude file)))
+		    (recentf-cleanup)
+		    (setq recentf-exclude perm-excluded))))
 
-(defun my-lsp-update-csproj ()
-	(interactive)
-	(my-lsp-csproj-copy-windows-files)
-	(my-lsp-csproj-fix-windows-wsl-path)
-	(lsp-workspace-restart))
+(defun my-lsp-update-csproj (workspace)
+	(interactive (list (lsp--read-workspace)))
+    (my-lsp-csproj-copy-windows-files workspace)
+	(my-lsp-csproj-fix-windows-wsl-path workspace)
+	(lsp-workspace-restart workspace))
 
 (defun my-get-path-for-frame-advice (debug-session stack-frame)
 	"Add advice so that dap will use regex to fix source path.
-Path of STACK-FRAME in a DEBUG-SESSION.
+Path of STACK-FRAME in a DEBUG-SESSION then runs ORIG-FUN.
 Uses regex rules in `my-multi-replace-regexp-in-string.'"
-	(let* ((source (gethash "source" stack-frame))
+    (let* ((source (gethash "source" stack-frame))
 			  (path (gethash "path" source))
-              (local-source-path (lsp-workspace-root))
+              (local-source-path (cdr (assoc (dap--debug-session-name debug-session) dap-session-project-root)))
               (path-map (rassoc local-source-path wsl-project-path-mapping)))
-		(puthash "path" (my-multi-replace-regexp-in-string
-                            (replace-regexp-in-string
-                                (car path-map)
-                                (cdr path-map)
-                                (my-multi-replace-regexp-in-string
-                                    'wsl-mount-points
-                                    (replace-regexp-in-string "\\\\+" "/" path)))
-                            path)
+        (message "hwllo %s" local-source-path)
+        (puthash "path" (replace-regexp-in-string
+                            (car path-map)
+                            (cdr path-map)
+                            (my-multi-replace-regexp-in-string
+                                wsl-mount-points
+                                (replace-regexp-in-string "\\\\+" "/" path)))
             source)))
 
 (defun toggle-window-split ()

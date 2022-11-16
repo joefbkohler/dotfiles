@@ -1,7 +1,8 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
-;;; ispell words file. Generation and switching.
+;;; csproj update
+;;; dependency checker: aspell/hunspell
 ;;; Modeline
 ;;; counsel-flymake
 ;;; counsel-rgrep
@@ -73,7 +74,7 @@
 ;; Global hooks
 (add-hook 'prog-mode-hook 'my-prog-mode-hook 10)
 (add-hook 'text-mode-hook 'my-text-mode-hook 10)
-(add-hook 'before-save-hook 'my-save-hook)
+;;(add-hook 'before-save-hook 'my-save-hook)
 
 ;; Default minor modes globally pre-loaded
 (column-number-mode 1)
@@ -104,7 +105,8 @@
 	(progn
 	    (require 'dap-mode)
         (setq-default dap-auto-show-output nil)
-        (advice-add 'dap--get-path-for-frame :around 'my-get-path-for-frame-advice))
+        (add-hook 'dap-session-created-hook 'my-dap-session-created-hook)
+        (advice-add 'dap--get-path-for-frame :before 'my-get-path-for-frame-advice))
     (error
 		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
 

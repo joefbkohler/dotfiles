@@ -45,7 +45,7 @@
 (defun my-register-fork-packages()
     "Register my forks so correct packages are installed."
     (straight-register-package
-        '(swiper :fork "joefbsjr/swiper" :branch "fix-counsel-company"))
+        '(swiper :fork "joefbsjr/swiper" :branch "master"))
     )
 
 (defun my-straight-initialize ()

@@ -69,6 +69,9 @@
 						  (replace-regexp-in-string (rx "-mode") "" (symbol-name major-mode)))))
 		(tree-sitter-indent-mode)))
 
+(defun my-dap-session-created-hook (debug-session)
+    (add-to-list 'dap-session-project-root (cons (dap--debug-session-name debug-session) (lsp-workspace-root))))
+
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)
 	(require 'tree-sitter-langs)
