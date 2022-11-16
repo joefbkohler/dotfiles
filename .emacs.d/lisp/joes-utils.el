@@ -111,8 +111,21 @@
 				(shell-command-to-string
 					(concat "find " root-path " -iname '*." file-ext "' -print -quit"))))))
 
+(defun find-file-upward (file-name &optional depth)
+	"Find FILE-NAME moving up folders up to DEPTH."
+    (or depth (setq depth 2))
+	(let ((num 0) (file-path "") (cur-path "."))
+		(while (< num depth)
+			(setq file-path (shell-command-to-string (concat "find " cur-path " -maxdepth 1 -name \"" file-name "\"")))
+			(setq cur-path (concat "../" cur-path))
+			(setq num (1+ num))
+			(when (not (string= file-path ""))
+				(setq num 999999)))
+		(file-truename file-path)))
+
 (defun tex-compile-update()
 	(interactive)
+    (require 'tex-mode)
 	(when (and (string= (buffer-name) (tex-main-file))
 			  (not (string-match-p (regexp-quote "documentclass") (buffer-string))))
 		(error "%s" "Main file buffer with documentclass not found. Is it open?"))
@@ -124,17 +137,24 @@
 	(when (< (count-windows) 2)
 		(split-window-right))
 
-	;; Gotta run twice to create table of contents. But first time can be draft mode.
-	(shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
-	(shell-command (concat "lualatex --halt-on-error" " " (tex-main-file)))
-
-	(let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
-			  (pdf-buffer (get-buffer pdf-file-name)))
-		(if pdf-buffer
-			(progn
-				(switch-to-buffer-other-window pdf-buffer)
-				(revert-buffer :noconfirm t))
-			(find-file-other-window pdf-file-name))))
+    (let* ((makefile (find-file-upward "Makefile"))
+              (path (file-name-directory makefile)))
+        (if (string= makefile "")
+            (progn
+                ;; No Makefile. Gotta run twice to create table of contents. But first time can be draft mode.
+	            (shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
+	            (shell-command (concat "lualatex --halt-on-error" " " (tex-main-file)))
+                (setq path "./"))
+            (shell-command (concat "cd " path " && make")))
+        (let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
+			      (pdf-buffer (get-buffer pdf-file-name)))
+		    (if pdf-buffer
+			    (progn
+				    (switch-to-buffer-other-window pdf-buffer)
+				    (revert-buffer :noconfirm t))
+                (find-file-other-window
+                    (car (split-string (shell-command-to-string
+                                           (concat "find " path " -name " pdf-file-name)))))))))
 
 (defun indent-or-complete ()
 	"Try to indent.  If line is already indented, invoke `completion-at-point'."
