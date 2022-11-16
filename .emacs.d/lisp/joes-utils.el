@@ -13,7 +13,7 @@
 	:type 'list)
 
 (defcustom company-capf-prefix-functions '(my-company-capf-prefix)
-	"List of functions that return t if current position should skip `company-capf'."
+	"Functions that return t if current position should skip `company-capf'."
 	:type 'list)
 (make-variable-buffer-local 'company-capf-prefix-functions)
 
@@ -170,35 +170,28 @@
 				(completion-at-point)))))
 
 (defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
-	(when (or
+    (when (or
 			  (not (eq command 'prefix))
 			  (not (seq-some (lambda (func)
-								 (not (funcall func)))
+                                 (funcall func))
 					   company-capf-prefix-functions)))
 		(funcall orig-fun command arg _args)))
 
 (defun my-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix."
-	(unless (or
-			  (nth 3 (syntax-ppss))
+    (when (or
+              (nth 3 (syntax-ppss))
 			  (nth 4 (syntax-ppss)))
 		t))
 
 (defun my-tree-sitter-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
-	(unless
-		(save-excursion
-			(ignore-errors (backward-char))
-			(let* ((cursor (tsc-make-cursor (tree-sitter-node-at-point)))
-					  (node (tsc-current-node cursor))
-					  (found nil))
-				(while (and node (not found))
-					(when (or (string-match-p "comment" (pp-to-string (ts-node-type node)))
-							  (string-match-p "string" (pp-to-string (ts-node-type node))))
-						(setq found t))
-					(setq node (tsc-get-parent node)))
-				found))
-		t))
+	(save-excursion
+		(ignore-errors (backward-char))
+		(let* ((node-type (tsc-node-type (tree-sitter-node-at-pos :named))))
+			(when (or (string-match-p "comment" (pp-to-string node-type))
+					  (string-match-p "string" (pp-to-string node-type)))
+                t))))
 
 (defun my-latex-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."

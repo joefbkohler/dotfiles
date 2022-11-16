@@ -62,7 +62,7 @@
 
 (defun my-tree-sitter-mode-hook()
 	(require 'tree-sitter-indent)
-	(add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix t)
+    (setq company-capf-prefix-functions '(my-tree-sitter-company-capf-prefix))
 	(tree-sitter-hl-mode)
 	(when (boundp
 			  (intern (format "tree-sitter-indent-%s-scopes"
