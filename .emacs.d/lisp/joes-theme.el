@@ -34,7 +34,8 @@
 		:height 180
 		:font "Iosevka")
 	(set-face-attribute 'font-lock-string-face nil
-		:font "-UKWN-Victor Mono-semibold-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+		:inherit 'default
+		:family "Etoile"
 		:italic t))
 
 (defun apply-zenburn-theme()
