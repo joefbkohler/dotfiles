@@ -35,8 +35,8 @@
 		:font "Iosevka")
 	(set-face-attribute 'font-lock-string-face nil
 		:inherit 'default
-		:family "Etoile"
-		:italic t))
+		:family "Iosevka Etoile"
+		:slant 'italic))
 
 (defun apply-zenburn-theme()
 	(require 'linum)
