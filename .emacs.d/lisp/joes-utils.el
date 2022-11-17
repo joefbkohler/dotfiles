@@ -184,6 +184,17 @@
 			  (nth 4 (syntax-ppss)))
 		t))
 
+(defun my-latex-company-capf-prefix()
+	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
+    (save-excursion
+		(let* ((start-point (point))
+			   (pos-slash (search-backward "\\" nil t))
+				  (pos-bracket (search-forward "{" nil t)))
+			(when (or (not pos-slash)
+					  (and pos-bracket
+						  (<= pos-bracket start-point)))
+				t))))
+
 (defun my-tree-sitter-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
 	(save-excursion
@@ -192,18 +203,6 @@
 			(when (or (string-match-p "comment" (pp-to-string node-type))
 					  (string-match-p "string" (pp-to-string node-type)))
                 t))))
-
-(defun my-latex-company-capf-prefix ()
-	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
-	(let ((start-point (point)))
-		(save-excursion
-			(and
-				(search-backward "\\" nil t 1)
-				(not (re-search-forward "}" start-point t 1))
-				(or
-					(search-forward "{" start-point t 1)
-					(not (re-search-forward "[^\\]\\b"
-							 (- start-point 1) t 1)))))))
 
 (defun my-create-links-creator-bat-file()
 	(interactive)
