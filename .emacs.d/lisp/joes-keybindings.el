@@ -38,6 +38,7 @@
 	(global-set-key (kbd "C-<tab>") (lambda () (interactive) (insert-tab)))
 	(global-set-key [remap shell-command] 'async-shell-command)
 	(global-set-key [remap indent-for-tab-command] 'indent-or-complete)
+	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
 	(global-set-key (kbd "<backtab>") 'indent-according-to-mode)
 	(global-set-key (kbd "C-c o") 'imenu)
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)

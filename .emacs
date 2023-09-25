@@ -22,15 +22,11 @@
 (require 'joes-theme)
 (require 'joes-keybindings)
 (require 'joes-hooks)
-
-;; -- Package (Straight)configuration
 (require 'joes-packages-manager)
-(my-straight-initialize)
-(setq-default package-enable-at-startup nil)
-(setq-default straight-vc-git-default-protocol 'ssh)
-(my-register-fork-packages)
-(my-install-default-packages)
-;;; Finished package configuration
+
+;; -- Package Manager
+;;(package-refresh-contents)
+(package-install-selected-packages t)
 
 ;; -- Keybindings
 (when (not (eq system-type 'darwin))
@@ -98,112 +94,91 @@
 
 ;; -- External packages configuration and modes
 
-(defvar-local initialization-errors "")
+(eval-when-compile
+  (require 'use-package))
 
 ;; -- DAP
-(condition-case err
-	(progn
-	    (require 'dap-mode)
-        (setq-default dap-auto-show-output nil)
-        (add-hook 'dap-session-created-hook 'my-dap-session-created-hook)
-        (advice-add 'dap--get-path-for-frame :before 'my-get-path-for-frame-advice))
-    (error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+(use-package dap-mode
+    :init
+    (setq-default dap-auto-show-output nil)
+    (add-hook 'dap-session-created-hook 'my-dap-session-created-hook)
+    (advice-add 'dap--get-path-for-frame :before 'my-get-path-for-frame-advice))
 
 ;; -- LSP
-(condition-case err
-	(progn
-		(setq-default lsp-enable-file-watchers nil)
-        (setq-default lsp-enable-indentation nil)
-		(setq-default lsp-diagnostic-clean-after-change t)
-		(apply-lsp-theme)
-        (add-hook 'lsp-after-open-hook 'my-lsp-hook))
-	(error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+(use-package lsp-mode
+	:config
+    (setq-default lsp-enable-file-watchers nil)
+    (setq-default lsp-enable-indentation nil)
+	(setq-default lsp-diagnostic-clean-after-change t)
+	(apply-lsp-theme)
+    (add-hook 'lsp-after-open-hook 'my-lsp-hook))
+	
 
 ;; -- Magit
-(condition-case err
-	(progn
-        (require 'magit)
-        (magit-auto-revert-mode -1)
-        (add-hook 'git-commit-mode-hook 'my-git-commit-mode-hook))
-    (error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+(use-package magit
+    :config
+    (magit-auto-revert-mode -1)
+    (add-hook 'git-commit-mode-hook 'my-git-commit-mode-hook))
 
 ;; -- Zenburn
-(condition-case err
-    (progn
-        (apply-zenburn-theme))
-    (error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+(use-package zenburn-theme
+    :config
+    (apply-zenburn-theme))
 
 ;; -- Company
-(condition-case err
-	(progn
-		(global-company-mode 1)
-		(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
-		(setq-default company-dabbrev-ignore-case 'keep-prefix)
-		(setq-default company-idle-delay nil)
-		(setq-default company-backends
-			'(company-capf company-files company-ispell company-dabbrev)))
-	(error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+(use-package company
+	:config
+    (global-company-mode 1)
+	(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
+	(setq-default company-dabbrev-ignore-case 'keep-prefix)
+	(setq-default company-idle-delay nil)
+	(setq-default company-backends
+		'(company-capf company-files company-ispell company-dabbrev)))
+	
 
 ;; -- Ivy configuration
-(condition-case err
-	(progn
-		(require 'counsel)
-		(require 'ivy-xref)
-		(ivy-mode 1)
-		(ivy-prescient-mode 1)
-		(prescient-persist-mode 1)
+(use-package ivy
+    :config
+	(require 'counsel)
+	(require 'ivy-xref)
+	(ivy-mode 1)
+	(ivy-prescient-mode 1)
+	(prescient-persist-mode 1)
 
-		(setq-default ivy-initial-inputs-alist
-			(append
-				ivy-initial-inputs-alist
-				'((counsel-M-x . "")
-					 (counsel-describe-variable . "")
-					 (counsel-describe-function . ""))))
+	(setq-default ivy-initial-inputs-alist
+		(append
+			ivy-initial-inputs-alist
+			'((counsel-M-x . "")
+				 (counsel-describe-variable . "")
+				 (counsel-describe-function . ""))))
 
-		(setq-default ivy-prescient-sort-commands
-			(append ivy-prescient-sort-commands '(lsp-ivy-workspace-symbol)))
+	(setq-default ivy-prescient-sort-commands
+		(append ivy-prescient-sort-commands '(lsp-ivy-workspace-symbol)))
 
-		(setq-default ivy-use-virtual-buffers t)
-		(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-		(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
-		(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
+	(setq-default ivy-use-virtual-buffers t)
+	(setq-default ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+	(setq-default xref-show-definitions-function #'ivy-xref-show-defs)
+	(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
 
-		(defadvice completion-at-point (around my-complete act)
-	        (counsel-company))
+	(defadvice completion-at-point (around my-complete act)
+	    (counsel-company))
 
-        (apply-ivy-theme)
-		(set-ivy-keybindings))
-	(error
-		(ido-everywhere 1)
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+    (apply-ivy-theme)
+	(set-ivy-keybindings))
 
 ;; -- Tree-Sitter configuration
-(condition-case err
-	(progn
-		(require 'tree-sitter-langs)
-		(global-tree-sitter-mode)
-		(add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
-		(apply-tree-sitter-theme))
-	(error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
+(use-package tree-sitter
+    :config
+    (require 'tree-sitter-langs)
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
+    (apply-tree-sitter-theme))
 
 ;; -- Ligations
-(condition-case err
-    (progn
-        (require 'ligature)
-        (ligature-default-ligatures)
-        (global-ligature-mode))
-    (error
-		(setq-local initialization-errors (concat initialization-errors (error-message-string err) "\n"))))
-
-
-(when (not (= (length initialization-errors) 0))
-	(error "%s \n\n error: %s" "Some error occurred during initialization.'" initialization-errors))
+(use-package ligature
+    :config
+    (ligature-default-ligatures)
+    (global-ligature-mode))
 
 (provide '.emacs)
 ;;; .emacs ends here
@@ -218,5 +193,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+      '(ivy-xref lsp-ivy counsel ivy-prescient magit-lfs magit yasnippet pdf-tools lsp-latex jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview csharp-mode company scad-mode dap-mode ligature))
  '(warning-suppress-types '((comp))))
 (put 'magit-clean 'disabled nil)

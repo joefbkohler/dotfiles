@@ -159,7 +159,7 @@
 (defun indent-or-complete ()
 	"Try to indent.  If line is already indented, invoke `completion-at-point'."
 	(interactive)
-	(if mark-active
+    (if mark-active
 		(indent-for-tab-command)
 		(let ((initial-indentation (current-indentation))
 				 (initial-position (point)))
@@ -279,7 +279,6 @@ Uses regex rules in `my-multi-replace-regexp-in-string.'"
 			  (path (gethash "path" source))
               (local-source-path (cdr (assoc (dap--debug-session-name debug-session) dap-session-project-root)))
               (path-map (rassoc local-source-path wsl-project-path-mapping)))
-        (message "hwllo %s" local-source-path)
         (puthash "path" (replace-regexp-in-string
                             (car path-map)
                             (cdr path-map)

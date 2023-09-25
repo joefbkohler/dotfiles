@@ -63,7 +63,7 @@
 (defun my-tree-sitter-mode-hook()
 	(require 'tree-sitter-indent)
     (setq company-capf-prefix-functions '(my-tree-sitter-company-capf-prefix))
-	(tree-sitter-hl-mode)
+    (tree-sitter-hl-mode)
 	(when (boundp
 			  (intern (format "tree-sitter-indent-%s-scopes"
 						  (replace-regexp-in-string (rx "-mode") "" (symbol-name major-mode)))))
@@ -73,21 +73,21 @@
     (add-to-list 'dap-session-project-root (cons (dap--debug-session-name debug-session) (lsp-workspace-root))))
 
 (defun my-csharp-mode-hook ()
-	(require 'whitespace)
-	(require 'tree-sitter-langs)
-	(require 'dap-mode)
-	(require 'dap-unity)
-	(dap-unity-setup)
-	(csharp-tree-sitter-mode)
-	(setenv "FrameworkPathOverride" framework-path-override)
-	(lsp)
+  (require 'whitespace)
+  (require 'tree-sitter-langs)
+  (require 'dap-mode)
+  (require 'dap-unity)
+  (setq-local csharp-indent-offset (my-buffer-indentation-offset))
+  (dap-unity-setup)
+  (setenv "FrameworkPathOverride" framework-path-override)
+  (lsp)
 
-	(tree-sitter-hl-add-patterns 'c-sharp
-		[(variable_declarator (identifier) @variable.parameter)])
+  (tree-sitter-hl-add-patterns 'c-sharp
+    [(variable_declarator (identifier) @variable.parameter)])
 
-	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
-	(whitespace-mode 1)
-	(eldoc-mode -1))
+  (setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
+  (whitespace-mode 1)
+  (eldoc-mode -1))
 
 (defun my-git-commit-mode-hook ()
 	(setq-local company-dabbrev-ignore-case nil)
