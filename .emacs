@@ -98,6 +98,10 @@
 (eval-when-compile
   (require 'use-package))
 
+(use-package exec-path-from-shell
+    :init
+    (exec-path-from-shell-initialize))
+
 ;; -- DAP
 (use-package dap-mode
     :init
