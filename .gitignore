@@ -18,3 +18,8 @@ elpa/
 .emacs.d/var
 .emacs.d/dict
 .emacs.d/ac-comphist.dat
+.emacs.d/.dap-breakpoints
+
+.emacs.d/eln-cache
+
+.emacs.d/tramp
