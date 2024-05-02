@@ -55,8 +55,8 @@
 (apply-default-theme-faces)
 
 ;; Backup configuration
-(setq backup-directory-alist `((".*" . "~/backups")))
-(setq auto-save-file-name-transforms `((".*" "~/backups" t)))
+(setq backup-directory-alist `((".*" . "~/.backups")))
+(setq auto-save-file-name-transforms `((".*" "~/.backups" t)))
 
 ;; Local envinronment configuration
 (ignore-errors (load-file "~/.emacs-local.el"))
@@ -91,6 +91,7 @@
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (add-hook 'latex-mode-hook 'my-latex-mode-hook)
 (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
+(add-hook 'c++-mode-hook 'my-cpp-mode-hook)
 
 ;; -- External packages configuration and modes
 
@@ -194,6 +195,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-      '(ivy-xref lsp-ivy counsel ivy-prescient magit-lfs magit yasnippet pdf-tools lsp-latex jedi highlight-indent-guides pyvenv yaml-mode json-mode dockerfile-mode lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview csharp-mode company scad-mode dap-mode ligature))
+      '(pet ivy-xref lsp-ivy counsel ivy-prescient magit-lfs magit yasnippet pdf-tools lsp-latex jedi highlight-indent-guides yaml-mode json-mode dockerfile-mode lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview csharp-mode company scad-mode dap-mode ligature))
  '(warning-suppress-types '((comp))))
 (put 'magit-clean 'disabled nil)

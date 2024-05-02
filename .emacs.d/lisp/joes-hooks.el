@@ -51,9 +51,10 @@
 	(delete-trailing-whitespace 0))
 
 (defun my-python-mode-hook ()
-	(highlight-indent-guides-mode t)
-	(pyvenv-mode t)
-	(set-python-keybindings)
+	(setq indent-tabs-mode nil)
+    (highlight-indent-guides-mode t)
+	(pet-mode)
+    (set-python-keybindings)
 	(lsp))
 
 (defun my-lsp-hook ()
@@ -71,6 +72,9 @@
 
 (defun my-dap-session-created-hook (debug-session)
     (add-to-list 'dap-session-project-root (cons (dap--debug-session-name debug-session) (lsp-workspace-root))))
+
+(defun my-cpp-mode-hook ()
+    (lsp))
 
 (defun my-csharp-mode-hook ()
   (require 'whitespace)

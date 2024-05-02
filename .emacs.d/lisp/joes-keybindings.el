@@ -40,7 +40,7 @@
 	(global-set-key [remap indent-for-tab-command] 'indent-or-complete)
 	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
 	(global-set-key (kbd "<backtab>") 'indent-according-to-mode)
-	(global-set-key (kbd "C-c o") 'imenu)
+	(global-set-key (kbd "C-c o") 'consult-imenu)
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
 
 	(global-set-key (kbd "C-c C-r") 'xref-find-references)

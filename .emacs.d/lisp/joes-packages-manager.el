@@ -18,7 +18,7 @@
 	     lsp-latex
 	     jedi
 	     highlight-indent-guides
-	     pyvenv
+	     pet
 	     yaml-mode
 	     json-mode
 	     dockerfile-mode
@@ -38,7 +38,8 @@
 	     ligature
          tree-sitter
          tree-sitter-langs
-         tree-sitter-indent))
+         tree-sitter-indent
+         consult))
 
 (defun my-register-fork-packages()
         (swiper :fork "joefbsjr/swiper" :branch "master"))
