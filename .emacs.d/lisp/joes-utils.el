@@ -170,12 +170,11 @@
 				(completion-at-point)))))
 
 (defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
-    (when (or
-			  (not (eq command 'prefix))
-			  (not (seq-some (lambda (func)
-                                 (funcall func))
-					   company-capf-prefix-functions)))
-		(funcall orig-fun command arg _args)))
+    (when 
+		(not (seq-some (lambda (func)
+                           (funcall func))
+				 company-capf-prefix-functions)))
+    (apply orig-fun command arg _args))
 
 (defun my-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix."
