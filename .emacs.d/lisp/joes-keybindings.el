@@ -41,8 +41,8 @@
 	(global-set-key [remap c-indent-line-or-region] 'indent-or-complete)
 	(global-set-key (kbd "<backtab>") 'indent-according-to-mode)
 	(global-set-key (kbd "C-c o") 'consult-imenu)
+	(global-set-key [remap list-buffers] 'ivy-switch-buffer)
 	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
-
 	(global-set-key (kbd "C-c C-r") 'xref-find-references)
 
 	;; Remove remapping of kill-line to kill-visual-line
@@ -77,12 +77,11 @@
 	(ivy-define-key ivy-minibuffer-map (kbd "C-n") 'ivy-next-history-element))
 
 (defun set-lsp-keybinding ()
-	(require 'ivy)
-	(local-set-key (kbd "C-c C-t") 'lsp-ivy-workspace-symbol)
-	(local-set-key (kbd "C-c C-r") 'lsp-find-references)
-	(local-set-key (kbd "C-c C-i") 'lsp-find-implementation)
-	(local-set-key (kbd "C-c C-d") 'lsp-find-declaration)
-	(local-set-key (kbd "C-c C-a") 'lsp-execute-code-action))
+	(local-set-key (kbd "C-c C-t") 'xref-find-apropos)
+	(local-set-key (kbd "C-c C-r") 'xref-find-references)
+	(local-set-key (kbd "C-c C-i") 'eglot-find-implementation)
+	(local-set-key (kbd "C-c C-d") 'eglot-find-declaration)
+	(local-set-key (kbd "C-c C-a") 'eglot-code-actions))
 
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here

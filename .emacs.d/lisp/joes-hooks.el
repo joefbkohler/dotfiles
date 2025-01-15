@@ -42,8 +42,8 @@
 
 (defun my-latex-mode-hook ()
 	(local-set-key [remap tex-compile] 'tex-compile-update)
-	(setq-local company-capf-prefix-functions '(my-latex-company-capf-prefix))
-	(lsp)
+	(add-to-list 'company-capf-prefix-functions 'my-latex-company-capf-prefix)
+	(eglot-ensure)
 	(flymake-mode 1)
 	(auto-fill-mode 1))
 
@@ -55,7 +55,7 @@
     (highlight-indent-guides-mode t)
 	(pet-mode)
     (set-python-keybindings)
-	(lsp))
+	(eglot-ensure))
 
 (defun my-lsp-hook ()
 	(yas-minor-mode)
@@ -63,28 +63,22 @@
 
 (defun my-tree-sitter-mode-hook()
 	(require 'tree-sitter-indent)
-    (setq company-capf-prefix-functions '(my-tree-sitter-company-capf-prefix))
+    (add-to-list 'company-capf-prefix-functions 'my-tree-sitter-company-capf-prefix)
     (tree-sitter-hl-mode)
 	(when (boundp
 			  (intern (format "tree-sitter-indent-%s-scopes"
 						  (replace-regexp-in-string (rx "-mode") "" (symbol-name major-mode)))))
 		(tree-sitter-indent-mode)))
 
-(defun my-dap-session-created-hook (debug-session)
-    (add-to-list 'dap-session-project-root (cons (dap--debug-session-name debug-session) (lsp-workspace-root))))
-
 (defun my-cpp-mode-hook ()
-    (lsp))
+    (eglot-ensure))
 
 (defun my-csharp-mode-hook ()
   (require 'whitespace)
   (require 'tree-sitter-langs)
-  (require 'dap-mode)
-  (require 'dap-unity)
   (setq-local csharp-indent-offset (my-buffer-indentation-offset))
-  (dap-unity-setup)
   (setenv "FrameworkPathOverride" framework-path-override)
-  (lsp)
+  (eglot-ensure)
 
   (tree-sitter-hl-add-patterns 'c-sharp
     [(variable_declarator (identifier) @variable.parameter)])

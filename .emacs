@@ -1,12 +1,15 @@
 ;;; Emacs --- Init file
 ;;; Commentary:
 ;;; TODO:
-;;; csproj update
 ;;; dependency checker: aspell/hunspell
 ;;; Modeline
-;;; counsel-flymake
-;;; counsel-rgrep
+;;; switch counsel for consult?
+;;; remove company? counsel/consult completion-at-point
+;;; fix xref-apropos so it's useful. counsel, consult, something!
+;;; counsel/consult-flymake
+;;; counsel/consult-rgrep
 ;;; Add a sane initialization to tree-sitter-indent
+
 ;;; Fix damn temp/backup files!
 
 ;;; Code:
@@ -102,22 +105,11 @@
     :init
     (exec-path-from-shell-initialize))
 
-;; -- DAP
-(use-package dap-mode
-    :init
-    (setq-default dap-auto-show-output nil)
-    (add-hook 'dap-session-created-hook 'my-dap-session-created-hook)
-    (advice-add 'dap--get-path-for-frame :before 'my-get-path-for-frame-advice))
-
 ;; -- LSP
-(use-package lsp-mode
+(use-package eglot
 	:config
-    (setq-default lsp-enable-file-watchers nil)
-    (setq-default lsp-enable-indentation nil)
-	(setq-default lsp-diagnostic-clean-after-change t)
-	(apply-lsp-theme)
-    (add-hook 'lsp-after-open-hook 'my-lsp-hook))
-	
+    (setq eglot-stay-out-of '(company))
+    (add-hook 'eglot-managed-mode-hook 'my-lsp-hook))
 
 ;; -- Magit
 (use-package magit
@@ -134,11 +126,13 @@
 (use-package company
 	:config
     (global-company-mode 1)
-	(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
+	(advice-add 'company-capf :around 'my-capf-extra-prefix-check)    
 	(setq-default company-dabbrev-ignore-case 'keep-prefix)
 	(setq-default company-idle-delay nil)
 	(setq-default company-backends
-		'(company-capf company-files company-ispell company-dabbrev)))
+		'(company-capf company-files (company-ispell company-dabbrev)))
+    (when (not (ispell-lookup-words "WHATEVER"))
+        (warn "Autocomplete using dictionary will not work correctly. You  have to creat a 'words' file. See: ispell-change-dictionary-and-words. Restart emacs afterwards.")))
 	
 
 ;; -- Ivy configuration
@@ -199,6 +193,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-      '(pet ivy-xref lsp-ivy counsel ivy-prescient magit-lfs magit yasnippet pdf-tools lsp-latex jedi highlight-indent-guides yaml-mode json-mode dockerfile-mode lsp-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview csharp-mode company scad-mode dap-mode ligature))
+      '(pet ivy-xref counsel ivy-prescient magit-lfs magit yasnippet pdf-tools jedi highlight-indent-guides yaml-mode json-mode dockerfile-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview csharp-mode company scad-mode ligature))
  '(warning-suppress-types '((comp))))
 (put 'magit-clean 'disabled nil)

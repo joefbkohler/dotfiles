@@ -98,9 +98,6 @@
 	(add-to-list 'default-frame-alist '(mouse-color . "#cca"))
 	(add-to-list 'default-frame-alist '(cursor-color . "#cca")))
 
-(defun apply-lsp-theme()
-	(setq-default lsp-modeline-code-action-fallback-icon "☼"))
-
 ;; Ivy prettify ;)
 (defun ivy-switch-buffer-mode-path-transformer (buffer-name)
 	"Transformer for `ivy-switch-buffer' that add major mode and path for BUFFER-NAME."

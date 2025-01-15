@@ -8,21 +8,18 @@
 
 (setq package-selected-packages
     '(ivy-xref
-	     lsp-ivy
 	     counsel
 	     ivy-prescient
 	     magit-lfs
 	     magit
 	     yasnippet
 	     pdf-tools
-	     lsp-latex
 	     jedi
 	     highlight-indent-guides
 	     pet
 	     yaml-mode
 	     json-mode
 	     dockerfile-mode
-	     lsp-mode
 	     jupyter
 	     gnu-elpa-keyring-update
 	     ivy
@@ -34,7 +31,6 @@
 	     csharp-mode
 	     company
 	     scad-mode
-	     dap-mode
 	     ligature
          tree-sitter
          tree-sitter-langs
