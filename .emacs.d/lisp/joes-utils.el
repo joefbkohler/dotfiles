@@ -88,7 +88,9 @@
 				            (mapcar #'list (ispell-available-dicts))
 				            nil t))
 			  (words
- 				  (ispell-aspell-words new-dict))
+ 				  (if ispell-really-hunspell
+                      (ispell-hunspell-words new-dict)
+                      (ispell-aspell-words new-dict)))
 			  (ispell-change-dictionary new-dict))
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
@@ -170,11 +172,11 @@
 				(completion-at-point)))))
 
 (defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
-    (when 
+    (when
 		(not (seq-some (lambda (func)
                            (funcall func))
-				 company-capf-prefix-functions)))
-    (apply orig-fun command arg _args))
+				 company-capf-prefix-functions))
+        (apply orig-fun command arg _args)))
 
 (defun my-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix."
@@ -192,7 +194,7 @@
 			(when (or (not pos-slash)
 					  (and pos-bracket
 						  (<= pos-bracket start-point)))
-				t))))
+                t))))
 
 (defun my-tree-sitter-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
@@ -269,22 +271,6 @@
     (my-lsp-csproj-copy-windows-files workspace)
 	(my-lsp-csproj-fix-windows-wsl-path workspace)
 	(lsp-workspace-restart workspace))
-
-(defun my-get-path-for-frame-advice (debug-session stack-frame)
-	"Add advice so that dap will use regex to fix source path.
-Path of STACK-FRAME in a DEBUG-SESSION then runs ORIG-FUN.
-Uses regex rules in `my-multi-replace-regexp-in-string.'"
-    (let* ((source (gethash "source" stack-frame))
-			  (path (gethash "path" source))
-              (local-source-path (cdr (assoc (dap--debug-session-name debug-session) dap-session-project-root)))
-              (path-map (rassoc local-source-path wsl-project-path-mapping)))
-        (puthash "path" (replace-regexp-in-string
-                            (car path-map)
-                            (cdr path-map)
-                            (my-multi-replace-regexp-in-string
-                                wsl-mount-points
-                                (replace-regexp-in-string "\\\\+" "/" path)))
-            source)))
 
 (defun toggle-window-split ()
 	(interactive)
