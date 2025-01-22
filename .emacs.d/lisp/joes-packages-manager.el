@@ -36,7 +36,8 @@
          tree-sitter-langs
          tree-sitter-indent
          consult
-         exec-path-from-shell))
+         exec-path-from-shell
+         dape))
 
 (defun my-register-fork-packages()
         (swiper :fork "joefbsjr/swiper" :branch "master"))

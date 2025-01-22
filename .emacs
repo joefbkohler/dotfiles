@@ -125,8 +125,9 @@
 ;; -- Company
 (use-package company
 	:config
+    (require 'ispell)
     (global-company-mode 1)
-	(advice-add 'company-capf :around 'my-capf-extra-prefix-check)    
+	(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
 	(setq-default company-dabbrev-ignore-case 'keep-prefix)
 	(setq-default company-idle-delay nil)
 	(setq-default company-backends
@@ -181,18 +182,3 @@
 
 (provide '.emacs)
 ;;; .emacs ends here
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-      '(pet ivy-xref counsel ivy-prescient magit-lfs magit yasnippet pdf-tools jedi highlight-indent-guides yaml-mode json-mode dockerfile-mode jupyter gnu-elpa-keyring-update ivy exwm smartparens adaptive-wrap zenburn-theme logview csharp-mode company scad-mode ligature))
- '(warning-suppress-types '((comp))))
-(put 'magit-clean 'disabled nil)
