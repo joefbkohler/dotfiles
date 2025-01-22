@@ -31,7 +31,7 @@
 (defun apply-default-theme-faces ()
 	(setq-default buffer-face-mode-face 'documents-face)
 	(set-face-attribute 'default nil
-		:height 180
+		:height 160
 		:font "Iosevka")
 	(set-face-attribute 'font-lock-string-face nil
 		:inherit 'default
