@@ -14,22 +14,18 @@
 
 ;;; Code:
 
-(add-to-list 'command-switch-alist '("-exwm" . my-exwm-hook))
-
 ;; Path
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (add-to-list 'exec-path "/usr/local/bin")
 (native-compile-async load-path)
 
+(require 'joes-packages-manager) ;; This should always be the first requirement
 (require 'joes-utils)
 (require 'joes-theme)
 (require 'joes-keybindings)
 (require 'joes-hooks)
-(require 'joes-packages-manager)
 
-;; -- Package Manager
-;;(package-refresh-contents)
-(package-install-selected-packages t)
+(add-to-list 'command-switch-alist '("-exwm" . my-exwm-hook))
 
 ;; -- Keybindings
 (when (not (eq system-type 'darwin))

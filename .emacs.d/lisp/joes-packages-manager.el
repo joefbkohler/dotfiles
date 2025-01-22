@@ -38,7 +38,12 @@
          consult
          exec-path-from-shell
          dape
-         ))
+         lsp-mode))
+
+(when (and (length> (seq-remove #'package-installed-p package-selected-packages) 0)
+          (y-or-n-p "Required packages not installed.  Install them?"))
+          (package-refresh-contents)
+          (package-install-selected-packages t))
 
 (provide 'joes-packages-manager)
 ;;; joes-packages-manager.el ends here
