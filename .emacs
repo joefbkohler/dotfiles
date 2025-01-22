@@ -95,46 +95,46 @@
 ;; -- External packages configuration and modes
 
 (eval-when-compile
-  (require 'use-package))
+    (require 'use-package))
 
 (use-package exec-path-from-shell
-    :init
-    (exec-path-from-shell-initialize))
+	:init
+	(exec-path-from-shell-initialize))
 
 ;; -- LSP
 (use-package eglot
 	:config
-    (setq eglot-stay-out-of '(company))
-    (add-hook 'eglot-managed-mode-hook 'my-lsp-hook))
+	(setq eglot-stay-out-of '(company))
+	(add-hook 'eglot-managed-mode-hook 'my-lsp-hook))
 
 ;; -- Magit
 (use-package magit
-    :config
-    (magit-auto-revert-mode -1)
-    (add-hook 'git-commit-mode-hook 'my-git-commit-mode-hook))
+	:config
+	(magit-auto-revert-mode -1)
+	(add-hook 'git-commit-mode-hook 'my-git-commit-mode-hook))
 
 ;; -- Zenburn
 (use-package zenburn-theme
-    :config
-    (apply-zenburn-theme))
+	:config
+	(apply-zenburn-theme))
 
 ;; -- Company
 (use-package company
 	:config
-    (require 'ispell)
-    (global-company-mode 1)
+	(require 'ispell)
+	(global-company-mode 1)
 	(advice-add 'company-capf :around 'my-capf-extra-prefix-check)
 	(setq-default company-dabbrev-ignore-case 'keep-prefix)
 	(setq-default company-idle-delay nil)
 	(setq-default company-backends
 		'(company-capf company-files (company-ispell company-dabbrev)))
-    (when (not (ispell-lookup-words "WHATEVER"))
-        (warn "Autocomplete using dictionary will not work correctly. You  have to creat a 'words' file. See: ispell-change-dictionary-and-words. Restart emacs afterwards.")))
-	
+	(when (not (ispell-lookup-words "WHATEVER"))
+		(warn "Autocomplete using dictionary will not work correctly. You  have to creat a 'words' file. See: ispell-change-dictionary-and-words. Restart emacs afterwards.")))
+
 
 ;; -- Ivy configuration
 (use-package ivy
-    :config
+	:config
 	(require 'counsel)
 	(require 'ivy-xref)
 	(ivy-mode 1)
@@ -157,24 +157,24 @@
 	(setq-default xref-show-xrefs-function #'ivy-xref-show-xrefs)
 
 	(defadvice completion-at-point (around my-complete act)
-	    (counsel-company))
+		(counsel-company))
 
-    (apply-ivy-theme)
+	(apply-ivy-theme)
 	(set-ivy-keybindings))
 
 ;; -- Tree-Sitter configuration
 (use-package tree-sitter
-    :config
-    (require 'tree-sitter-langs)
-    (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
-    (apply-tree-sitter-theme))
+	:config
+	(require 'tree-sitter-langs)
+	(global-tree-sitter-mode)
+	(add-hook 'tree-sitter-mode-hook 'my-tree-sitter-mode-hook)
+	(apply-tree-sitter-theme))
 
 ;; -- Ligations
 (use-package ligature
-    :config
-    (ligature-default-ligatures)
-    (global-ligature-mode))
+	:config
+	(ligature-default-ligatures)
+	(global-ligature-mode))
 
 (provide '.emacs)
 ;;; .emacs ends here

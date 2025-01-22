@@ -17,7 +17,7 @@
 	:type 'integer)
 
 (defface documents-face '((t :font "Iosevka Etoile"))
-	 "Face for text documents.")
+	"Face for text documents.")
 
 (defun apply-flymake-theme()
 	(require 'flymake)
@@ -127,7 +127,7 @@
 							   (make-string (max 1 (- ivy-counsel-doc-column (string-width symbol-name))) ? )
 							   (propertize docstring 'face 'font-lock-comment-face))
 						   "\n"))))
-				result)
+			result)
 		(frame-width) nil nil t t))
 
 (defun ivy-counsel-function-doc-transformer (function-name)

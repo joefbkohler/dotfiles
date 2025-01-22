@@ -1,6 +1,6 @@
 ;;; package --- Joe's Utils
 ;;; Commentary:
-;; My custom functions.  Either made by me or stolen from the internet ;)
+;; My custom functions.	 Either made by me or stolen from the internet ;)
 ;;; Code:
 
 (defgroup joe nil
@@ -53,13 +53,13 @@
 
 (defun ispell-aspell-words (dict)
 	"Return all words of an aspell DICT."
-    (string-join
+	(string-join
 		(cl-mapcar
 			(lambda (word)
 				(replace-regexp-in-string "\/.+" "" word))
 			(sort (split-string
 					  (shell-command-to-string
-                          (concat "aspell dump master " (car (split-string dict "-")))))
+						  (concat "aspell dump master " (car (split-string dict "-")))))
 				'string-lessp))
 		"\n"))
 
@@ -83,14 +83,14 @@
 	"Switch Ispell dictionary and create words file."
 	(interactive)
 	(let* ((perm-excluded recentf-exclude)
-              (new-dict (completing-read
-				            "Use new dictionary: "
-				            (mapcar #'list (ispell-available-dicts))
-				            nil t))
+			  (new-dict (completing-read
+							"Use new dictionary: "
+							(mapcar #'list (ispell-available-dicts))
+							nil t))
 			  (words
- 				  (if ispell-really-hunspell
-                      (ispell-hunspell-words new-dict)
-                      (ispell-aspell-words new-dict)))
+				  (if ispell-really-hunspell
+					  (ispell-hunspell-words new-dict)
+					  (ispell-aspell-words new-dict)))
 			  (ispell-change-dictionary new-dict))
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
@@ -98,8 +98,8 @@
 			(insert words)
 			(save-buffer)
 			(kill-buffer))
-        (add-to-list 'recentf-exclude ispell-complete-word-dict)
-        (recentf-cleanup)
+		(add-to-list 'recentf-exclude ispell-complete-word-dict)
+		(recentf-cleanup)
 		(setq recentf-exclude perm-excluded)))
 
 (defun find-project()
@@ -107,7 +107,7 @@
 	(interactive)
 	(require 'ivy)
 	(let ((root-path (read-directory-name "Project root: " "~/"))
-	 		 (file-ext (ivy-read "File ext: " project-file-extensions :require-match t)))
+			 (file-ext (ivy-read "File ext: " project-file-extensions :require-match t)))
 		(find-file
 			(string-trim
 				(shell-command-to-string
@@ -115,7 +115,7 @@
 
 (defun find-file-upward (file-name &optional depth)
 	"Find FILE-NAME moving up folders up to DEPTH."
-    (or depth (setq depth 2))
+	(or depth (setq depth 2))
 	(let ((num 0) (file-path "") (cur-path "."))
 		(while (< num depth)
 			(setq file-path (shell-command-to-string (concat "find " cur-path " -maxdepth 1 -name \"" file-name "\"")))
@@ -127,7 +127,7 @@
 
 (defun tex-compile-update()
 	(interactive)
-    (require 'tex-mode)
+	(require 'tex-mode)
 	(when (and (string= (buffer-name) (tex-main-file))
 			  (not (string-match-p (regexp-quote "documentclass") (buffer-string))))
 		(error "%s" "Main file buffer with documentclass not found. Is it open?"))
@@ -139,29 +139,29 @@
 	(when (< (count-windows) 2)
 		(split-window-right))
 
-    (let* ((makefile (find-file-upward "Makefile"))
-              (path (file-name-directory makefile)))
-        (if (string= makefile "")
-            (progn
-                ;; No Makefile. Gotta run twice to create table of contents. But first time can be draft mode.
-	            (shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
-	            (shell-command (concat "lualatex --halt-on-error" " " (tex-main-file)))
-                (setq path "./"))
-            (shell-command (concat "cd " path " && make")))
-        (let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
-			      (pdf-buffer (get-buffer pdf-file-name)))
-		    (if pdf-buffer
-			    (progn
-				    (switch-to-buffer-other-window pdf-buffer)
-				    (revert-buffer :noconfirm t))
-                (find-file-other-window
-                    (car (split-string (shell-command-to-string
-                                           (concat "find " path " -name " pdf-file-name)))))))))
+	(let* ((makefile (find-file-upward "Makefile"))
+			  (path (file-name-directory makefile)))
+		(if (string= makefile "")
+			(progn
+				;; No Makefile. Gotta run twice to create table of contents. But first time can be draft mode.
+				(shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
+				(shell-command (concat "lualatex --halt-on-error" " " (tex-main-file)))
+				(setq path "./"))
+			(shell-command (concat "cd " path " && make")))
+		(let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
+				  (pdf-buffer (get-buffer pdf-file-name)))
+			(if pdf-buffer
+				(progn
+					(switch-to-buffer-other-window pdf-buffer)
+					(revert-buffer :noconfirm t))
+				(find-file-other-window
+					(car (split-string (shell-command-to-string
+										   (concat "find " path " -name " pdf-file-name)))))))))
 
 (defun indent-or-complete ()
-	"Try to indent.  If line is already indented, invoke `completion-at-point'."
+	"Try to indent.	 If line is already indented, invoke `completion-at-point'."
 	(interactive)
-    (if mark-active
+	(if mark-active
 		(indent-for-tab-command)
 		(let ((initial-indentation (current-indentation))
 				 (initial-position (point)))
@@ -172,29 +172,29 @@
 				(completion-at-point)))))
 
 (defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
-    (when
+	(when
 		(not (seq-some (lambda (func)
-                           (funcall func))
+						   (funcall func))
 				 company-capf-prefix-functions))
-        (apply orig-fun command arg _args)))
+		(apply orig-fun command arg _args)))
 
 (defun my-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix."
-    (when (or
-              (nth 3 (syntax-ppss))
+	(when (or
+			  (nth 3 (syntax-ppss))
 			  (nth 4 (syntax-ppss)))
 		t))
 
 (defun my-latex-company-capf-prefix()
 	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
-    (save-excursion
+	(save-excursion
 		(let* ((start-point (point))
-			   (pos-slash (search-backward "\\" nil t))
+			      (pos-slash (search-backward "\\" nil t))
 				  (pos-bracket (search-forward "{" nil t)))
 			(when (or (not pos-slash)
 					  (and pos-bracket
 						  (<= pos-bracket start-point)))
-                t))))
+				t))))
 
 (defun my-tree-sitter-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
@@ -203,7 +203,7 @@
 		(let* ((node-type (tsc-node-type (tree-sitter-node-at-pos :named))))
 			(when (or (string-match-p "comment" (pp-to-string node-type))
 					  (string-match-p "string" (pp-to-string node-type)))
-                t))))
+				t))))
 
 (defun my-create-links-creator-bat-file()
 	(interactive)
@@ -226,11 +226,11 @@
 	"Replace in STRING all keys by the values in REPLACE-PAIRS."
 	(seq-reduce
 		(lambda (string replace-pair)
-            (replace-regexp-in-string
-                (concat (car replace-pair) "+")
-                (cdr replace-pair)
-                string
-                t))
+			(replace-regexp-in-string
+				(concat (car replace-pair) "+")
+				(cdr replace-pair)
+				string
+				t))
 		replace-pairs
 		string))
 
@@ -238,37 +238,37 @@
 	"Copy all .csproj and .sln from Windows mount to WORKSPACE project root."
 	(interactive (list (lsp--read-workspace)))
 	(with-lsp-workspace workspace
-        (let* ((root-path (lsp-workspace-root))
-			      (windows-path (car (rassoc root-path wsl-project-path-mapping))))
-		    (dolist (file (directory-files windows-path t ".*\.csproj$"))
-			    (copy-file file (concat root-path "/" (file-name-nondirectory file)) t))
-		    (dolist (file (directory-files windows-path t ".*\.sln$"))
-			    (copy-file file (concat root-path "/" (file-name-nondirectory file)) t)))))
+		(let* ((root-path (lsp-workspace-root))
+				  (windows-path (car (rassoc root-path wsl-project-path-mapping))))
+			(dolist (file (directory-files windows-path t ".*\.csproj$"))
+				(copy-file file (concat root-path "/" (file-name-nondirectory file)) t))
+			(dolist (file (directory-files windows-path t ".*\.sln$"))
+				(copy-file file (concat root-path "/" (file-name-nondirectory file)) t)))))
 
 (defun my-lsp-csproj-fix-windows-wsl-path (workspace)
 	(interactive (list (lsp--read-workspace)))
-    (with-lsp-workspace workspace
-        (let ((root-path (lsp-workspace-root))
-			     (perm-excluded recentf-exclude))
-		    (save-excursion
-			    (dolist (file (directory-files root-path t ".*\.csproj"))
-				    (progn
-					    (find-file file)
-					    (dolist (mount wsl-mount-points)
-						    (while (search-forward (car mount) nil t)
-							    (replace-match (cdr mount) t t))
-						    (goto-char 0))
-					    (while (search-forward "\\" nil t)
-						    (replace-match "/")))
-				    (save-buffer)
-				    (kill-current-buffer)
-				    (add-to-list 'recentf-exclude file)))
-		    (recentf-cleanup)
-		    (setq recentf-exclude perm-excluded))))
+	(with-lsp-workspace workspace
+		(let ((root-path (lsp-workspace-root))
+				 (perm-excluded recentf-exclude))
+			(save-excursion
+				(dolist (file (directory-files root-path t ".*\.csproj"))
+					(progn
+						(find-file file)
+						(dolist (mount wsl-mount-points)
+							(while (search-forward (car mount) nil t)
+								(replace-match (cdr mount) t t))
+							(goto-char 0))
+						(while (search-forward "\\" nil t)
+							(replace-match "/")))
+					(save-buffer)
+					(kill-current-buffer)
+					(add-to-list 'recentf-exclude file)))
+			(recentf-cleanup)
+			(setq recentf-exclude perm-excluded))))
 
 (defun my-lsp-update-csproj (workspace)
 	(interactive (list (lsp--read-workspace)))
-    (my-lsp-csproj-copy-windows-files workspace)
+	(my-lsp-csproj-copy-windows-files workspace)
 	(my-lsp-csproj-fix-windows-wsl-path workspace)
 	(lsp-workspace-restart workspace))
 
