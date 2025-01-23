@@ -37,8 +37,7 @@
 		 tree-sitter-indent
 		 consult
 		 exec-path-from-shell
-		 dape
-		 lsp-mode))
+		 dape))
 
 (when (and (length> (seq-remove #'package-installed-p package-selected-packages) 0)
 		  (y-or-n-p "Required packages not installed.  Install them?"))
