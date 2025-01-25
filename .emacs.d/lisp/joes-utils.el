@@ -29,8 +29,6 @@
 	"List of key-values of path mapping for project source from wsl to windows."
 	:type 'alist)
 
-(defvar dap-session-project-root '())
-
 (defun blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
 	(unless time (setq time 0.1))
@@ -113,19 +111,36 @@
 				(shell-command-to-string
 					(concat "find " root-path " -iname '*." file-ext "' -print -quit"))))))
 
-(defun find-file-upward (file-name &optional depth)
-	"Find FILE-NAME moving up folders up to DEPTH."
+(defun find-file-upward (file-name &optional depth recursive)
+	"Find FILE-NAME moving up folders up to DEPTH.  RECURSIVE."
 	(or depth (setq depth 2))
+	(setq recursive (number-to-string (if recursive (+ depth 1) 1)))
 	(let ((num 0) (file-path "") (cur-path "."))
 		(while (< num depth)
-			(setq file-path (shell-command-to-string (concat "find " cur-path " -maxdepth 1 -name \"" file-name "\"")))
+			(setq file-path (shell-command-to-string (concat "find " cur-path " -maxdepth " recursive " -name \"" file-name "\"")))
 			(setq cur-path (concat "../" cur-path))
 			(setq num (1+ num))
 			(when (not (string= file-path ""))
 				(setq num 999999)))
-		(file-truename file-path)))
+		(when (not (string= file-path ""))
+			(file-truename file-path))))
 
-(defun tex-compile-update()
+
+(defun my-compile-unreal-editor-project()
+	"Find the Unreal project folder and run `make win` and `make linux'."
+	(interactive)
+	(make-local-variable compilation-buffer-name-function)
+	(let ((project-file (string-trim (find-file-upward "*.uproject" 10)))
+			 (compilation-buffer-name-function (lambda (mode)
+												   "*compilation Unreal Windows*")))
+		
+		(compile (concat "cd " (file-name-directory project-file) " && make win"))
+		
+		(let ((compilation-buffer-name-function (lambda (mode)
+													"*compilation Unreal*")))
+			(compile (concat "cd " (file-name-directory project-file) " && make linux")))))
+
+(defun my-tex-compile-update()
 	(interactive)
 	(require 'tex-mode)
 	(when (and (string= (buffer-name) (tex-main-file))
