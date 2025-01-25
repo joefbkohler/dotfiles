@@ -33,7 +33,8 @@
 										  (buffer-substring-no-properties 1 (point-max)))) t))
 	(flymake-mode 1)
 	(display-line-numbers-mode 1)
-	(setq tab-width 4)
+	(when c-buffer-is-cc-mode
+		(c-set-style "csharp"))
 	(setq-local company-dabbrev-ignore-case nil)
 	(setq-local company-dabbrev-downcase nil))
 
@@ -41,7 +42,7 @@
 	(buffer-face-mode))
 
 (defun my-latex-mode-hook ()
-	(local-set-key [remap tex-compile] 'tex-compile-update)
+	(local-set-key [remap tex-compile] 'my-tex-compile-update)
 	(add-to-list 'company-capf-prefix-functions 'my-latex-company-capf-prefix)
 	(eglot-ensure)
 	(flymake-mode 1)
@@ -73,6 +74,15 @@
 
 (defun my-cpp-mode-hook ()
 	(eglot-ensure))
+
+(defun my-c-mode-hook ()
+	(if (and (string-suffix-p ".h" (buffer-file-name) t)
+			(or (find-file-upward (concat (file-name-nondirectory (file-name-sans-extension (buffer-file-name))) ".cpp") 3 t)
+				(find-file-upward (concat (file-name-nondirectory (file-name-sans-extension (buffer-file-name))) ".cc") 3 t)))
+		(c++-mode)
+		;; Actual c-mode-hook
+		(eglot-ensure)
+		))
 
 (defun my-csharp-mode-hook ()
 	(require 'whitespace)

@@ -91,6 +91,7 @@
 (add-hook 'latex-mode-hook 'my-latex-mode-hook)
 (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-hook)
 (add-hook 'c++-mode-hook 'my-cpp-mode-hook)
+(add-hook 'c-mode-hook 'my-c-mode-hook)
 
 ;; -- External packages configuration and modes
 
