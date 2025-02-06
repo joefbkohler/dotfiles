@@ -43,17 +43,16 @@
 						:font "Iosevka Fixed")
 	(set-face-attribute 'font-lock-string-face nil
 						:inherit 'default
-						:family "Iosevka Fixed"
 						:slant 'italic))
 
 (defun joes-theme-apply-zenburn()
 	(load-theme 'zenburn t)
 	(joes-theme-apply-default-faces)
 	(set-face-attribute 'default nil
-		:background "#181818"
+		:background "#111"
 		:foreground "#D6D0BC")
-	(set-face-attribute 'hl-line nil :background "#111" :box '(:line-width -1 :color "#555"))
-	(set-face-attribute 'region nil :foreground 'unspecified :background "#334")
+	(set-face-attribute 'hl-line nil :background "#0A0A0A" :box '(:line-width -1 :color "#555"))
+	(set-face-attribute 'region nil :foreground 'unspecified :background "#18181F")
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
 	(set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
 
@@ -62,7 +61,8 @@
 	(set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
 
 	(set-face-attribute 'font-lock-type-face nil :foreground "#6292A8")
-	(set-face-attribute 'line-number-current-line nil :background "#222" :box '(:line-width -1 :color "#555"))
+	(set-face-attribute 'line-number nil :background "#151515")
+	(set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 
 	(set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF"))
 
