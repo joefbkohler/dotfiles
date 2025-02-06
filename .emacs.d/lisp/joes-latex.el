@@ -29,6 +29,7 @@
 (require 'joes-company)
 
 (defun joes-latex-mode-hook ()
+	"Latex mode hook configuration."
 	(local-set-key [remap tex-compile] 'joes-tex-compile-update)
 	(add-to-list 'company-capf-prefix-functions 'my-latex-company-capf-prefix)
 	(eglot-ensure)
@@ -38,6 +39,7 @@
 	(auto-fill-mode 1))
 
 (defun joes-latex-compile-update()
+	"Compile to PDF, update buffer and show in window."
 	(interactive)
 	(when (and (string= (buffer-name) (tex-main-file))
 			  (not (string-match-p (regexp-quote "documentclass") (buffer-string))))

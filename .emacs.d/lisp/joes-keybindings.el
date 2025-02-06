@@ -91,5 +91,14 @@
 	(local-set-key (kbd "C-c C-d") 'eglot-find-declaration)
 	(local-set-key (kbd "C-c C-a") 'eglot-code-actions))
 
+(defun joes-keybinding-ai ()
+	"Set keys used for AI assistant."
+	(defvar minuet-active-mode-map)
+	(keymap-set minuet-active-mode-map "M-n" 'minuet-next-suggestion)
+	(keymap-set minuet-active-mode-map "M-p" 'minuet-previous-suggestion)
+	(keymap-set minuet-active-mode-map "C-g" 'minuet-dismiss-suggestion)
+	(keymap-set minuet-active-mode-map "<tab>" 'minuet-accept-suggestion)
+	(keymap-global-set "C-M-/" 'minuet-show-suggestion))
+
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here

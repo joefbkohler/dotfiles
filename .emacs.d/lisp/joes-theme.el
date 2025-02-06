@@ -40,7 +40,7 @@
 	(set-face-attribute 'default nil
 						:height 160
 						:width 'normal
-						:font "Iosevka Fixed")
+						:font "Iosevka")
 	(set-face-attribute 'font-lock-string-face nil
 						:inherit 'default
 						:slant 'italic))
@@ -69,8 +69,8 @@
 (defun joes-theme-apply-ivy()
 	(require 'ivy-faces)
 	(set-face-attribute 'ivy-current-match nil
-		:background "#223"
-		:box '(:line-width -1 :color "#080")
+		:background "#0A0A0A"
+		:box '(:line-width -1 :color "#555")
 		:foreground 'unspecified
 		:underline 'unspecified
 		:extend t)
