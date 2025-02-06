@@ -24,9 +24,6 @@
 
 ;;; Code:
 
-(provide 'joes-ispell)
-;;; joes-ispell.el ends here
-
 (require 'ispell)
 (require 'cl-lib)
 (require 'recentf)
@@ -75,8 +72,8 @@
 			  (words
 				  (if ispell-really-hunspell
 					  (joes-ispell-hunspell-words new-dict)
-					  (joes-ispell-aspell-words new-dict)))
-			  (ispell-change-dictionary new-dict))
+					  (joes-ispell-aspell-words new-dict))))
+		(ispell-change-dictionary new-dict)
 		(with-current-buffer
 			(find-file ispell-complete-word-dict)
 			(erase-buffer)
