@@ -1,47 +1,52 @@
-;;; package --- Joe's Utils
+;;; joes-utils.el --- Collection of useful functions  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  Joe Köhler
+
+;; Author: Joe Köhler <joe.fb.kohler@gmail.com>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 ;;; Commentary:
-;; My custom functions.	 Either made by me or stolen from the internet ;)
+
+;; 
+
 ;;; Code:
 
-(defgroup joe nil
-	"My little functions"
-	:group 'convenience)
+(defun joes-header-has-c++-implementation (file-name)
+	(or (joes-search-file-regex-upward
+					(concat (file-name-nondirectory
+								(file-name-sans-extension file-name))
+						".cpp") 2 t)
+				(joes-search-file-regex-upward
+					(concat (file-name-nondirectory
+								(file-name-sans-extension file-name))
+						".cc") 2 t)))
 
-(defcustom project-file-extensions
-	'("cs" "py" "c" "cpp")
-	"File extensions that can be used by find-project function."
-	:type 'list)
-
-(defcustom company-capf-prefix-functions '(my-company-capf-prefix)
-	"Functions that return t if current position should skip `company-capf'."
-	:type 'list)
-(make-variable-buffer-local 'company-capf-prefix-functions)
-
-(defcustom wsl-remote-path "\\\\wsl$\\Arch"
-	"Path to wsl remote folder from Windows"
-	:type 'string)
-
-(defcustom wsl-mount-points '(("c:" . "/mnt/c"))
-	"WSL mount points for windows drives."
-	:type 'alist)
-
-(defcustom wsl-project-path-mapping '()
-	"List of key-values of path mapping for project source from wsl to windows."
-	:type 'alist)
-
-(defun blink-minibuffer (&optional time)
+(defun joes-blink-minibuffer (&optional time)
 	"Blink the minibuffer for a set TIME."
 	(unless time (setq time 0.1))
 	(invert-face 'mode-line)
 	(run-with-timer time nil #'invert-face 'mode-line))
 
-(defun create-scratch-buffer ()
+(defun joes-create-scratch-buffer ()
 	"Create a new scratch buffer if one does not exist."
 	(interactive)
 	(switch-to-buffer (get-buffer-create "*scratch*"))
 	(lisp-interaction-mode))
 
-(defun my-buffer-indentation-offset ()
+(defun joes-buffer-indentation-offset ()
 	(save-excursion
 		(if (search-forward-regexp "^\t+[^[:blank:]]" nil t)
 			(current-indentation)
@@ -49,75 +54,13 @@
 				(current-indentation)
 				tab-width))))
 
-(defun ispell-aspell-words (dict)
-	"Return all words of an aspell DICT."
-	(string-join
-		(cl-mapcar
-			(lambda (word)
-				(replace-regexp-in-string "\/.+" "" word))
-			(sort (split-string
-					  (shell-command-to-string
-						  (concat "aspell dump master " (car (split-string dict "-")))))
-				'string-lessp))
-		"\n"))
-
-(defun ispell-hunspell-words (dict)
-	(let ((dict-path
-			  (car (seq-filter
-					   (lambda (path) (string-equal dict (file-name-nondirectory path)))
-					   (split-string (shell-command-to-string "hunspell -D"))))))
-		(shell-command-to-string (concat "unmunch " dict-path ".dic " dict-path ".aff"))))
-
-(defun ispell-available-dicts ()
-	"If hunspell in use, return only found dicts."
-	(if ispell-really-hunspell
-		(seq-filter (lambda (dict)
-						(string-match-p (regexp-quote dict)
-							(shell-command-to-string "hunspell -D")))
-			(ispell-valid-dictionary-list))
-		(ispell-valid-dictionary-list)))
-
-(defun ispell-change-dictionary-and-words ()
-	"Switch Ispell dictionary and create words file."
-	(interactive)
-	(let* ((perm-excluded recentf-exclude)
-			  (new-dict (completing-read
-							"Use new dictionary: "
-							(mapcar #'list (ispell-available-dicts))
-							nil t))
-			  (words
-				  (if ispell-really-hunspell
-					  (ispell-hunspell-words new-dict)
-					  (ispell-aspell-words new-dict)))
-			  (ispell-change-dictionary new-dict))
-		(with-current-buffer
-			(find-file ispell-complete-word-dict)
-			(erase-buffer)
-			(insert words)
-			(save-buffer)
-			(kill-buffer))
-		(add-to-list 'recentf-exclude ispell-complete-word-dict)
-		(recentf-cleanup)
-		(setq recentf-exclude perm-excluded)))
-
-(defun find-project()
-	"Find the 'first' file recursively with an extesions and opens it using gnu find."
-	(interactive)
-	(require 'ivy)
-	(let ((root-path (read-directory-name "Project root: " "~/"))
-			 (file-ext (ivy-read "File ext: " project-file-extensions :require-match t)))
-		(find-file
-			(string-trim
-				(shell-command-to-string
-					(concat "find " root-path " -iname '*." file-ext "' -print -quit"))))))
-
-(defun find-file-upward (file-name &optional depth recursive)
-	"Find FILE-NAME moving up folders up to DEPTH.  RECURSIVE."
-	(or depth (setq depth 2))
-	(setq recursive (number-to-string (if recursive (+ depth 1) 1)))
-	(let ((num 0) (file-path "") (cur-path "."))
+(defun joes-search-file-regex-upward (file-regexp &optional depth recursive)
+	"Find FILE-REGEXP moving up folders up to DEPTH.  RECURSIVE."
+	(let ((num 0) (file-path "") (cur-path ".")
+			 (depth (or depth 2))
+			 (recursive (number-to-string (if recursive (+ depth 1) 1))))
 		(while (< num depth)
-			(setq file-path (shell-command-to-string (concat "find " cur-path " -maxdepth " recursive " -name \"" file-name "\"")))
+			(setq file-path (shell-command-to-string (concat "find " cur-path " -maxdepth " recursive " -name \"" file-regexp "\"")))
 			(setq cur-path (concat "../" cur-path))
 			(setq num (1+ num))
 			(when (not (string= file-path ""))
@@ -125,55 +68,7 @@
 		(when (not (string= file-path ""))
 			(file-truename file-path))))
 
-
-(defun my-compile-unreal-editor-project()
-	"Find the Unreal project folder and run `make win` and `make linux'."
-	(interactive)
-	(make-local-variable compilation-buffer-name-function)
-	(let ((project-file (string-trim (find-file-upward "*.uproject" 10)))
-			 (compilation-buffer-name-function (lambda (mode)
-												   "*compilation Unreal Windows*")))
-		
-		(compile (concat "cd " (file-name-directory project-file) " && make win"))
-		
-		(let ((compilation-buffer-name-function (lambda (mode)
-													"*compilation Unreal*")))
-			(compile (concat "cd " (file-name-directory project-file) " && make linux")))))
-
-(defun my-tex-compile-update()
-	(interactive)
-	(require 'tex-mode)
-	(when (and (string= (buffer-name) (tex-main-file))
-			  (not (string-match-p (regexp-quote "documentclass") (buffer-string))))
-		(error "%s" "Main file buffer with documentclass not found. Is it open?"))
-
-	(if (tex-shell-running)
-		(tex-kill-job)
-		(tex-start-shell))
-
-	(when (< (count-windows) 2)
-		(split-window-right))
-
-	(let* ((makefile (find-file-upward "Makefile"))
-			  (path (file-name-directory makefile)))
-		(if (string= makefile "")
-			(progn
-				;; No Makefile. Gotta run twice to create table of contents. But first time can be draft mode.
-				(shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
-				(shell-command (concat "lualatex --halt-on-error" " " (tex-main-file)))
-				(setq path "./"))
-			(shell-command (concat "cd " path " && make")))
-		(let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
-				  (pdf-buffer (get-buffer pdf-file-name)))
-			(if pdf-buffer
-				(progn
-					(switch-to-buffer-other-window pdf-buffer)
-					(revert-buffer :noconfirm t))
-				(find-file-other-window
-					(car (split-string (shell-command-to-string
-										   (concat "find " path " -name " pdf-file-name)))))))))
-
-(defun indent-or-complete ()
+(defun joes-indent-or-complete ()
 	"Try to indent.	 If line is already indented, invoke `completion-at-point'."
 	(interactive)
 	(if mark-active
@@ -186,32 +81,7 @@
 					  (eq initial-indentation (current-indentation)))
 				(completion-at-point)))))
 
-(defun my-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
-	(when
-		(not (seq-some (lambda (func)
-						   (funcall func))
-				 company-capf-prefix-functions))
-		(apply orig-fun command arg _args)))
-
-(defun my-company-capf-prefix ()
-	"Check if current prefix is a valid `company-capf' prefix."
-	(when (or
-			  (nth 3 (syntax-ppss))
-			  (nth 4 (syntax-ppss)))
-		t))
-
-(defun my-latex-company-capf-prefix()
-	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
-	(save-excursion
-		(let* ((start-point (point))
-			      (pos-slash (search-backward "\\" nil t))
-				  (pos-bracket (search-forward "{" nil t)))
-			(when (or (not pos-slash)
-					  (and pos-bracket
-						  (<= pos-bracket start-point)))
-				t))))
-
-(defun my-tree-sitter-company-capf-prefix ()
+(defun joes-tree-sitter-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
 	(save-excursion
 		(ignore-errors (backward-char))
@@ -220,24 +90,7 @@
 					  (string-match-p "string" (pp-to-string node-type)))
 				t))))
 
-(defun my-create-links-creator-bat-file()
-	(interactive)
-	(let* ((project-path (read-directory-name "Project root: " "~/")))
-		(with-current-buffer
-			(find-file-noselect (concat project-path "createlinks.bat"))
-			(dolist (original-file-path (directory-files project-path t))
-				(when (and (not (string= (substring (file-name-nondirectory original-file-path) 0 1) ".")))
-					(let ((file-windows-path
-							  (concat wsl-remote-path
-								  (replace-regexp-in-string "/" "\\\\" original-file-path))))
-						(insert (concat "mklink" (when (car (file-attributes original-file-path)) " /d") " \""
-									(file-name-nondirectory original-file-path)
-									"\" \""
-									file-windows-path "\" \n")))))
-			(save-buffer)
-			(kill-current-buffer))))
-
-(defun my-multi-replace-regexp-in-string (replace-pairs string)
+(defun joes-multi-replace-regexp-in-string (replace-pairs string)
 	"Replace in STRING all keys by the values in REPLACE-PAIRS."
 	(seq-reduce
 		(lambda (string replace-pair)
@@ -249,45 +102,8 @@
 		replace-pairs
 		string))
 
-(defun my-lsp-csproj-copy-windows-files (workspace)
-	"Copy all .csproj and .sln from Windows mount to WORKSPACE project root."
-	(interactive (list (lsp--read-workspace)))
-	(with-lsp-workspace workspace
-		(let* ((root-path (lsp-workspace-root))
-				  (windows-path (car (rassoc root-path wsl-project-path-mapping))))
-			(dolist (file (directory-files windows-path t ".*\.csproj$"))
-				(copy-file file (concat root-path "/" (file-name-nondirectory file)) t))
-			(dolist (file (directory-files windows-path t ".*\.sln$"))
-				(copy-file file (concat root-path "/" (file-name-nondirectory file)) t)))))
-
-(defun my-lsp-csproj-fix-windows-wsl-path (workspace)
-	(interactive (list (lsp--read-workspace)))
-	(with-lsp-workspace workspace
-		(let ((root-path (lsp-workspace-root))
-				 (perm-excluded recentf-exclude))
-			(save-excursion
-				(dolist (file (directory-files root-path t ".*\.csproj"))
-					(progn
-						(find-file file)
-						(dolist (mount wsl-mount-points)
-							(while (search-forward (car mount) nil t)
-								(replace-match (cdr mount) t t))
-							(goto-char 0))
-						(while (search-forward "\\" nil t)
-							(replace-match "/")))
-					(save-buffer)
-					(kill-current-buffer)
-					(add-to-list 'recentf-exclude file)))
-			(recentf-cleanup)
-			(setq recentf-exclude perm-excluded))))
-
-(defun my-lsp-update-csproj (workspace)
-	(interactive (list (lsp--read-workspace)))
-	(my-lsp-csproj-copy-windows-files workspace)
-	(my-lsp-csproj-fix-windows-wsl-path workspace)
-	(lsp-workspace-restart workspace))
-
-(defun toggle-window-split ()
+(defun joes-toggle-window-split ()
+	"Toggle two windows from vertical to horizontal split and vice versa."
 	(interactive)
 	(if (= (count-windows) 2)
 		(let* ((this-win-buffer (window-buffer))
