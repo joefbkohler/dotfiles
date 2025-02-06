@@ -151,10 +151,10 @@
 
 ;; AI stuff
 (use-package gptel
-  :commands gptel gptel-send gptel-rewrite)
+    :commands gptel gptel-send gptel-rewrite gptel-menu)
 
-(use-package minuet
-  :commands minuet-show-suggestion)
+(use-package joes-ai
+    :commands minuet-show-suggestion)
 
 (use-package ligature
 	:functions global-ligature-mode

@@ -3,7 +3,6 @@
 ;; Copyright (C) 2025  Joe Köhler
 
 ;; Author: Joe Köhler <joe.fb.kohler@gmail.com>
-;; Keywords: 
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,6 +24,7 @@
 ;;; Code:
 
 (defun joes-header-has-c++-implementation (file-name)
+	"Find if c++ source file with FILE-NAME in sibling folders exists."
 	(or (joes-search-file-regex-upward
 					(concat (file-name-nondirectory
 								(file-name-sans-extension file-name))
@@ -47,6 +47,7 @@
 	(lisp-interaction-mode))
 
 (defun joes-buffer-indentation-offset ()
+	"Find the indentation offset based on first indetation found."
 	(save-excursion
 		(if (search-forward-regexp "^\t+[^[:blank:]]" nil t)
 			(current-indentation)
@@ -80,15 +81,6 @@
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))
 				(completion-at-point)))))
-
-(defun joes-tree-sitter-company-capf-prefix ()
-	"Check if current prefix is a valid `company-capf' prefix in `tree-sitter'."
-	(save-excursion
-		(ignore-errors (backward-char))
-		(let* ((node-type (tsc-node-type (tree-sitter-node-at-pos :named))))
-			(when (or (string-match-p "comment" (pp-to-string node-type))
-					  (string-match-p "string" (pp-to-string node-type)))
-				t))))
 
 (defun joes-multi-replace-regexp-in-string (replace-pairs string)
 	"Replace in STRING all keys by the values in REPLACE-PAIRS."
