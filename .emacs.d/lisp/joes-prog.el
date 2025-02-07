@@ -23,7 +23,6 @@
 (require 'joes-utils)
 (require 'joes-keybindings)
 
-(message "joes prog config file loaded")
 (defun joes-prog-mode-hook ()
 	"General prog mode config."
 	;; Look for a tab indentation, if found, set indent-tabs-mode.
@@ -72,6 +71,10 @@
 	(pet-mode)
 	(joes-keybindings-python)
 	(eglot-ensure))
+
+(defun joes-eglot-hook ()
+	"Eglot config."
+		(joes-keybinding-eglot))
 
 (provide 'joes-prog)
 ;;; joes-prog.el ends here

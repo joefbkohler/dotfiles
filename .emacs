@@ -1,3 +1,4 @@
+
 ;;; Emacs --- Init file	 -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; TODO:
@@ -110,10 +111,7 @@
 
 (use-package eglot
 	:commands eglot-ensure
-	:init
-	(defun joes-eglot-hook ()
-		(joes-keybinding-eglot))
-	:hook (eglot-managed-mode-hook . joes-eglot-hook)
+	:hook (eglot-managed-mode . joes-eglot-hook)
 	:config
 	(setq eglot-stay-out-of '(company)))
 
