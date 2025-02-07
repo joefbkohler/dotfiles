@@ -28,68 +28,72 @@
 (defun joes-keybindings-common()
 	"Set keys used everywhere."
 	;; Unset some keybindings that I hate!
-	(global-unset-key (kbd "C-v"))
-	(global-unset-key (kbd "M-v"))
-	(global-unset-key (kbd "C-x C-z"))
+	(keymap-global-unset "C-v")
+	(keymap-global-unset "M-v")
+	(keymap-global-unset "C-x C-z")
+	(keymap-unset emacs-lisp-mode-map "C-c C-f")
 
-	(global-set-key (kbd "C-z") 'undo)
-	(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 1)))
-	(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 1)))
-	(global-set-key (kbd "C-|") 'joes-toggle-window-split)
-	(global-set-key (kbd "C-<tab>") (lambda () (interactive) (insert-tab)))
-	(global-set-key [remap shell-command] 'async-shell-command)
-	(global-set-key [remap indent-for-tab-command] 'joes-indent-or-complete)
-	(global-set-key [remap c-indent-line-or-region] 'joes-indent-or-complete)
-	(global-set-key (kbd "<backtab>") 'indent-according-to-mode)
-	(global-set-key [remap list-buffers] 'ivy-switch-buffer)
-	(global-set-key (kbd "C-c C-t") 'xref-find-apropos)
-	(global-set-key (kbd "C-c C-r") 'xref-find-references)
-	(global-set-key (kbd "C-c o") 'imenu)
-	(global-set-key (kbd "s-u") 'revert-buffer-quick)
+	(keymap-global-set "C-z" 'undo)
+	(keymap-global-set "M-n" (lambda () (interactive) (scroll-up 1)))
+	(keymap-global-set "M-p" (lambda () (interactive) (scroll-down 1)))
+	(keymap-global-set "C-|" 'joes-toggle-window-split)
+	(keymap-global-set "C-<tab>" (lambda () (interactive) (insert-tab)))
+	(keymap-global-set "<backtab>" 'indent-according-to-mode)
+	(keymap-global-set "C-c C-t" 'xref-find-apropos)
+	(keymap-global-set "C-c C-r" 'xref-find-references)
+	(keymap-global-set "C-c o" 'imenu)
+	(keymap-global-set "s-u" 'revert-buffer-quick)
 
-	(define-key minibuffer-local-map (kbd "<tab>") 'complete-symbol)
-	;; Remove remapping of kill-line to kill-visual-line
-	(define-key visual-line-mode-map [remap kill-line] nil)
+	(keymap-substitute (current-global-map) 'shell-command 'async-shell)
+	(keymap-substitute (current-global-map) 'shell-command 'async-shell-command)
+	(keymap-substitute (current-global-map) 'indent-for-tab-command 'joes-indent-or-complete)
+	(keymap-substitute (current-global-map) 'c-indent-line-or-region 'joes-indent-or-complete)
+	(keymap-substitute (current-global-map) 'list-buffers 'ivy-switch-buffer)
 
-	(global-set-key [remap isearch-forward] 'isearch-forward-regexp)
-	(global-set-key [remap isearch-backward] 'isearch-backward-regexp))
+	(keymap-set minibuffer-local-map "<tab>" 'complete-symbol)
+	
+	(keymap-substitute visual-line-mode-map 'kill-line nil) ;; Remove remapping of kill-line to kill-visual-line
+
+	(keymap-substitute (current-global-map) 'isearch-forward 'isearch-forward-regexp)
+	(keymap-substitute (current-global-map) 'isearch-backward 'isearch-backward-regexp))
 
 (defun joes-keybindings-git-commit()
 	"Set keys used in git commenting."
-	(local-set-key [remap indent-for-tab-command] 'completion-at-point))
+	(keymap-substitute (current-local-map) 'indent-for-tab-command 'completion-at-point))
 
 (defun joes-keybindings-python()
 	"Set keys used in python mode."
 	(declare-function python-indent-line "python")
-	(local-set-key (kbd "C->") (lambda () (interactive)
+	(keymap-local-set "C->" (lambda () (interactive)
 								   (python-indent-line)))
-	(local-set-key (kbd "C-<") 'python-indent-shift-left))
+	(keymap-local-set "C-<" 'python-indent-shift-left))
 
 (defun joes-keybindings-ivy()
 	"Set keys used in ivy functions."
 	(declare-function ivy-define-key "ivy")
 	(defvar ivy-minibuffer-map)
-	(global-set-key (kbd "M-x") 'counsel-M-x)
-	(global-set-key [remap describe-function] 'counsel-describe-function)
-	(global-set-key [remap describe-variable] 'counsel-describe-variable)
-	(global-set-key (kbd "C-M-y") 'counsel-yank-pop)
-	(global-set-key (kbd "C-c C-f") 'counsel-git)
-	(global-set-key [remap isearch-forward-regexp] 'counsel-grep-or-swiper)
-	(global-set-key [remap ivy-done] 'ivy-alt-done)
-	(global-set-key [remap ivy-partial-or-done] 'ivy-partial)
-	(global-set-key [remap imenu] 'counsel-imenu)
+	(keymap-global-set "M-x" 'counsel-M-x)
+	(keymap-global-set "C-M-y" 'counsel-yank-pop)
+	(keymap-global-set "C-c C-f" 'counsel-git)
+	(keymap-global-set "C-M-s" 'counsel-grep-or-swiper)
+
+	(keymap-substitute (current-global-map) 'describe-function 'counsel-describe-function)
+	(keymap-substitute (current-global-map) 'describe-variable 'counsel-describe-variable)
+	(keymap-substitute (current-global-map) 'ivy-done 'ivy-alt-done)
+	(keymap-substitute (current-global-map) 'ivy-partial-or-done 'ivy-partial)
+	(keymap-substitute (current-global-map) 'imenu 'counsel-imenu)
 
 	;; minibuffer keys
-	(ivy-define-key ivy-minibuffer-map (kbd "M-p") 'ivy-previous-line)
-	(ivy-define-key ivy-minibuffer-map (kbd "M-n") 'ivy-next-line)
-	(ivy-define-key ivy-minibuffer-map (kbd "C-p") 'ivy-previous-history-element)
-	(ivy-define-key ivy-minibuffer-map (kbd "C-n") 'ivy-next-history-element))
+	(keymap-set ivy-minibuffer-map "M-p" 'ivy-previous-line)
+	(keymap-set ivy-minibuffer-map "M-n" 'ivy-next-line)
+	(keymap-set ivy-minibuffer-map "C-p" 'ivy-previous-history-element)
+	(keymap-set ivy-minibuffer-map "C-n" 'ivy-next-history-element))
 
 (defun joes-keybinding-eglot ()
 	"Set keys used for eglot functions."
-	(local-set-key (kbd "C-c C-i") 'eglot-find-implementation)
-	(local-set-key (kbd "C-c C-d") 'eglot-find-declaration)
-	(local-set-key (kbd "C-c C-a") 'eglot-code-actions))
+	(keymap-local-set "C-c C-i" 'eglot-find-implementation)
+	(keymap-local-set "C-c C-d" 'eglot-find-declaration)
+	(keymap-local-set "C-c C-a" 'eglot-code-actions))
 
 (defun joes-keybinding-ai ()
 	"Set keys used for AI assistant."
