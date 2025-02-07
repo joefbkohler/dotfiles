@@ -59,7 +59,7 @@
 
 (defun joes-keybindings-git-commit()
 	"Set keys used in git commenting."
-	(keymap-substitute (current-local-map) 'indent-for-tab-command 'completion-at-point))
+	(keymap-set (current-local-map) "<tab>" 'completion-at-point))
 
 (defun joes-keybindings-python()
 	"Set keys used in python mode."
