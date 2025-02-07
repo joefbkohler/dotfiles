@@ -41,7 +41,7 @@ Must have FIM support."
 
 (defcustom joes-ollama-gptel-models '(deepseek-r1:1.5b qwen2.5-coder:3b)
 	"Ollama reasoning model.  Model for more complex tasks."
-	:type 'string)
+	:type 'list)
 
 (setq gptel-backend (gptel-make-ollama "Ollama PC"
 						:stream t

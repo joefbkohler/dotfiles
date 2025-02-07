@@ -148,8 +148,7 @@
   :hook (latex-mode . joes-latex-mode-hook))
 
 ;; AI stuff
-(use-package joes-ai
-    :commands minuet-show-suggestion gptel gptel-send gptel-rewrite gptel-menu)
+(use-package joes-ai)
 
 (use-package ligature
 	:functions global-ligature-mode
