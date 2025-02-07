@@ -16,7 +16,7 @@
 ;;; Code:
 
 ;; Path
-(add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.config/emacs/joes")
 (add-to-list 'exec-path "/usr/local/bin")
 
 (require 'joes-utils)
@@ -38,13 +38,13 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;; Local envinronment configuration
-(ignore-errors (load-file "~/.emacs.d/local.el"))
-(setq recentf-save-file "~/.emacs.d/recentf")
+(ignore-errors (load-file "~/.config/emacs/local.el"))
+(setq recentf-save-file "~/.config/emacs/recentf")
 
 ;; Backup configuration
-(make-directory "~/.emacs.d/autosaves/" t)
-(setq backup-directory-alist `((".*" . "~/.emacs.d/autosaves/")))
-(setq auto-save-file-name-transforms `((".*" "~/.emacs.d/autosaves/\\1" t)))
+(make-directory "~/.config/emacs/autosaves/" t)
+(setq backup-directory-alist `((".*" . "~/.config/emacs/autosaves/")))
+(setq auto-save-file-name-transforms `((".*" "~/.config/emacs/autosaves/\\1" t)))
 
 ;; Default minor modes globally pre-loaded
 (minibuffer-depth-indicate-mode 1)
