@@ -7,8 +7,6 @@
 ;;; Check on Vertico.
 ;;; remove company? counsel completion-at-point the convolluted
 ;;; fix xref-apropos so it's useful. counsel, vertico, something!
-;;; counsel-flymake
-;;; counsel-rgrep
 ;;; Add a sane initialization to tree-sitter-indent
 
 ;;; Fix damn temp/backup files!
