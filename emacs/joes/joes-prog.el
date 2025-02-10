@@ -26,7 +26,6 @@
 (defun joes-prog-mode-hook ()
 	"General prog mode config."
 	;; Look for a tab indentation, if found, set indent-tabs-mode.
-	(message "%s" "run prog mode?")
 	(setq indent-tabs-mode (when (not (string-match
 										  "^\s+[^[:blank:]]"
 										  (buffer-substring-no-properties 1 (point-max)))) t))

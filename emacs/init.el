@@ -54,7 +54,7 @@
 (electric-indent-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
-(fringe-mode -1)
+(fringe-mode '(8 . 0))
 
 (joes-keybindings-common)
 (joes-theme-apply-default-faces)

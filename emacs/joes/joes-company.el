@@ -34,7 +34,7 @@
 (setq-default company-dabbrev-ignore-case 'keep-prefix)
 (setq-default company-idle-delay nil)
 (setq-default company-backends
-	'(company-capf company-files (company-ispell company-dabbrev)))
+	'(company-capf company-files (company-dabbrev company-ispell :separate)))
 
 (when (not (ispell-lookup-words "WHATEVER"))
 	(warn "Autocomplete using dictionary will not work correctly. You  have to create a `words' file. See: ispell-change-dictionary-and-words. Restart emacs afterwards."))

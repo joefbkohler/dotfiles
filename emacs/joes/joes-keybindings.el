@@ -59,7 +59,8 @@
 
 (defun joes-keybindings-git-commit()
 	"Set keys used in git commenting."
-	(keymap-set (current-local-map) "<tab>" 'completion-at-point))
+	(defvar git-commit-mode-map)
+	(keymap-set git-commit-mode-map "<tab>" 'completion-at-point))
 
 (defun joes-keybindings-python()
 	"Set keys used in python mode."
@@ -81,9 +82,8 @@
 	(keymap-substitute (current-global-map) 'describe-variable 'counsel-describe-variable)
 	(keymap-substitute (current-global-map) 'imenu 'counsel-imenu)
 
-	(defvar ivy-mode-map)
-	(keymap-set ivy-mode-map "<RET>" 'ivy-alt-done)
-	(keymap-set ivy-mode-map "<TAB>" 'ivy-partial)
+	(keymap-set ivy-minibuffer-map "<RET>" 'ivy-alt-done)
+	(keymap-set ivy-minibuffer-map "<TAB>" 'ivy-partial)
 
 	;; minibuffer keys
 	(keymap-set ivy-minibuffer-map "M-p" 'ivy-previous-line)
