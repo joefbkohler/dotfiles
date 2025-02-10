@@ -54,7 +54,7 @@
 (electric-indent-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
-(fringe-mode '(4 . 0))
+(fringe-mode -1)
 
 (joes-keybindings-common)
 (joes-theme-apply-default-faces)
@@ -155,5 +155,5 @@
 	(joes-theme-set-ligatures)
 	(global-ligature-mode))
 
-(provide '.emacs)
-;;; .emacs ends here.
+(provide 'init)
+;;; init.el ends here.

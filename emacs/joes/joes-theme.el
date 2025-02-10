@@ -59,6 +59,7 @@
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
 	(set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
 	
+	(set-face-attribute 'fringe nil :foreground nil :background "#222")
 	(set-face-attribute 'mode-line nil :background "#161616" :height 140)
 
 	(set-face-attribute 'font-lock-keyword-face nil :foreground "#AA6" :weight 'bold)
@@ -75,7 +76,7 @@
 	"Ivy/Swiper/Counsel colors."
 	(require 'ivy-faces)
 	(set-face-attribute 'ivy-current-match nil
-		:background "#0A0A0E"
+		:background "#0A0E0A"
 		:box '(:line-width -1 :color "#606560")
 		:foreground 'unspecified
 		:underline 'unspecified

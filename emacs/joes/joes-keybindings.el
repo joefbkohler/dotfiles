@@ -79,9 +79,11 @@
 
 	(keymap-substitute (current-global-map) 'describe-function 'counsel-describe-function)
 	(keymap-substitute (current-global-map) 'describe-variable 'counsel-describe-variable)
-	(keymap-substitute (current-global-map) 'ivy-done 'ivy-alt-done)
-	(keymap-substitute (current-global-map) 'ivy-partial-or-done 'ivy-partial)
 	(keymap-substitute (current-global-map) 'imenu 'counsel-imenu)
+
+	(defvar ivy-mode-map)
+	(keymap-set ivy-mode-map "<RET>" 'ivy-alt-done)
+	(keymap-set ivy-mode-map "<TAB>" 'ivy-partial)
 
 	;; minibuffer keys
 	(keymap-set ivy-minibuffer-map "M-p" 'ivy-previous-line)

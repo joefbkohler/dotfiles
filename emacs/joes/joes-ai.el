@@ -43,11 +43,20 @@ Must have FIM support."
 	"Ollama reasoning model.  Model for more complex tasks."
 	:type 'list)
 
+(setq gptel-model (car joes-ollama-gptel-models))
+
 (setq gptel-backend (gptel-make-ollama "Ollama PC"
 						:stream t
 						:host joes-ollama-host
 						:models joes-ollama-gptel-models
 						:endpoint "/api/chat"))
+
+(defun joes-init-complete-ai()
+	"Try to start ai models.  Depends on Ollama servers being up."
+	(interactive)
+	(async-shell-command (concat "curl http://"
+							 joes-ollama-host
+							 "/api/generate -d '{\"model\": \"" joes-ollama-completion-model "\"}'")))
 
 (setq minuet-provider 'openai-fim-compatible)
 (setq minuet-n-completions 2)
