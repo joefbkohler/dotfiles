@@ -1,13 +1,33 @@
-;;; package --- Joe's company functions and configuration
+;;; joes-company.el --- Joe's company functions and configuration  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  Joe Köhler
+
+;; Author: Joe Köhler <joe.fb.kohler@gmail.com>
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 ;;; Commentary:
-;; My custom functions for ispell dictionaries.
+
+;; 
+
 ;;; Code:
 
 (require 'joes-ispell)
 (require 'company)
 
 (defgroup joe nil
-	"My little functions"
+	"My little functions."
 	:group 'convenience)
 
 (defcustom company-capf-prefix-functions '(joes-company-capf-prefix)
@@ -15,12 +35,15 @@
 	:type 'list)
 (make-variable-buffer-local 'company-capf-prefix-functions)
 
-(defun joes-company-capf-extra-prefix-check (orig-fun command &optional arg &rest _args)
+(defun joes-company-capf-extra-prefix-check (orig-fun command &optional arg &rest args)
+	"Advice to `company-capf' to better decide when to call capf or dabbrev/ispell.
+ORIG-FUN is the capf function.  COMMAND, ARG and ARGS are the
+arguments passed to the capf."
 	(when
 		(not (seq-some (lambda (func)
 						   (funcall func))
 				 company-capf-prefix-functions))
-		(apply orig-fun command arg _args)))
+		(apply orig-fun command arg args)))
 
 (defun joes-company-capf-prefix ()
 	"Check if current prefix is a valid `company-capf' prefix."
