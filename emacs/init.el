@@ -7,7 +7,10 @@
 ;;; Check on Vertico.
 ;;; remove company? counsel completion-at-point the convolluted
 ;;; fix xref-apropos so it's useful. counsel, vertico, something!
-;;; Add a sane initialization to tree-sitter-indent
+;;; Use tree-sitter whenever possible
+;;; --> Move native-comp-eln-cache to ~/.cache
+;;; --> Move elpa to ~/.local/share
+;;; --> Move backups, projects, recentf, tramp, transient, etc... to ~/.local/state
 
 ;;; Fix damn temp/backup files!
 
@@ -145,8 +148,13 @@
 (use-package joes-latex
   :hook (latex-mode . joes-latex-mode-hook))
 
-;; AI stuff
 (use-package joes-ai)
+
+(use-package eat
+    :commands eat
+    :config
+    (declare-function eat-compile-terminfo "eat")
+    (eat-compile-terminfo))
 
 (use-package ligature
 	:functions global-ligature-mode
