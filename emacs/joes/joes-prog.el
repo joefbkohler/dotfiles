@@ -29,7 +29,10 @@
 	(setq indent-tabs-mode (when (not (string-match
 										  "^\s+[^[:blank:]]"
 										  (buffer-substring-no-properties 1 (point-max)))) t))
+	(declare-function flymake-eldoc-function "flymake")
 	(flymake-mode 1)
+	(push #'flymake-eldoc-function eldoc-documentation-functions)
+
 	(display-line-numbers-mode 1)
 	(setq-local display-line-numbers-grow-only 1)
 	
