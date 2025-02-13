@@ -1,5 +1,5 @@
 
-;;; Emacs --- Init file	 -*- lexical-binding: t; -*-
+;;; Emacs --- Init file -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; TODO:
 ;;; dependency checker: aspell/hunspell
@@ -150,11 +150,13 @@
 
 (use-package joes-ai)
 
+;; Terminal Emulator
 (use-package eat
-    :commands eat
+    :commands eat eat-other-window
     :config
     (declare-function eat-compile-terminfo "eat")
-    (eat-compile-terminfo))
+    (eat-compile-terminfo)
+    (setq eat-kill-buffer-on-exit t))
 
 (use-package ligature
 	:functions global-ligature-mode

@@ -36,7 +36,6 @@
 		 pdf-tools
 		 pet
 		 yaml-mode
-		 json-mode
 		 dockerfile-mode
 		 jupyter
 		 gnu-elpa-keyring-update
