@@ -49,6 +49,7 @@
 (defun joes-buffer-indentation-offset ()
 	"Find the indentation offset based on first indetation found."
 	(save-excursion
+		(goto-char (point-min))
 		(if (search-forward-regexp "^\t+[^[:blank:]]" nil t)
 			(current-indentation)
 			(if (search-forward-regexp "^\s+[^[:blank:]]" nil t)
