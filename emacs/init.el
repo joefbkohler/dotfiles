@@ -104,6 +104,8 @@
 
 (use-package joes-ispell)
 
+(use-package joes-mode-line)
+
 (use-package joes-company
 	:after joes-ispell)
 
