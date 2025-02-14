@@ -41,6 +41,7 @@
 ;; Local envinronment configuration
 (ignore-errors (load-file "~/.config/emacs/local.el"))
 (setq recentf-save-file "~/.config/emacs/recentf")
+(setq custom-file "~/.config/emacs/emacs-custom.el")
 
 ;; Backup configuration
 (make-directory "~/.config/emacs/autosaves/" t)

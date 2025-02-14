@@ -54,13 +54,16 @@
 	(set-face-attribute 'default nil
 		:background "#111"
 		:foreground "#D6D0BC")
-	(set-face-attribute 'hl-line nil :background "#0D0D0D" :box '(:line-width -1 :color "#555"))
+	
+    (set-face-attribute 'hl-line nil :background "#0D0D0D" :box '(:line-width -1 :color "#555"))
 	(set-face-attribute 'region nil :foreground 'unspecified :background "#18181F")
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
 	(set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
 	
 	(set-face-attribute 'fringe nil :foreground nil :background "#222")
-	(set-face-attribute 'mode-line nil :background "#161616" :height 140)
+
+	(set-face-attribute 'mode-line nil :font "Iosevka Nerd Font" :background "#161616" :height 140)
+    (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626" :height 140)
 
 	(set-face-attribute 'font-lock-keyword-face nil :foreground "#AA6" :weight 'bold)
 	(set-face-attribute 'font-lock-constant-face nil :inherit 'font-lock-keyword-face :foreground "#C66")
@@ -117,6 +120,15 @@
 			 "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
 			 "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
 			 "\\\\" "://")))
+
+(defun joes-simple-mode-line-render (left right)
+	"Return a string of `window-total-width' containing LEFT and RIGHT.
+LEFT and RIGHT aligned respectively."
+    (list left
+        (propertize " "
+            'display
+            `((space :align-to (- right-margin -2,(length (format-mode-line right))))))
+        right))
 
 (provide 'joes-theme)
 ;;; joes-theme.el ends here
