@@ -52,6 +52,8 @@
 		 gptel
 		 minuet))
 
+(package-initialize)
+
 (when (and (length> (seq-remove #'package-installed-p package-selected-packages) 0)
 		  (y-or-n-p "Required packages not installed.  Install them?"))
 	(package-refresh-contents)
