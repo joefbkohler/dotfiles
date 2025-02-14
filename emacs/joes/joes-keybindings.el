@@ -106,5 +106,7 @@
 	(keymap-set minuet-active-mode-map "<tab>" 'minuet-accept-suggestion)
 	(keymap-global-set "C-M-/" 'minuet-show-suggestion))
 
+(joes-keybindings-common)
+
 (provide 'joes-keybindings)
 ;;; joes-keybindings.el ends here
