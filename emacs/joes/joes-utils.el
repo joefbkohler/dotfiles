@@ -121,5 +121,9 @@
 				(select-window first-win)
 				(if this-win-2nd (other-window 1))))))
 
+(defun joes-is-git-worktree-clean ()
+    "Return t if worktree is clean and nil if not."
+    (string-empty-p (shell-command-to-string "git status --porcelain -z")))
+
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
