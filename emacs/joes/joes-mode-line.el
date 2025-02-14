@@ -26,9 +26,11 @@
 (require 'vc-git)
 (require 'joes-utils)
 
-(defvar-local joes-mode-line-vc-branch "")
+(defvar-local joes-mode-line-vc-branch ""
+	(put 'joes-mode-line-vc-branch 'risky-local-variable t))
 
 (defun joes-update-mode-line-vc ()
+	"Update VC branch and modified in mode-line."
 	(setq joes-mode-line-vc-branch
 		(let ((branch (car (vc-git-branches))))
 			(if branch
@@ -50,7 +52,7 @@
 				  "  "
 				  mode-line-buffer-identification
 				  mode-line-process
-				  joes-mode-line-vc-branch
+				  (:eval joes-mode-line-vc-branch)
 				  (:eval (when (bound-and-true-p flymake-mode) (concat " " (format-mode-line flymake-mode-line-format))))
 				  (:eval (when (not (string-empty-p (format-mode-line mode-line-misc-info)))
 							 (concat " " (format-mode-line mode-line-misc-info)))))
@@ -61,7 +63,8 @@
 				  mode-line-percent-position
 				  " "))))
 
-(run-at-time nil 0.1 'joes-update-mode-line-vc)
+(run-at-time nil 0.5 'joes-update-mode-line-vc)
 
 (provide 'joes-mode-line)
 ;;; joes-mode-line.el ends here
+
