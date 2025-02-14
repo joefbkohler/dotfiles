@@ -23,31 +23,45 @@
 
 ;;; Code:
 
+(require 'vc-git)
+(require 'joes-utils)
+
+(defvar-local joes-mode-line-vc-branch "")
+
+(defun joes-update-mode-line-vc ()
+	(setq joes-mode-line-vc-branch
+		(let ((branch (car (vc-git-branches))))
+			(if branch
+				(format " %s %s"
+					(propertize "" 'face
+						(if (joes-is-git-worktree-clean) '(:foreground nil) '(:foreground "#A22")))
+					branch)
+				""))))
+
 (setq-default mode-line-format
 	'(:eval
-         (joes-simple-mode-line-render
-		     '("%e "
-                  (:eval (if buffer-read-only "󰷪" "󰲶"))
-                  " "
-                  (:eval (if (file-remote-p default-directory) "󰲁" "󰉖"))
-                  " "
-                  (:eval (if (buffer-modified-p) "󰷈" "󱪚"))
-	              "  "
-                  mode-line-buffer-identification
-                  mode-line-process
-                  (:eval (when (car (vc-git-branches))
-                             (format " %s %s" (propertize "" 'face
-                                                  (if (joes-is-git-worktree-clean) '(:foreground nil) '(:foreground "#A22")))
-                                 (car (vc-git-branches)))))
-			      (:eval (when (bound-and-true-p flymake-mode) (concat " " (format-mode-line flymake-mode-line-format))))
-                  (:eval (when (not (string-empty-p (format-mode-line mode-line-misc-info)))
-                             (concat " " (format-mode-line mode-line-misc-info)))))
-             
-		     '(""
-                  (:eval (if (<= (count-windows) 1) (concat (format-mode-line mode-name) "  ")))
-                  "[%3l:%3C]"
-                  mode-line-percent-position
-                  " "))))
+		 (joes-simple-mode-line-render
+			 '("%e "
+				  (:eval (if buffer-read-only "󰷪" "󰲶"))
+				  " "
+				  (:eval (if (file-remote-p default-directory) "󰲁" "󰉖"))
+				  " "
+				  (:eval (if (buffer-modified-p) "󰷈" "󱪚"))
+				  "  "
+				  mode-line-buffer-identification
+				  mode-line-process
+				  joes-mode-line-vc-branch
+				  (:eval (when (bound-and-true-p flymake-mode) (concat " " (format-mode-line flymake-mode-line-format))))
+				  (:eval (when (not (string-empty-p (format-mode-line mode-line-misc-info)))
+							 (concat " " (format-mode-line mode-line-misc-info)))))
+			 
+			 '(""
+				  (:eval (if (<= (count-windows) 1) (concat (format-mode-line mode-name) "  ")))
+				  "[%3l:%3C]"
+				  mode-line-percent-position
+				  " "))))
+
+(run-at-time nil 0.1 'joes-update-mode-line-vc)
 
 (provide 'joes-mode-line)
 ;;; joes-mode-line.el ends here
