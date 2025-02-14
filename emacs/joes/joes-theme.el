@@ -31,12 +31,16 @@
 	(setq-default visual-line-fringe-indicators 'left-curly-arrow right-curly-arrow)
 	(setq-default buffer-face-mode-face 'documents-face) ;; For documents buffers.
 	(set-face-attribute 'default nil
-						:height 160
-						:width 'normal
-						:font "Iosevka")
+		:height 160
+		:width 'normal
+		:font "Iosevka")
 	(set-face-attribute 'font-lock-string-face nil
-						:inherit 'default
-						:slant 'italic))
+		:inherit 'default
+		:slant 'italic)
+    (set-face-attribute 'mode-line nil
+        :font "Iosevka Nerd Font")
+    (set-face-attribute 'mode-line-inactive nil
+        :inherit 'mode-line))
 
 (defun joes-theme-apply-flymake()
 	"Flymake theme config."
@@ -62,8 +66,8 @@
 	
 	(set-face-attribute 'fringe nil :foreground nil :background "#222")
 
-	(set-face-attribute 'mode-line nil :font "Iosevka Nerd Font" :background "#161616" :height 140)
-    (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626" :height 140)
+	(set-face-attribute 'mode-line nil :background "#161616" :height 140)
+    (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626")
 
 	(set-face-attribute 'font-lock-keyword-face nil :foreground "#AA6" :weight 'bold)
 	(set-face-attribute 'font-lock-constant-face nil :inherit 'font-lock-keyword-face :foreground "#C66")
@@ -129,6 +133,8 @@ LEFT and RIGHT aligned respectively."
             'display
             `((space :align-to (- right-margin -2,(length (format-mode-line right))))))
         right))
+
+(joes-theme-apply-default-faces)
 
 (provide 'joes-theme)
 ;;; joes-theme.el ends here
