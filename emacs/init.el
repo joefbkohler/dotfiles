@@ -41,6 +41,7 @@
 
 (setq-default ring-bell-function 'joes-blink-minibuffer)
 (setq-default scroll-conservatively 10000)
+(setq-default pixel-scroll-precision-mode t)
 (setq-default scroll-step 1)
 (setq-default tab-width 4)
 (setq-default visible-bell nil)
