@@ -138,8 +138,7 @@ output as a string."
 								  (buffer-substring-no-properties
 									  (point-min)
 									  (point-max)))))
-						(funcall callback output-string)))
-					(kill-buffer output-buffer)))))
-
+						(funcall callback output-string)
+                        (kill-buffer output-buffer)))))))
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
