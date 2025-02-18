@@ -106,6 +106,11 @@
 	(keymap-set minuet-active-mode-map "<tab>" 'minuet-accept-suggestion)
 	(keymap-global-set "C-M-/" 'minuet-show-suggestion))
 
+(defun joes-latex-keybinding ()
+	"Keys for TeX mode."
+	(defvar latex-mode-map)
+	(keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-update))
+
 (joes-keybindings-common)
 
 (provide 'joes-keybindings)

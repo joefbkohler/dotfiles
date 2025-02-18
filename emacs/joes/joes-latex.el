@@ -3,7 +3,6 @@
 ;; Copyright (C) 2025  Joe Köhler
 
 ;; Author: Joe Köhler <joe.fb.kohler@gmail.com>
-;; Keywords: 
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,11 +26,12 @@
 (require 'tex-mode)
 (require 'joes-utils)
 (require 'joes-company)
+(require 'joes-keybindings)
 
 (defun joes-latex-mode-hook ()
 	"Latex mode hook configuration."
-	(local-set-key [remap tex-compile] 'joes-tex-compile-update)
-	(add-to-list 'company-capf-prefix-functions 'my-latex-company-capf-prefix)
+	(joes-latex-keybinding)
+	(add-to-list 'company-capf-prefix-functions 'joes-latex-company-capf-prefix)
 	(eglot-ensure)
 	(flyspell-mode 1)
 	(flymake-mode 1)
