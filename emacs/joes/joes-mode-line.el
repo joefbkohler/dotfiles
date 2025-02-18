@@ -34,13 +34,13 @@
 	(let ((branch (car (vc-git-branches))))
 		(if branch
 			(joes-async-shell-command-to-string
-				"git status --porcelain -z"
 				(lambda (result)
 					(setq joes-mode-line-vc-branch
 						(format " %s %s"
 							(propertize "" 'face
 								(if (string-empty-p result) '(:foreground nil) '(:foreground "#A22")))
-							branch))))
+							branch)))
+				"git" "status" "--porcelain" "-z")
 			(setq joes-mode-line-vc-branch ""))))
 
 (setq-default mode-line-format

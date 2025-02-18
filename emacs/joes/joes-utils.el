@@ -121,16 +121,18 @@
 				(select-window first-win)
 				(if this-win-2nd (other-window 1))))))
 
-(defun joes-async-shell-command-to-string (command callback)
+(defun joes-async-shell-command-to-string (callback command &rest args)
 	"Execute shell command COMMAND asynchronously in the background.
 Return the temporary output buffer which command is writing to
 during execution.
 
 When the command is finished, call CALLBACK with the resulting
-output as a string."
+output as a string.
+
+ARGS are sent to the command."
 	(let ((output-buffer (generate-new-buffer "*async-string*")))
 		(set-process-sentinel
-			(start-process "Shell" output-buffer shell-file-name shell-command-switch command)
+			(apply #'start-process "Shell" output-buffer command args)
 			(lambda (process _)
 				(when (memq (process-status process) '(exit signal))
 					(let ((output-string
