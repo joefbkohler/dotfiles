@@ -121,9 +121,25 @@
 				(select-window first-win)
 				(if this-win-2nd (other-window 1))))))
 
-(defun joes-is-git-worktree-clean ()
-    "Return t if worktree is clean and nil if not."
-    (string-empty-p (shell-command-to-string "git status --porcelain -z")))
+(defun joes-async-shell-command-to-string (command callback)
+	"Execute shell command COMMAND asynchronously in the background.
+Return the temporary output buffer which command is writing to
+during execution.
+
+When the command is finished, call CALLBACK with the resulting
+output as a string."
+	(let ((output-buffer (get-buffer-create "*temp*")))
+		(set-process-sentinel
+			(start-process "Shell" output-buffer shell-file-name shell-command-switch command)
+			(lambda (process _)
+				(when (memq (process-status process) '(exit signal))
+					(let ((output-string
+							  (with-current-buffer output-buffer
+								  (buffer-substring-no-properties
+									  (point-min)
+									  (point-max)))))
+						(funcall callback output-string)))
+					(kill-buffer output-buffer)))))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

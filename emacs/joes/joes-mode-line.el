@@ -31,14 +31,17 @@
 
 (defun joes-update-mode-line-vc ()
 	"Update VC branch and modified in mode-line."
-	(setq joes-mode-line-vc-branch
-		(let ((branch (car (vc-git-branches))))
-			(if branch
-				(format " %s %s"
-					(propertize "" 'face
-						(if (joes-is-git-worktree-clean) '(:foreground nil) '(:foreground "#A22")))
-					branch)
-				""))))
+	(let ((branch (car (vc-git-branches))))
+		(if branch
+			(joes-async-shell-command-to-string
+				"git status --porcelain -z"
+				(lambda (result)
+					(setq joes-mode-line-vc-branch
+						(format " %s %s"
+							(propertize "" 'face
+								(if (string-empty-p result) '(:foreground nil) '(:foreground "#A22")))
+							branch))))
+			(setq joes-mode-line-vc-branch ""))))
 
 (setq-default mode-line-format
 	'(:eval
