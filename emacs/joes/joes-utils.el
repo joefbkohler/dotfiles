@@ -128,7 +128,7 @@ during execution.
 
 When the command is finished, call CALLBACK with the resulting
 output as a string."
-	(let ((output-buffer (get-buffer-create "*temp*")))
+	(let ((output-buffer (generate-new-buffer "*async-string*")))
 		(set-process-sentinel
 			(start-process "Shell" output-buffer shell-file-name shell-command-switch command)
 			(lambda (process _)
