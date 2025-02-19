@@ -26,15 +26,18 @@
 (defun joes-prog-mode-hook ()
 	"General prog mode config."
 	;; Look for a tab indentation, if found, set indent-tabs-mode.
-	(setq indent-tabs-mode (when (not (string-match
-										  "^\s+[^[:blank:]]"
-										  (buffer-substring-no-properties 1 (point-max)))) t))
+	(setq indent-tabs-mode
+		  (when (not (string-match
+					  "^\s+[^[:blank:]]"
+					  (buffer-substring-no-properties 1 (point-max)))) t))
+	
 	(declare-function flymake-eldoc-function "flymake")
 	(flymake-mode 1)
 	(push #'flymake-eldoc-function eldoc-documentation-functions)
 
+
+	(setq-local display-line-numbers-width-start t)
 	(display-line-numbers-mode 1)
-	(setq-local display-line-numbers-grow-only 1)
 	
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
 	(whitespace-mode -1)
