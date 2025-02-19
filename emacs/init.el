@@ -104,7 +104,11 @@
   
 (use-package joes-ispell)
  
-(use-package joes-mode-line)
+(use-package joes-mode-line
+    :demand t
+    :hook ((after-save . joes-update-mode-line-vc)
+              (find-file . joes-update-mode-line-vc)
+              (window-configuration-change . joes-update-mode-line-vc)))
  
 (use-package joes-company
     :after joes-ispell)

@@ -31,17 +31,18 @@
 
 (defun joes-update-mode-line-vc ()
 	"Update VC branch and modified in mode-line."
-	(let ((branch (car (vc-git-branches))))
-		(if branch
-			(joes-async-shell-command-to-string
-				(lambda (result)
-					(setq joes-mode-line-vc-branch
-						(format " %s %s"
-							(propertize "" 'face
-								(if (string-empty-p result) '(:foreground nil) '(:foreground "#A22")))
-							branch)))
-				"git" "status" "--porcelain" "-z")
-			(setq joes-mode-line-vc-branch ""))))
+	(setq joes-mode-line-vc-branch "")
+	(when (buffer-file-name) ;; short circuit to avoid unecessary git calls.
+		(let ((branch (car (vc-git-branches))))
+			(when branch ;; is inside a git repo.
+				(joes-async-shell-command-to-string
+					(lambda (result)
+						(setq joes-mode-line-vc-branch
+							(format " %s %s"
+								(propertize "" 'face
+									(if (string-empty-p result) '(:foreground nil) '(:foreground "#A22")))
+								branch)))
+					"git" "status" "--porcelain" "-z")))))
 
 (setq-default mode-line-format
 	'(:eval
@@ -59,15 +60,11 @@
 				  (:eval (when (bound-and-true-p flymake-mode) (concat " " (format-mode-line flymake-mode-line-format))))
 				  (:eval (when (not (string-empty-p (format-mode-line mode-line-misc-info)))
 							 (concat " " (format-mode-line mode-line-misc-info)))))
-			 
 			 '(""
 				  (:eval (if (<= (count-windows) 1) (concat (format-mode-line mode-name) "  ")))
 				  "[%3l:%3C]"
 				  mode-line-percent-position
 				  " "))))
 
-(run-at-time nil 0.5 'joes-update-mode-line-vc)
-
 (provide 'joes-mode-line)
 ;;; joes-mode-line.el ends here
-
