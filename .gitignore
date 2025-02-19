@@ -1,5 +1,3 @@
 *.extmap
-emacs/transient
-emacs/url
-emacs/projects
 emacs/local.el
+emacs/early-local.el
