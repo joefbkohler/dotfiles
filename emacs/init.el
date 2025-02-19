@@ -101,10 +101,7 @@
     (joes-theme-apply-zenburn)
     (when joes-use-transparency
         (joes-darker-transparent-background)))
- 
-(use-package vterm
-  :commands vterm vterm-other-window)
- 
+  
 (use-package joes-ispell)
  
 (use-package joes-mode-line)
