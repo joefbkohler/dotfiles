@@ -98,7 +98,9 @@
  
 (use-package zenburn-theme
     :config
-    (joes-theme-apply-zenburn))
+    (joes-theme-apply-zenburn)
+    (when joes-use-transparency
+        (joes-darker-transparent-background)))
  
 (use-package vterm
   :commands vterm vterm-other-window)

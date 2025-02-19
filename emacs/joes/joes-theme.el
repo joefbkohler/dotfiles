@@ -23,6 +23,14 @@
 
 ;;; Code:
 
+(defgroup joe nil
+	"My little modifications."
+	:group 'convenience)
+
+(defcustom joes-use-transparency t
+	"Should use transparency in background."
+	:type 'boolean)
+
 (defface documents-face '((t :font "Iosevka Etoile"))
 	"Face for text documents.")
 
@@ -60,11 +68,11 @@
 		:foreground "#D6D0BC")
 	
     (set-face-attribute 'hl-line nil :background "#0D0D0D" :box '(:line-width -1 :color "#555"))
-	(set-face-attribute 'region nil :foreground 'unspecified :background "#18181F")
+	(set-face-attribute 'region nil :foreground 'unspecified :background "#322")
 	(set-face-attribute 'isearch nil :foreground 'unspecified)
 	(set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
 	
-	(set-face-attribute 'fringe nil :foreground nil :background "#222")
+	(set-face-attribute 'fringe nil :foreground 'unspecified :background "#222")
 
 	(set-face-attribute 'mode-line nil :background "#161616" :height 140)
     (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626")
@@ -77,7 +85,25 @@
 	(set-face-attribute 'line-number nil :background "#141414")
 	(set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 
-	(set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF"))
+	(set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF")
+    (set-frame-parameter (selected-frame) 'alpha-background 100)
+    ;; alpha background for macos
+    (set-frame-parameter (selected-frame) 'alpha '(100 100)))
+
+(defun joes-darker-transparent-background()
+    "Darker background colors for use with transparency."
+    (message "%s" "Is this being run?")
+    (set-face-attribute 'default nil :background "#000")
+    (set-face-attribute 'hl-line nil :background "#080808")
+    (set-face-attribute 'fringe nil :background "#111")
+    (set-face-attribute 'region nil :background "#281818")
+    (set-face-attribute 'mode-line nil :background "#060606")
+    (set-face-attribute 'mode-line-inactive nil :background "#161616")
+    (set-face-attribute 'line-number nil :background "#060606")
+	(set-face-attribute 'line-number-current-line nil :background "#000")
+    (set-frame-parameter (selected-frame) 'alpha-background 90)
+    ;; alpha background for macos
+    (set-frame-parameter (selected-frame) 'alpha '(90 90)))
 
 (defun joes-theme-apply-ivy()
 	"Ivy/Swiper/Counsel colors."
