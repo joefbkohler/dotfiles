@@ -92,7 +92,6 @@
 
 (defun joes-darker-transparent-background()
     "Darker background colors for use with transparency."
-    (message "%s" "Is this being run?")
     (set-face-attribute 'default nil :background "#000")
     (set-face-attribute 'hl-line nil :background "#080808")
     (set-face-attribute 'fringe nil :background "#111")
