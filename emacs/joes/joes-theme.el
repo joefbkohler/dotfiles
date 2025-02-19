@@ -102,7 +102,7 @@
 	(set-face-attribute 'line-number-current-line nil :background "#000")
     (set-frame-parameter (selected-frame) 'alpha-background 90)
     ;; alpha background for macos
-    (set-frame-parameter (selected-frame) 'alpha '(90 90)))
+    (set-frame-parameter (selected-frame) 'alpha '(100 90)))
 
 (defun joes-theme-apply-ivy()
 	"Ivy/Swiper/Counsel colors."
