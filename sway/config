@@ -167,10 +167,10 @@ exec /usr/share/sway/scripts/inactive-windows-transparency.py --opacity 0.7
 bar {
 	position top
 	status_command i3status -c ~/.config/sway/i3status.conf
-	font pango:iosevka 10
+	font pango:iosevka 12
 
     colors {
-        statusline #ffffff
+        statusline #DDDDDD
         background #323232
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
