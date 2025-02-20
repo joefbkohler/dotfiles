@@ -109,7 +109,7 @@
 (defun joes-latex-keybinding ()
 	"Keys for TeX mode."
 	(defvar latex-mode-map)
-	(keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-update))
+	(keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-and-show))
 
 (joes-keybindings-common)
 
