@@ -31,6 +31,7 @@
 					  "^\s+[^[:blank:]]"
 					  (buffer-substring-no-properties 1 (point-max)))) t))
 	
+	(hl-line-mode)
 	(declare-function flymake-eldoc-function "flymake")
 	(flymake-mode 1)
 	(push #'flymake-eldoc-function eldoc-documentation-functions)
@@ -55,7 +56,8 @@
 
 (defun joes-text-mode-hook ()
 	"Text mode config."
-	(buffer-face-mode))
+	(buffer-face-mode)
+	(hl-line-mode))
 
 (defun joes-c-mode-common-hook ()
 	"C-common mode config."
