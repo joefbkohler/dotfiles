@@ -39,6 +39,9 @@
 (setq-default tab-width 4)
 (setq-default visible-bell nil)
 (setq-default enable-recursive-minibuffers t)
+(setq-default compilation-ask-about-save nil)
+(setq-default compilation-save-buffers-predicate 'ignore)
+(setq-default grep-save-buffers nil)
 (put 'narrow-to-region 'disabled nil)
 
 ;; Local envinronment configuration
