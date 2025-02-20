@@ -122,7 +122,8 @@
     (defun joes-git-commit-mode-hook ()
     	(setq-local company-dabbrev-ignore-case nil)
     	(setq-local company-dabbrev-downcase nil)
-    	(joes-keybindings-git-commit))
+        (joes-keybindings-git-commit)
+        (joes-theme-apply-magit))
     :hook (git-commit-mode . joes-git-commit-mode-hook)
     :config
     (declare-function magit-auto-revert-mode "magit")

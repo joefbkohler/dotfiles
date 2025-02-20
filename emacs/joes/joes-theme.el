@@ -86,6 +86,7 @@
 	(set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
 
 	(set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF")
+
     (set-frame-parameter (selected-frame) 'alpha-background 100)
     ;; alpha background for macos
     (set-frame-parameter (selected-frame) 'alpha '(100 100)))
@@ -125,6 +126,15 @@
 	(set-face-attribute 'logview-error-entry nil :foreground "#A33" :background 'unspecified)
 	(set-face-attribute 'logview-trace-entry nil :foreground "#AAC" :background 'unspecified)
 	(set-face-attribute 'logview-information-entry nil :foreground "#3B3" :background 'unspecified))
+
+(defun joes-theme-apply-magit()
+    "Magit colors."
+    (set-face-attribute 'magit-diff-hunk-heading-highlight nil :background "#2F2F2F")
+    (set-face-attribute 'magit-diff-context-highlight nil :background "#1F1F1F")
+    (set-face-attribute 'magit-diff-removed nil :background "#7C3333")
+    (set-face-attribute 'magit-diff-added nil :background "#5F7F5F")
+    (set-face-attribute 'magit-diff-removed-highlight nil :background "#8C4343")
+    (set-face-attribute 'magit-diff-added-highlight nil :background "#6F8F6F"))
 
 (defun joes-theme-set-cursor()
 	"Mouse cursor."
