@@ -36,9 +36,11 @@
 	(flymake-mode 1)
 	(push #'flymake-eldoc-function eldoc-documentation-functions)
 
-
 	(setq-local display-line-numbers-width-start t)
 	(display-line-numbers-mode 1)
+
+	(setq-local fill-column 79)
+	(display-fill-column-indicator-mode t)
 	
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
 	(whitespace-mode -1)
@@ -81,7 +83,9 @@
 
 (defun joes-eglot-hook ()
 	"Eglot config."
-		(joes-keybinding-eglot))
+	(declare-function eglot-inlay-hints-mode "eglot")
+	(joes-keybinding-eglot)
+	(eglot-inlay-hints-mode -1))
 
 (provide 'joes-prog)
 ;;; joes-prog.el ends here
