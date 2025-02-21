@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'hl-line)
+
 (defgroup joe nil
 	"My little modifications."
 	:group 'convenience)
@@ -129,12 +131,13 @@
 
 (defun joes-theme-apply-magit()
     "Magit colors."
-    (set-face-attribute 'magit-diff-hunk-heading-highlight nil :background "#2F2F2F")
+    (set-face-attribute 'magit-section-highlight nil :background "#262626")
+    (set-face-attribute 'magit-diff-hunk-heading-highlight nil :background "#262626")
     (set-face-attribute 'magit-diff-context-highlight nil :background "#1F1F1F")
-    (set-face-attribute 'magit-diff-removed nil :background "#7C3333")
-    (set-face-attribute 'magit-diff-added nil :background "#5F7F5F")
-    (set-face-attribute 'magit-diff-removed-highlight nil :background "#8C4343")
-    (set-face-attribute 'magit-diff-added-highlight nil :background "#6F8F6F"))
+    (set-face-attribute 'magit-diff-removed nil :background "#5C1313")
+    (set-face-attribute 'magit-diff-added nil :background "#3F5F3F")
+    (set-face-attribute 'magit-diff-removed-highlight nil :background "#6C2323")
+    (set-face-attribute 'magit-diff-added-highlight nil :background "#4F6F4F"))
 
 (defun joes-theme-set-cursor()
 	"Mouse cursor."
