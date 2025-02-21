@@ -90,7 +90,6 @@
 	(set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF")
 
     (set-frame-parameter (selected-frame) 'alpha-background 100)
-    ;; alpha background for macos
     (set-frame-parameter (selected-frame) 'alpha '(100 100)))
 
 (defun joes-darker-transparent-background()
@@ -104,7 +103,6 @@
     (set-face-attribute 'line-number nil :background "#060606")
 	(set-face-attribute 'line-number-current-line nil :background "#000")
     (set-frame-parameter (selected-frame) 'alpha-background 90)
-    ;; alpha background for macos
     (set-frame-parameter (selected-frame) 'alpha '(100 90)))
 
 (defun joes-theme-apply-ivy()
