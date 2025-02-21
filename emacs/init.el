@@ -156,6 +156,8 @@
 ;; Terminal Emulator
 (use-package eat
     :commands eat eat-other-window
+    :init
+    (joes-keybindings-eat)
     :config
     (declare-function eat-compile-terminfo "eat")
     (eat-compile-terminfo)

@@ -57,6 +57,10 @@
 	(keymap-substitute (current-global-map) 'isearch-forward 'isearch-forward-regexp)
 	(keymap-substitute (current-global-map) 'isearch-backward 'isearch-backward-regexp))
 
+(defun joes-keybindings-eat()
+	"Set eat keybindings."
+	(keymap-global-set "M-RET" 'eat-other-window))
+
 (defun joes-keybindings-git-commit()
 	"Set keys used in git commenting."
 	(defvar git-commit-mode-map)
