@@ -59,7 +59,8 @@
 
 (defun joes-keybindings-eat()
 	"Set eat keybindings."
-	(keymap-global-set "M-RET" 'eat-other-window))
+	(keymap-global-set "M-RET" 'eat-other-window)
+	(keymap-global-set "C-M-<return>" 'eat-project-other-window))
 
 (defun joes-keybindings-git-commit()
 	"Set keys used in git commenting."
