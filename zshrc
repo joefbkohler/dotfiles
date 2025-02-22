@@ -1,8 +1,7 @@
 export ZSH="$HOME/dotfiles/oh-my-zsh"
-ZSH_THEME="ys"
+ZSH_THEME="agnoster"
 
-plugins=(git
-		 colorize
+plugins=(colorize
 		 python
 		 pip
 		 virtualenv
