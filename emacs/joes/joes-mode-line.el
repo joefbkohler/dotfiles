@@ -76,15 +76,13 @@
 				(joes-async-shell-command-to-string
 					(lambda (result)
 						(setq joes-mode-line-vc-branch
-							(list
-                                0
-                                (format "%s%s%s"
-								    (propertize joes-mode-line-vc-symbol 'face
-									    (if (string-empty-p result)
-                                            '(:foreground nil)
-                                            `(:foreground ,joes-mode-line-vc-modified-color)))
-								    branch
-                                    (if (string-empty-p result) "" "")))))
+                            (format "%s%s%s"
+								(propertize joes-mode-line-vc-symbol 'face
+									(if (string-empty-p result)
+                                        '(:foreground nil)
+                                        `(:foreground ,joes-mode-line-vc-modified-color)))
+								branch
+                                (if (string-empty-p result) "" ""))))
 					"git" "status" "--porcelain" "-z")))))
 
 (defun joes-mode-line-colorize-recursive (section &optional color)
@@ -147,17 +145,14 @@ LEFT and RIGHT aligned respectively."
 				       (2 ,(if buffer-read-only "󰷪" "󰲶"))
 				       (2 ,(if (file-remote-p default-directory) "󰲁" "󰉖"))
 				       (2 ,(if (buffer-modified-p) "󰷈" "󱪚")))
-                  
                   (joes-mode-line-colorized-section
                       (list
                           (format-mode-line mode-line-buffer-identification)
                           (when mode-line-process mode-line-process))
                       joes-mode-line-area-divider 0)
-                  
                   (joes-mode-line-colorized-section
                       (when joes-mode-line-vc-branch joes-mode-line-vc-branch)
                       joes-mode-line-area-divider 1)
-
                   (joes-mode-line-colorized-section
                       (list (when (bound-and-true-p flymake-mode) (format-mode-line flymake-mode-line-format))
 				          (when (not (string-empty-p (format-mode-line mode-line-misc-info))) (format-mode-line mode-line-misc-info)))
