@@ -58,6 +58,15 @@
     "How much to change the previous section color to highlight new section."
     :type 'int)
 
+(defcustom joes-mode-line-selected-window (frame-selected-window)
+    "Selected window."
+    :type 'int)
+
+(defun joes-mode-line-update-window(_)
+    "Update selected window."
+    (setq joes-mode-line-selected-window (frame-selected-window))
+    (force-mode-line-update))
+
 (defun joes-mode-line-update-vc ()
 	"Update VC branch and modified in mode-line."
 	(setq joes-mode-line-vc-branch nil)
@@ -90,17 +99,21 @@
     section)
 
 (defun joes-mode-line-colored-divider(divider new-color &optional last-color)
-    (let* ((current-bg (or last-color (face-background 'mode-line))))
+    "Return DIVIDER with the correct NEW-COLOR comming from LAST-COLOR."
+    (let* ((current-bg (or last-color (joes-mode-line-current-background))))
         `(2 ,(propertize divider
                  'face
                  `(:background ,new-color :foreground ,current-bg)))))
 
 (defun joes-mode-line-colorized-section (section divider depth &optional new-color)
+    "Add color to SECTION, a DIVIDER before it.
+DEPTH help find the correct color by darkening it a certain amount.
+NEW-COLOR can be set to override the color selected."
     (let ((new-color (or new-color
                          (color-darken-name joes-mode-line-highlight-color
                              (* depth joes-mode-line-color-delta))))
              (last-color (if (< (- depth 1) 0)
-                             (face-background 'mode-line)
+                             (joes-mode-line-current-background)
                              (color-darken-name joes-mode-line-highlight-color
                                  (* (- depth 1) joes-mode-line-color-delta)))))
         (remove 'nil
@@ -120,6 +133,12 @@ LEFT and RIGHT aligned respectively."
             `((space :align-to (- right-margin -2,(length (format-mode-line right))))))
         right))
 
+(defun joes-mode-line-current-background ()
+    "Background color based on the mode-line being active or not."
+    (if (eq (selected-window) joes-mode-line-selected-window)
+        (face-background 'mode-line)
+        (face-background 'mode-line-inactive)))
+
 (setq-default mode-line-format
 	'((:eval
 		  (joes-mode-line-simple-splitter
@@ -131,10 +150,10 @@ LEFT and RIGHT aligned respectively."
                   
                   (joes-mode-line-colorized-section
                       (list
-                          mode-line-buffer-identification
+                          (format-mode-line mode-line-buffer-identification)
                           (when mode-line-process mode-line-process))
                       joes-mode-line-area-divider 0)
-                          
+                  
                   (joes-mode-line-colorized-section
                       (when joes-mode-line-vc-branch joes-mode-line-vc-branch)
                       joes-mode-line-area-divider 1)
@@ -143,13 +162,12 @@ LEFT and RIGHT aligned respectively."
                       (list (when (bound-and-true-p flymake-mode) (format-mode-line flymake-mode-line-format))
 				          (when (not (string-empty-p (format-mode-line mode-line-misc-info))) (format-mode-line mode-line-misc-info)))
                       joes-mode-line-area-divider 2)
-                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider 3 (face-background 'mode-line)))
+                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider 3 (joes-mode-line-current-background)))
 
 			  (list
-                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider-right 2 (face-background 'mode-line))
+                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider-right 2 (joes-mode-line-current-background))
                   (joes-mode-line-colorized-section mode-name joes-mode-line-area-divider-right 1)
                   (joes-mode-line-colorized-section '("%3l%3C") joes-mode-line-area-divider-right 0)
-                  ;;(joes-mode-line-colorized-section  joes-mode-line-area-divider-right 0)
                   '((-3 "%p") (1 " ")))
               ))))
 

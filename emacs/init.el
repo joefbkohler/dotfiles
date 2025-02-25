@@ -103,7 +103,9 @@
 	:demand t
 	:hook ((after-save . joes-mode-line-update-vc)
 			  (find-file . joes-mode-line-update-vc)
-			  (window-configuration-change . joes-mode-line-update-vc)))
+			  (window-configuration-change . joes-mode-line-update-vc))
+    :config
+    (add-hook 'window-selection-change-functions 'joes-mode-line-update-window))
  
 (use-package joes-company
     :after joes-ispell)
