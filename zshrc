@@ -9,6 +9,7 @@ plugins=(colorize
 		 sudo)
 
 PYTHON_AUTO_VRUN=true
+DISABLE_AUTO_UPDATE=true
 
 source $ZSH/oh-my-zsh.sh
 
