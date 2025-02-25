@@ -23,7 +23,6 @@
 ;; remove company? counsel completion-at-point the convolluted
 ;; fix xref-apropos so it's useful.  counsel, vertico, something!
 ;; Use tree-sitter whenever possible
-;; --> Move elpa to ~/.local/share
 
 ;;; Code:
 
