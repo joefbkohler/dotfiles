@@ -161,15 +161,6 @@
 			 "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
 			 "\\\\" "://")))
 
-(defun joes-simple-mode-line-render (left right)
-	"Return a string of `window-total-width' containing LEFT and RIGHT.
-LEFT and RIGHT aligned respectively."
-    (list left
-        (propertize " "
-            'display
-            `((space :align-to (- right-margin -2,(length (format-mode-line right))))))
-        right))
-
 (joes-theme-apply-default-faces)
 
 (provide 'joes-theme)

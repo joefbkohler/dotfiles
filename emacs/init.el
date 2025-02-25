@@ -100,10 +100,10 @@
 (use-package joes-ispell)
  
 (use-package joes-mode-line
-    :demand t
-    :hook ((after-save . joes-update-mode-line-vc)
-              (find-file . joes-update-mode-line-vc)
-              (window-configuration-change . joes-update-mode-line-vc)))
+	:demand t
+	:hook ((after-save . joes-mode-line-update-vc)
+			  (find-file . joes-mode-line-update-vc)
+			  (window-configuration-change . joes-mode-line-update-vc)))
  
 (use-package joes-company
     :after joes-ispell)
