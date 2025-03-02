@@ -122,15 +122,6 @@ NEW-COLOR can be set to override the color selected."
                 (when (eq divider joes-mode-line-area-divider-right)
                     (joes-mode-line-colored-divider divider new-color last-color))))))
 
-(defun joes-mode-line-simple-splitter (left right)
-	"Return a string of `window-total-width' containing LEFT and RIGHT.
-LEFT and RIGHT aligned respectively."
-    (list left
-        (propertize " "
-            'display
-            `((space :align-to (- right-margin -2,(length (format-mode-line right))))))
-        right))
-
 (defun joes-mode-line-current-background ()
     "Background color based on the mode-line being active or not."
     (if (eq (selected-window) joes-mode-line-selected-window)
@@ -138,33 +129,32 @@ LEFT and RIGHT aligned respectively."
         (face-background 'mode-line-inactive)))
 
 (setq-default mode-line-format
-	'((:eval
-		  (joes-mode-line-simple-splitter
-              (list
-                  `((1 "%e")
-				       (2 ,(if buffer-read-only "󰷪" "󰲶"))
-				       (2 ,(if (file-remote-p default-directory) "󰲁" "󰉖"))
-				       (2 ,(if (buffer-modified-p) "󰷈" "󱪚")))
-                  (joes-mode-line-colorized-section
-                      (list
-                          (format-mode-line mode-line-buffer-identification)
-                          (when mode-line-process mode-line-process))
-                      joes-mode-line-area-divider 0)
-                  (joes-mode-line-colorized-section
-                      (when joes-mode-line-vc-branch joes-mode-line-vc-branch)
-                      joes-mode-line-area-divider 1)
-                  (joes-mode-line-colorized-section
-                      (list (when (bound-and-true-p flymake-mode) (format-mode-line flymake-mode-line-format))
-				          (when (not (string-empty-p (format-mode-line mode-line-misc-info))) (format-mode-line mode-line-misc-info)))
-                      joes-mode-line-area-divider 2)
-                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider 3 (joes-mode-line-current-background)))
-
-			  (list
-                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider-right 2 (joes-mode-line-current-background))
-                  (joes-mode-line-colorized-section mode-name joes-mode-line-area-divider-right 1)
-                  (joes-mode-line-colorized-section '("%3l%3C") joes-mode-line-area-divider-right 0)
-                  '((-3 "%p") (1 " ")))
-              ))))
+	'((:eval (list
+                 mode-line-front-space
+                 `((2 ,(if buffer-read-only "󰷪" "󰲶"))
+				      (2 ,(if (file-remote-p default-directory) "󰲁" "󰉖"))
+				      (2 ,(if (buffer-modified-p) "󰷈" "󱪚")))
+                 (joes-mode-line-colorized-section
+                     (list
+                         (format-mode-line mode-line-buffer-identification)
+                         (when mode-line-process mode-line-process))
+                     joes-mode-line-area-divider 0)
+                 (joes-mode-line-colorized-section
+                     (when joes-mode-line-vc-branch joes-mode-line-vc-branch)
+                     joes-mode-line-area-divider 1)
+                 (joes-mode-line-colorized-section
+                     (list (when (bound-and-true-p flymake-mode) (format-mode-line flymake-mode-line-format))
+				         (when (not (string-empty-p (format-mode-line mode-line-misc-info))) (format-mode-line mode-line-misc-info)))
+                     joes-mode-line-area-divider 2)
+                 (joes-mode-line-colorized-section '("") joes-mode-line-area-divider 3 (joes-mode-line-current-background))))
+         mode-line-format-right-align
+		 (:eval (list
+                    (joes-mode-line-colorized-section '("") joes-mode-line-area-divider-right 2 (joes-mode-line-current-background))
+                    (joes-mode-line-colorized-section mode-name joes-mode-line-area-divider-right 1)
+                    (joes-mode-line-colorized-section '("%3l%3C") joes-mode-line-area-divider-right 0)
+                    '((-3 "%p") (1 " "))))
+         mode-line-end-spaces
+         ))))
 
 (provide 'joes-mode-line)
 ;;; joes-mode-line.el ends here
