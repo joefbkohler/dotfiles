@@ -93,11 +93,18 @@
             (dolist (subsection section)
                 (joes-mode-line-colorize-recursive subsection color))
             (when (stringp section)
-                (put-text-property 0 (length section) 'face `(:background ,color) section))))
+                (let* ((current-face (get-text-property 0 'face section))
+                          (face `(:background ,color))
+                          (current-bg (car (cdr (assoc :background (ensure-list current-face))))))
+                    (when (not (string= color current-bg))
+                        (add-face-text-property 0 (length section) face nil section))
+					)
+                )))
     section)
 
 (defun joes-mode-line-colored-divider(divider new-color &optional last-color)
     "Return DIVIDER with the correct NEW-COLOR comming from LAST-COLOR."
+
     (let* ((current-bg (or last-color (joes-mode-line-current-background))))
         `(2 ,(propertize divider
                  'face
@@ -154,7 +161,7 @@ NEW-COLOR can be set to override the color selected."
                     (joes-mode-line-colorized-section '("%3l%3C") joes-mode-line-area-divider-right 0)
                     '((-3 "%p") (1 " "))))
          mode-line-end-spaces
-         ))))
+         ))
 
 (provide 'joes-mode-line)
 ;;; joes-mode-line.el ends here
