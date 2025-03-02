@@ -25,23 +25,30 @@
 ;; Use tree-sitter whenever possible
 
 ;;; Code:
+(require 'joes-utils)
+(require 'joes-theme)
+(require 'joes-keybindings)
+(require 'joes-package)
+(require 'xdg)
 
 ;; Global variables
 ;; -- General
-(setq-default user-full-name "Joe Köhler")
-(setq-default user-mail-address "joe.fb.kohler@gmail.com")
+(setopt
+    user-full-name  "Joe Köhler"
+    user-mail-address "joe.fb.kohler@gmail.com"
 
-(setq-default ring-bell-function 'joes-blink-minibuffer)
-(setq-default scroll-conservatively 10000)
-(setq-default pixel-scroll-precision-mode t)
-(setq-default scroll-step 1)
-(setq-default tab-width 4)
-(setq-default visible-bell nil)
-(setq-default enable-recursive-minibuffers t)
-(setq-default compilation-ask-about-save nil)
-(setq-default compilation-save-buffers-predicate 'ignore)
-(setq-default grep-save-buffers nil)
+    ring-bell-function 'joes-blink-minibuffer
+    scroll-conservatively 10000
+    pixel-scroll-precision-mode t
+    scroll-step 1
+    visible-bell nil
+    enable-recursive-minibuffers t
+    compilation-ask-about-save nil
+    compilation-save-buffers-predicate 'ignore
+    grep-save-buffers nil)
+
 (put 'narrow-to-region 'disabled nil)
+(setq-default tab-width 4)
 
 ;; Local envinronment configuration
 (ignore-errors (load-file (expand-file-name "emacs/local.el" (xdg-config-home))))
@@ -64,15 +71,12 @@
 
 ;; -- External packages configuration and modes
 
+(joes-package-initialize)
+
 (eval-when-compile
 	(require 'use-package))
 
 (setq use-package-compute-statistics t)
-
-(require 'joes-utils)
-(require 'joes-theme)
-(require 'joes-keybindings)
-(require 'joes-package)
 
 (use-package joes-prog
     :hook ((text-mode . joes-text-mode-hook)
@@ -94,7 +98,7 @@
     :config
     (joes-theme-apply-zenburn)
     (when joes-use-transparency
-        (joes-darker-transparent-background)))
+        (joes-theme-darker-transparent-background)))
   
 (use-package joes-ispell)
  

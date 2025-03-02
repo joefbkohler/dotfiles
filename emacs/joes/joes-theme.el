@@ -92,7 +92,7 @@
     (set-frame-parameter (selected-frame) 'alpha-background 100)
     (set-frame-parameter (selected-frame) 'alpha '(100 100)))
 
-(defun joes-darker-transparent-background()
+(defun joes-theme-darker-transparent-background()
     "Darker background colors for use with transparency."
     (set-face-attribute 'default nil :background "#000")
     (set-face-attribute 'hl-line nil :background "#080808")
