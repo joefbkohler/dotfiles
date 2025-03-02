@@ -85,6 +85,7 @@
                                 (if (string-empty-p result) "" ""))))
 					"git" "status" "--porcelain" "-z")))))
 
+
 (defun joes-mode-line-colorize-recursive (section &optional color)
     "Add bg COLOR to all strings of a SECTION recursevely."
     (let ((color (or color joes-mode-line-highlight-color)))
@@ -92,8 +93,7 @@
             (dolist (subsection section)
                 (joes-mode-line-colorize-recursive subsection color))
             (when (stringp section)
-                (add-face-text-property 0 (length section)
-                    `(:background ,color) nil section))))
+                (put-text-property 0 (length section) 'face `(:background ,color) section))))
     section)
 
 (defun joes-mode-line-colored-divider(divider new-color &optional last-color)
