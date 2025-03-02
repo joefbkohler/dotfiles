@@ -28,36 +28,36 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 (setq package-selected-packages
-	'(ivy-xref
-		 counsel
-		 ivy-prescient
-		 magit-lfs
+	'(magit-lfs
 		 magit
 		 pdf-tools
-		 pet
+		 pet ;Python environment.
 		 yaml-mode
-		 dockerfile-mode
 		 jupyter
 		 gnu-elpa-keyring-update
-		 ivy
 		 zenburn-theme
 		 logview
-		 company
 		 scad-mode
 		 ligature
-		 exec-path-from-shell
-		 eglot
-		 dape
-		 eat
-		 gptel
-		 minuet))
+		 exec-path-from-shell ;Used to work with macos path
+		 eglot ;builtin version was too far back.
+		 dape ;Debugger using Debug
+		 eat ;Terminal emulator
+		 gptel ;AI chat
+		 minuet ;AI completion suggestion.
+		 vertico ;minibuffer completion UI
+		 marginalia ;minibuffe pretty docs
+		 consult ;utilitarian commands based on complete-read - grep, line and completion.
+		 orderless ;simple minibuffer completion/order style
+		 ))
 
-(package-initialize)
-
-(when (and (length> (seq-remove #'package-installed-p package-selected-packages) 0)
-		  (y-or-n-p "Required packages not installed.  Install them?"))
-	(package-refresh-contents)
-	(package-install-selected-packages t))
+(defun joes-package-initialize ()
+	"Intialize.  Check for required packages."
+	(package-initialize)
+	(when (and (length> (seq-remove #'package-installed-p package-selected-packages) 0)
+ 			  (y-or-n-p "Required packages not installed.  Install them?"))
+ 		(package-refresh-contents)
+ 		(package-install-selected-packages t)))
 
 (provide 'joes-package)
 ;;; joes-package.el ends here

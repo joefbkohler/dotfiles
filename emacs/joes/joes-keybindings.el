@@ -43,15 +43,13 @@
 	(keymap-global-set "C-c C-r" 'xref-find-references)
 	(keymap-global-set "C-c o" 'imenu)
 	(keymap-global-set "s-u" 'revert-buffer-quick)
+	(keymap-global-set "C-c C-f" 'project-find-file)
 
 	(keymap-substitute (current-global-map) 'shell-command 'async-shell)
 	(keymap-substitute (current-global-map) 'shell-command 'async-shell-command)
 	(keymap-substitute (current-global-map) 'indent-for-tab-command 'joes-indent-or-complete)
 	(keymap-substitute (current-global-map) 'c-indent-line-or-region 'joes-indent-or-complete)
-	(keymap-substitute (current-global-map) 'list-buffers 'ivy-switch-buffer)
-
-	(keymap-set minibuffer-local-map "<tab>" 'complete-symbol)
-	
+		
 	(keymap-substitute visual-line-mode-map 'kill-line nil) ;; Remove remapping of kill-line to kill-visual-line
 
 	(keymap-substitute (current-global-map) 'isearch-forward 'isearch-forward-regexp)
@@ -74,27 +72,21 @@
 								   (python-indent-line)))
 	(keymap-local-set "C-<" 'python-indent-shift-left))
 
-(defun joes-keybindings-ivy()
-	"Set keys used in ivy functions."
-	(declare-function ivy-define-key "ivy")
-	(defvar ivy-minibuffer-map)
-	(keymap-global-set "M-x" 'counsel-M-x)
-	(keymap-global-set "C-M-y" 'counsel-yank-pop)
-	(keymap-global-set "C-c C-f" 'counsel-git)
-	(keymap-global-set "C-M-s" 'counsel-grep-or-swiper)
+(defun joes-keybindings-vertico()
+	"Set keys used in vertico functions."
+	(keymap-set vertico-map "C-M-p" 'vertico-previous-group)
+	(keymap-set vertico-map "C-M-n" 'vertico-next-group)
+	(keymap-set vertico-map "DEL" 'vertico-directory-delete-char)
+    (keymap-set vertico-map "<TAB>" 'minibuffer-complete)
+    (keymap-set vertico-map "<RET>" 'vertico-directory-enter))
 
-	(keymap-substitute (current-global-map) 'describe-function 'counsel-describe-function)
-	(keymap-substitute (current-global-map) 'describe-variable 'counsel-describe-variable)
-	(keymap-substitute (current-global-map) 'imenu 'counsel-imenu)
-
-	(keymap-set ivy-minibuffer-map "<RET>" 'ivy-alt-done)
-	(keymap-set ivy-minibuffer-map "<TAB>" 'ivy-partial)
-
-	;; minibuffer keys
-	(keymap-set ivy-minibuffer-map "M-p" 'ivy-previous-line)
-	(keymap-set ivy-minibuffer-map "M-n" 'ivy-next-line)
-	(keymap-set ivy-minibuffer-map "C-p" 'ivy-previous-history-element)
-	(keymap-set ivy-minibuffer-map "C-n" 'ivy-next-history-element))
+(defun joes-keybindings-consult()
+	"Set keys used in Consult functions."
+	(keymap-global-set "C-M-s" 'consult-line)
+    (keymap-global-set "C-M-y" 'consult-yank-pop)
+	(keymap-substitute (current-global-map) 'switch-to-buffer 'consult-buffer)
+    (keymap-substitute (current-global-map) 'list-buffers 'consult-buffer)
+    (setopt consult-preview-key "C-v"))
 
 (defun joes-keybinding-eglot ()
 	"Set keys used for eglot functions."

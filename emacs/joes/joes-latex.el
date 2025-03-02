@@ -25,14 +25,14 @@
 
 (require 'tex-mode)
 (require 'joes-utils)
-(require 'joes-company)
+;(require 'joes-company)
 (require 'joes-keybindings)
 (require 'project)
 
 (defun joes-latex-mode-hook ()
 	"Latex mode hook configuration."
 	(joes-latex-keybinding)
-	(add-to-list 'company-capf-prefix-functions 'joes-latex-company-capf-prefix)
+	;(add-to-list 'company-capf-prefix-functions 'joes-latex-company-capf-prefix)
 	(eglot-ensure)
 	(flyspell-mode 1)
 	(flymake-mode 1)

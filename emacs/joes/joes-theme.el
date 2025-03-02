@@ -105,20 +105,14 @@
     (set-frame-parameter (selected-frame) 'alpha-background 90)
     (set-frame-parameter (selected-frame) 'alpha '(100 90)))
 
-(defun joes-theme-apply-ivy()
-	"Ivy/Swiper/Counsel colors."
-	(require 'ivy-faces)
-	(set-face-attribute 'ivy-current-match nil
+(defun joes-theme-apply-vertico()
+    "Vertico theme."
+    (set-face-attribute 'vertico-current nil
 		:background "#0A0E0A"
 		:box '(:line-width -1 :color "#606560")
 		:foreground 'unspecified
 		:underline 'unspecified
-		:extend t)
-	(set-face-attribute 'ivy-subdir nil :background 'unspecified :foreground 'unspecified :inherit 'dired-directory)
-	(set-face-attribute 'ivy-minibuffer-match-face-1 nil :background 'unspecified :underline "#FFF")
-	(set-face-attribute 'ivy-minibuffer-match-face-2 nil :background 'unspecified :underline "#FFF")
-	(set-face-attribute 'ivy-minibuffer-match-face-3 nil :background 'unspecified :underline "#FFF")
-	(set-face-attribute 'ivy-minibuffer-match-face-4 nil :background 'unspecified :underline "#FFF"))
+		:extend t))
 
 (defun joes-theme-apply-logview()
 	"Logview theme."

@@ -109,14 +109,7 @@
 			  (window-configuration-change . joes-mode-line-update-vc))
     :config
     (add-hook 'window-selection-change-functions 'joes-mode-line-update-window))
- 
-(use-package joes-company
-    :after joes-ispell)
- 
-(use-package joes-ivy
-    :demand t
-    :hook '(minibuffer-mode . joes-ivy-hook))
- 
+  
 (use-package eglot
     :commands eglot-ensure
     :hook (eglot-managed-mode . joes-eglot-hook)
@@ -166,7 +159,7 @@
     :config
     (declare-function eat-compile-terminfo "eat")
     (eat-compile-terminfo)
-    (setq eat-kill-buffer-on-exit t))
+    (setopt eat-kill-buffer-on-exit t))
  
 (use-package ligature
     :functions global-ligature-mode
@@ -174,6 +167,37 @@
     (declare-function global-ligature-mode "ligature")
     (joes-theme-set-ligatures)
     (global-ligature-mode))
- 
+
+(use-package vertico
+    :config
+    (declare-function vertico-mode "vertico")
+    (vertico-mode)
+    (joes-keybindings-vertico)
+    (joes-theme-apply-vertico))
+
+(use-package marginalia
+    :config
+    (declare-function marginalia-mode "marginalia")
+    (marginalia-mode))
+
+(use-package orderless
+    :config
+    (setopt completion-styles '(basic orderless partial-completion)))
+
+(use-package consult
+    :demand t
+    :init
+    (defun joes-minibuffer-complete()
+        "This function allows use of tab partial completion when in minibuffer.
+It still allows consult completion in eval-expression."
+        (when (not (string= current-minibuffer-command "eval-expression"))
+            (setq-local completion-in-region-function #'completion--in-region)))
+    :hook ((minibuffer-mode . joes-minibuffer-complete))
+    :config
+    (recentf-mode)
+    (declare-function consult-completion-in-region "consult")
+    (setq-default completion-in-region-function #'consult-completion-in-region)
+    (joes-keybindings-consult))
+
 (provide 'init)
 ;;; init.el ends here.
