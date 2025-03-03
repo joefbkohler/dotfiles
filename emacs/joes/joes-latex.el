@@ -25,14 +25,14 @@
 
 (require 'tex-mode)
 (require 'joes-utils)
-;(require 'joes-company)
 (require 'joes-keybindings)
 (require 'project)
 
 (defun joes-latex-mode-hook ()
 	"Latex mode hook configuration."
+	(advice-add 'eglot-completion-at-point
+		:around #'joes-latex-capf-wrap-latex-code)
 	(joes-latex-keybinding)
-	;(add-to-list 'company-capf-prefix-functions 'joes-latex-company-capf-prefix)
 	(eglot-ensure)
 	(flyspell-mode 1)
 	(flymake-mode 1)
@@ -93,16 +93,18 @@
 	(joes-latex-compile-project)
 	(joes-latex-show-project-pdf))
 
-(defun joes-latex-company-capf-prefix()
-	"Check if current prefix is a valid `company-capf' prefix in `latex-mode'."
-	(save-excursion
-		(let* ((start-point (point))
-			      (pos-slash (search-backward "\\" nil t))
-				  (pos-bracket (search-forward "{" nil t)))
-			(when (or (not pos-slash)
-					  (and pos-bracket
-						  (<= pos-bracket start-point)))
-				t))))
+(defun joes-latex-capf-wrap-latex-code(capf)
+	"Wrap to check if current point should trigger latex code CAPF."
+	(when (or
+			 (not (eq major-mode 'latex-mode)) ;; Always true if not LaTeX.
+			 (save-excursion
+				 (let ((start-point (point))
+						  (pos-slash (search-backward "\\" nil t))
+						  (pos-bracket (search-forward "{" nil t)))
+					 (and pos-slash
+						 (or (not pos-bracket)
+							 (>= pos-bracket start-point))))))
+		(funcall capf)))
 
 (provide 'joes-latex)
 ;;; joes-latex.el ends here
