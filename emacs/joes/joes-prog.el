@@ -43,10 +43,7 @@
 	(display-fill-column-indicator-mode t)
 	
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
-	(whitespace-mode -1)
-
-	(setq-local company-dabbrev-ignore-case nil)
-	(setq-local company-dabbrev-downcase nil))
+	(whitespace-mode -1))
 
 (defun joes-ediff-mode-hook()
 	"Ediff mode config."

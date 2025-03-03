@@ -112,10 +112,18 @@
   
 (use-package eglot
     :commands eglot-ensure
-    :hook (eglot-managed-mode . joes-eglot-hook)
-    :config
-    (setq eglot-stay-out-of '(company)))
+    :hook (eglot-managed-mode . joes-eglot-hook))
  
+(use-package cape
+    :config
+    (declare-function cape-capf-super "cape")
+    (declare-function cape-dabbrev "cape")
+    (declare-function cape-file "cape")
+    (declare-function cape-wrap-inside-code "cape")
+    (add-hook 'completion-at-point-functions (cape-capf-super #'cape-dabbrev #'ispell-completion-at-point))
+    (add-hook 'completion-at-point-functions #'cape-file)
+    (advice-add 'eglot-completion-at-point :around #'cape-wrap-inside-code))
+
 (use-package magit
     :commands magit-status
     :init

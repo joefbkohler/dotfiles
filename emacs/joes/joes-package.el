@@ -1,4 +1,3 @@
-
 ;;; joes-package.el --- joes package.el configuration and functions  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025
@@ -49,6 +48,7 @@
 		 marginalia ;minibuffe pretty docs
 		 consult ;utilitarian commands based on complete-read - grep, line and completion.
 		 orderless ;simple minibuffer completion/order style
+		 cape ;usefull to agregate multiple capfs in one. Also cape-file is cool.
 		 ))
 
 (defun joes-package-initialize ()
