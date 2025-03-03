@@ -179,9 +179,14 @@
 (use-package vertico
     :config
     (declare-function vertico-mode "vertico")
+    (declare-function vertico-multiform-mode "vertico")
     (vertico-mode)
+    (vertico-multiform-mode)
     (joes-keybindings-vertico)
-    (joes-theme-apply-vertico))
+    (joes-theme-apply-vertico)
+    (setopt vertico-multiform-categories
+      '((file grid)
+        (consult-grep buffer))))
 
 (use-package marginalia
     :config
