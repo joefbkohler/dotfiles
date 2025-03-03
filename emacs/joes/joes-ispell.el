@@ -29,8 +29,8 @@
 (require 'recentf)
 
 ;; Prefer Hunspell. If not, whatever is found.
-(setq-default ispell-program-name (or (executable-find "hunspell") ispell-program-name))
-(setq-default ispell-complete-word-dict (file-truename "~/.words"))
+(setopt ispell-program-name (or (executable-find "hunspell") ispell-program-name))
+(setopt ispell-complete-word-dict (file-truename "~/.words"))
 
 (defun joes-ispell-aspell-words (dict)
 	"Return all words of an aspell DICT."

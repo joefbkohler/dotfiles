@@ -157,7 +157,7 @@ NEW-COLOR can be set to override the color selected."
          mode-line-format-right-align
 		 (:eval (list
                     (joes-mode-line-colorized-section '("") joes-mode-line-area-divider-right 2 (joes-mode-line-current-background))
-                    (joes-mode-line-colorized-section mode-name joes-mode-line-area-divider-right 1)
+                    (joes-mode-line-colorized-section (format-mode-line mode-name) joes-mode-line-area-divider-right 1)
                     (joes-mode-line-colorized-section '("%3l%3C") joes-mode-line-area-divider-right 0)
                     '((-3 "%p") (1 " "))))
          mode-line-end-spaces
