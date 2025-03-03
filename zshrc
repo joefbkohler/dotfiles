@@ -1,6 +1,10 @@
 export ZSH="$HOME/dotfiles/oh-my-zsh"
 ZSH_THEME="agnoster"
 
+if [ "$TERM" = "linux" ]; then
+	ZSH_THEME="ys"
+fi
+
 plugins=(colorize
 		 python
 		 pip
