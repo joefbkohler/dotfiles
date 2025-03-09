@@ -188,11 +188,6 @@
       '((file grid)
         (consult-grep buffer))))
 
-(use-package marginalia
-    :config
-    (declare-function marginalia-mode "marginalia")
-    (marginalia-mode))
-
 (use-package orderless
     :config
     (setopt completion-styles '(basic orderless partial-completion)))

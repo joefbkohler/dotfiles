@@ -45,7 +45,6 @@
 		 gptel ;AI chat
 		 minuet ;AI completion suggestion.
 		 vertico ;minibuffer completion UI
-		 marginalia ;minibuffe pretty docs
 		 consult ;utilitarian commands based on complete-read - grep, line and completion.
 		 orderless ;simple minibuffer completion/order style
 		 cape ;usefull to agregate multiple capfs in one. Also cape-file is cool.
