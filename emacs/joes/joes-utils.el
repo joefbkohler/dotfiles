@@ -81,7 +81,17 @@
 			(when (and
 					  (eq initial-position (point))
 					  (eq initial-indentation (current-indentation)))
-				(completion-at-point)))))
+                (completion-at-point)
+                ))))
+
+(defun joes-utils-toggle-eldoc ()
+	(interactive)
+	(let ((eldoc-window (get-buffer-window (eldoc-doc-buffer))))
+		(if eldoc-window
+			(quit-window nil eldoc-window)
+			(save-selected-window
+				(switch-to-buffer-other-window
+					(eldoc-doc-buffer))))))
 
 (defun joes-multi-replace-regexp-in-string (replace-pairs string)
 	"Replace in STRING all keys by the values in REPLACE-PAIRS."

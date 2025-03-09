@@ -31,6 +31,8 @@
 	(keymap-global-unset "C-v")
 	(keymap-global-unset "M-v")
 	(keymap-global-unset "C-x C-z")
+    (keymap-global-unset "C-c C-h")
+
 	(keymap-unset emacs-lisp-mode-map "C-c C-f")
 
 	(keymap-global-set "C-z" 'undo)
@@ -39,7 +41,9 @@
 	(keymap-global-set "C-|" 'joes-toggle-window-split)
 	(keymap-global-set "C-<tab>" (lambda () (interactive) (insert-tab)))
 	(keymap-global-set "<backtab>" 'indent-according-to-mode)
-	(keymap-global-set "C-c C-t" 'xref-find-apropos)
+	(keymap-global-set "C-c C-h" #'joes-utils-toggle-eldoc)
+
+    (keymap-global-set "C-c C-t" 'xref-find-apropos)
 	(keymap-global-set "C-c C-r" 'xref-find-references)
 	(keymap-global-set "C-c o" 'imenu)
 	(keymap-global-set "s-u" 'revert-buffer-quick)
@@ -83,7 +87,6 @@
 (defun joes-keybindings-consult()
 	"Set keys used in Consult functions."
 	(keymap-global-set "C-M-s" 'consult-line)
-    (keymap-global-set "C-M-y" 'consult-yank-pop)
 	(keymap-substitute (current-global-map) 'switch-to-buffer 'consult-buffer)
     (keymap-substitute (current-global-map) 'list-buffers 'consult-buffer)
     (setopt consult-preview-key "C-v"))
@@ -106,7 +109,8 @@
 (defun joes-latex-keybinding ()
 	"Keys for TeX mode."
 	(defvar latex-mode-map)
-	(keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-and-show))
+	(keymap-unset latex-mode-map "C-c C-f")
+    (keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-and-show))
 
 (joes-keybindings-common)
 
