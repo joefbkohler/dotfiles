@@ -152,5 +152,27 @@ ARGS are sent to the command."
 									  (point-max)))))
 						(funcall callback output-string)
                         (kill-buffer output-buffer)))))))
+
+(defun joes-utils-iterative-apropos ()
+	"Asks iteratively for an apropos and run `xref-find-apropos' using it."
+	(interactive)
+	(let ((orig-buffer (current-buffer)))
+	    (switch-to-buffer-other-window xref-buffer-name)
+	    (condition-case completion-err
+            (progn
+                (completing-read "Regexp I-apropos: "
+		            (lambda (input predicate action)
+			            (when (> (length input) 2)
+				            (with-current-buffer orig-buffer
+					            (condition-case err
+						            (xref--find-xrefs input 'apropos input nil)
+						            (invalid-regexp nil)
+						            (user-error (message "%s" (error-message-string err))))
+					            (select-window (active-minibuffer-window))))
+			            nil))
+                (switch-to-buffer xref-buffer-name))
+            (quit (progn (quit-window (get-buffer-window xref-buffer-name))
+                      (select-window (get-buffer-window orig-buffer)))))))
+
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
