@@ -42,6 +42,7 @@
 	(keymap-global-set "C-<tab>" (lambda () (interactive) (insert-tab)))
 	(keymap-global-set "<backtab>" 'indent-according-to-mode)
 	(keymap-global-set "C-c C-h" #'joes-utils-toggle-eldoc)
+    (keymap-global-set "M-z" 'zap-up-to-char)
 
     (keymap-global-set "C-c C-t" 'joes-utils-iterative-apropos)
 	(keymap-global-set "C-c C-r" 'xref-find-references)
