@@ -45,7 +45,8 @@
     enable-recursive-minibuffers t
     compilation-ask-about-save nil
     compilation-save-buffers-predicate 'ignore
-    grep-save-buffers nil)
+    grep-save-buffers nil
+    completions-detailed t)
 
 (put 'narrow-to-region 'disabled nil)
 (setq-default tab-width 4)
@@ -185,12 +186,24 @@
     (joes-keybindings-vertico)
     (joes-theme-apply-vertico)
     (setopt vertico-multiform-categories
-      '((file grid)
-        (consult-grep buffer))))
+      '((consult-grep buffer))))
 
 (use-package orderless
     :config
     (setopt completion-styles '(basic orderless partial-completion)))
+
+(use-package marginalia
+    :config
+    (declare-function marginalia-mode "marginalia")
+    (marginalia-mode)
+    (setopt marginalia-separator "  "))
+
+(use-package nerd-icons-completion
+    :after marginalia
+    :config
+    (declare-function nerd-icons-completion-mode "nerd-icons-completion")
+    (nerd-icons-completion-mode)
+    (add-hook 'marginalia-mode-hook 'nerd-icons-completion-marginalia-setup))
 
 (use-package consult
     :demand t

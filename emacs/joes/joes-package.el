@@ -48,6 +48,8 @@
 		 consult ;utilitarian commands based on complete-read - grep, line and completion.
 		 orderless ;simple minibuffer completion/order style
 		 cape ;usefull to agregate multiple capfs in one. Also cape-file is cool.
+		 marginalia ;pretty docs in minibuffer
+		 nerd-icons-completion ;pretty font icons in minibuffer
 		 ))
 
 (defun joes-package-initialize ()
