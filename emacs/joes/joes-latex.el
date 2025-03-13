@@ -28,7 +28,7 @@
 (require 'joes-keybindings)
 (require 'project)
 
-(defun joes-latex-mode-hook ()
+(defun joes-latex-mode-config ()
 	"Latex mode hook configuration."
 	(advice-add 'eglot-completion-at-point
 		:around #'joes-latex-capf-wrap-latex-code)

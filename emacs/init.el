@@ -79,14 +79,15 @@
 
 (setq use-package-compute-statistics t)
 
-(use-package joes-prog
-    :hook ((text-mode . joes-text-mode-hook)
-    	   (prog-mode . joes-prog-mode-hook)
-    	   (python-mode . joes-python-mode-hook)
-    	   (emacs-lisp-mode . joes-elisp-mode-hook)
-    	   (c-mode . joes-c-mode-hook)
-    	   (c-mode-common . joes-c-mode-common-hook)
-    	   (ediff-mode . joes-ediff-mode-hook)))
+(use-package joes-major-modes
+    :hook ((text-mode . joes-text-mode-config)
+    	   (prog-mode . joes-prog-mode-config)
+    	   (python-mode . joes-python-mode-config)
+    	   (python-ts-mode . joes-python-mode-config)
+           (emacs-lisp-mode . joes-elisp-mode-config)
+           (c-mode-common . joes-c-mode-common-config)
+    	   (c-ts-base-mode . joes-c-mode-common-config)
+           (ediff-mode . joes-ediff-mode-config)))
  
 ;; Useful to get the environment variables, only run in OSX
 (use-package exec-path-from-shell
@@ -113,7 +114,7 @@
   
 (use-package eglot
     :commands eglot-ensure
-    :hook (eglot-managed-mode . joes-eglot-hook))
+    :hook (eglot-managed-mode . joes-eglot-config))
  
 (use-package cape
     :config
@@ -128,12 +129,12 @@
 (use-package magit
     :commands magit-status
     :init
-    (defun joes-git-commit-mode-hook ()
+    (defun joes-git-commit-mode-config ()
     	(setq-local company-dabbrev-ignore-case nil)
     	(setq-local company-dabbrev-downcase nil)
         (joes-keybindings-git-commit)
         (joes-theme-apply-magit))
-    :hook (git-commit-mode . joes-git-commit-mode-hook)
+    :hook (git-commit-mode . joes-git-commit-mode-config)
     :config
     (declare-function magit-auto-revert-mode "magit")
     (magit-auto-revert-mode -1))
@@ -156,7 +157,7 @@
     (pdf-tools-install :no-query))
  
 (use-package joes-latex
-  :hook (latex-mode . joes-latex-mode-hook))
+  :hook (latex-mode . joes-latex-mode-config))
  
 (use-package joes-ai)
  
