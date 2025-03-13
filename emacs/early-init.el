@@ -30,22 +30,24 @@
 (add-to-list 'load-path (expand-file-name "emacs/joes" (xdg-config-home)))
 (add-to-list 'exec-path "/usr/local/bin")
 (startup-redirect-eln-cache (expand-file-name "emacs/eln" (xdg-cache-home)))
-(setq-default recentf-save-file (expand-file-name "emacs/recentf" (xdg-state-home)))
-(setq-default custom-file (expand-file-name "emacs/emacs-custom.el" (xdg-state-home)))
+
+(setopt recentf-save-file (expand-file-name "emacs/recentf" (xdg-state-home))
+    custom-file (expand-file-name "emacs/emacs-custom.el" (xdg-state-home)))
 
 (let ((autosave-dir (expand-file-name "emacs/autosaves/" (xdg-state-home))))
     (make-directory autosave-dir t)
-    (setq-default auto-save-list-file-prefix (expand-file-name ".saves-" autosave-dir))
-    (setq-default backup-directory-alist `((".*" . ,autosave-dir)))
-    (setq-default auto-save-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat autosave-dir "\\1") t))))
+    (setopt auto-save-list-file-prefix (expand-file-name ".saves-" autosave-dir)
+        backup-directory-alist `((".*" . ,autosave-dir))
+        auto-save-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat autosave-dir "\\1") t))))
 
-(setq-default lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat "/var/tmp/" "\\1") t)))
-(setq-default package-user-dir (expand-file-name "emacs/elpa" (xdg-data-home)))
-(setq-default project-list-file (expand-file-name "emacs/projects" (xdg-state-home)))
+(setopt lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat "/var/tmp/" "\\1") t))
+    package-user-dir (expand-file-name "emacs/elpa" (xdg-data-home))
+    project-list-file (expand-file-name "emacs/projects" (xdg-state-home))
 
-(setq-default prescient-save-file (expand-file-name "emacs/prescient-save.el" (xdg-state-home)))
-(setq-default transient-history-file (expand-file-name "emacs/history.el" (xdg-state-home)))
-(setq-default logview-cache-filename (expand-file-name "emacs/logview-cache.extmap" (xdg-cache-home)))
+    prescient-save-file (expand-file-name "emacs/prescient-save.el" (xdg-state-home))
+    transient-history-file (expand-file-name "emacs/history.el" (xdg-state-home))
+    logview-cache-filename (expand-file-name "emacs/logview-cache.extmap" (xdg-cache-home))
+
 
 ;; Local envinronment configuration
 (ignore-errors (load-file (expand-file-name "emacs/early-local.el" (xdg-config-home))))
