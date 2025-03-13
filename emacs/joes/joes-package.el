@@ -31,7 +31,6 @@
 		 magit
 		 pdf-tools
 		 pet ;Python environment.
-		 yaml-mode
 		 jupyter
 		 gnu-elpa-keyring-update
 		 zenburn-theme
@@ -52,6 +51,13 @@
 		 nerd-icons-completion ;pretty font icons in minibuffer
 		 ))
 
+(setq treesit-language-source-alist
+	'((c . ("https://github.com/tree-sitter/tree-sitter-c"))
+		 (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+		 (c-sharp . ("https://github.com/tree-sitter/tree-sitter-c-sharp"))
+		 (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+		 (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+
 (defun joes-package-initialize ()
 	"Intialize.  Check for required packages."
 	(package-initialize)
@@ -59,6 +65,20 @@
  			  (y-or-n-p "Required packages not installed.  Install them?"))
  		(package-refresh-contents)
  		(package-install-selected-packages t)))
+
+(defun joes-package-treesit-init-langs ()
+	(let ((langs (seq-filter
+					 (lambda (lang)
+						 (not (treesit-language-available-p (car lang))))
+					 treesit-language-source-alist)))
+		(when (and (length> langs 0)
+				  (y-or-n-p "Not all tree-sitter grammars are installed.  Install them?"))
+			(mapc (lambda (lang-cel)
+					  (treesit-install-language-grammar
+						  (car lang-cel)
+						  (car treesit-extra-load-path))) ;; install where it loads
+				langs))))
+	
 
 (provide 'joes-package)
 ;;; joes-package.el ends here

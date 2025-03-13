@@ -73,6 +73,7 @@
 ;; -- External packages configuration and modes
 
 (joes-package-initialize)
+(joes-package-treesit-init-langs)
 
 (eval-when-compile
 	(require 'use-package))
@@ -89,6 +90,19 @@
     	   (c-ts-base-mode . joes-c-mode-common-config)
            (ediff-mode . joes-ediff-mode-config)))
  
+(setq auto-mode-alist
+    (append auto-mode-alist
+        '(("\\.[yY][mM][lL]\\'$" . yaml-ts-mode)
+             ("\\.[yY][aA][mM][lL]\\'$" . yaml-ts-mode))))
+
+(setq major-mode-remap-alist
+    (append major-mode-remap-alist
+        '((c-or-c++-mode . c-or-c++-ts-mode)
+             (c-mode . c-ts-mode)
+             (c++-mode . c++-ts-mode)
+             (python-mode . python-ts-mode)
+             (csharp-mode . csharp-ts-mode))))
+
 ;; Useful to get the environment variables, only run in OSX
 (use-package exec-path-from-shell
     :if (memq window-system '(mac ns))

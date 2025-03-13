@@ -48,6 +48,7 @@
     transient-history-file (expand-file-name "emacs/history.el" (xdg-state-home))
     logview-cache-filename (expand-file-name "emacs/logview-cache.extmap" (xdg-cache-home))
 
+    treesit-extra-load-path `(,(expand-file-name "emacs/tree-sitter" (xdg-data-home))))
 
 ;; Local envinronment configuration
 (ignore-errors (load-file (expand-file-name "emacs/early-local.el" (xdg-config-home))))
