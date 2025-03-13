@@ -41,7 +41,8 @@
 
 (defun joes-latex-find-main-file()
 	"Find and open main TeX file."
-	(when (not (tex-main-file))
+	(when (and (string= (buffer-name) (tex-main-file))
+			  (not (string-match-p (regexp-quote "documentclass") (buffer-string))))
 		(let* ((default-directory (project-root (project-current)))
 				  (tex-root-file-path
 					  (string-trim (shell-command-to-string "find . -iname '*.tex' -exec grep -l documentclass {} +"))))
@@ -55,7 +56,6 @@
 	(joes-latex-find-main-file)
 	(let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
 	 		  (pdf-buffer (get-buffer pdf-file-name)))
-		(message "what window is this? %s" (current-buffer))
 		(save-selected-window
 			(if pdf-buffer
 	 			(progn
@@ -75,16 +75,13 @@
 				(memq (current-buffer) (project-buffers project)))))
 
 	(let* ((makefile (joes-search-file-regex-upward "Makefile"))
-			  (default-directory (file-name-directory makefile))
-			  (tex-root-file (tex-main-file)))
+			  (default-directory (file-name-directory makefile)))
 		(if (string= makefile "")
 			(progn
-				(when (and (string= (buffer-name) (tex-main-file))
-						  (not (string-match-p (regexp-quote "documentclass") (buffer-string))))
-					(error "%s" "Main file buffer with documentclass not found. Is it open?"))
+				(joes-latex-find-main-file)
 				;; No Makefile. Gotta run twice to create table of contents. But first time can be draft mode.
-				(shell-command (concat "lualatex --draftmode --halt-on-error" " " tex-root-file))
-				(shell-command (concat "lualatex --halt-on-error" " " tex-root-file)))
+				(shell-command (concat "lualatex --draftmode --halt-on-error" " " (tex-main-file)))
+				(shell-command (concat "lualatex --halt-on-error" " " (tex-main-file))))
 			(shell-command "make"))))
 
 (defun joes-latex-compile-and-show()
