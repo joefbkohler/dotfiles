@@ -49,6 +49,7 @@
 	(keymap-global-set "C-c o" 'imenu)
 	(keymap-global-set "s-u" 'revert-buffer-quick)
 	(keymap-global-set "C-c C-f" 'project-find-file)
+    (keymap-global-set "C-c C-p" 'project-switch-project)
 
 	(keymap-substitute (current-global-map) 'shell-command 'async-shell)
 	(keymap-substitute (current-global-map) 'shell-command 'async-shell-command)
@@ -110,7 +111,8 @@
 (defun joes-latex-keybinding ()
 	"Keys for TeX mode."
 	(defvar latex-mode-map)
-	(keymap-unset latex-mode-map "C-c C-f")
+	(keymap-unset latex-mode-map "C-c C-p")
+    (keymap-unset latex-mode-map "C-c C-f")
     (keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-and-show))
 
 (joes-keybindings-common)
