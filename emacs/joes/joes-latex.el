@@ -36,7 +36,7 @@
 	(eglot-ensure)
 	(flyspell-mode 1)
 	(flymake-mode 1)
-	(set-fill-column 63)
+	(set-fill-column 79)
 	(auto-fill-mode 1))
 
 (defun joes-latex-find-main-file()
