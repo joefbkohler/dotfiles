@@ -83,11 +83,10 @@
 (use-package joes-major-modes
     :hook ((text-mode . joes-text-mode-config)
     	   (prog-mode . joes-prog-mode-config)
-    	   (python-mode . joes-python-mode-config)
     	   (python-ts-mode . joes-python-mode-config)
            (emacs-lisp-mode . joes-elisp-mode-config)
            (c-mode-common . joes-c-mode-common-config)
-    	   (c-ts-base-mode . joes-c-mode-common-config)
+           (csharp-ts-mode . joes-c-mode-common-config)
            (ediff-mode . joes-ediff-mode-config)))
  
 (setq auto-mode-alist
