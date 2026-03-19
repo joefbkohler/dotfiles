@@ -43,7 +43,7 @@
 	(set-face-attribute 'default nil
 		:height 160
 		:width 'normal
-		:font "Iosevka")
+		:family "Iosevka")
 	(set-face-attribute 'font-lock-string-face nil
 		:inherit 'default
 		:slant 'italic)
@@ -154,6 +154,19 @@
 			 "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
 			 "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
 			 "\\\\" "://")))
+
+(defun joes-theme-set-nerd-icon-completions ()
+    "Nerd Icons completions theme."
+    (joes-set-font-family-for-face-group 'nerd-icons-faces "Iosevka Nerd Font"))
+
+(defun joes-set-font-family-for-face-group (group family)
+    "Set font family for all faces in customization group GROUP to FAMILY.
+GROUP should be a symbol (e.g., 'font-lock-faces)."
+    (let ((members (custom-group-members group nil)))
+        (dolist (member members)
+            (let ((face (car member)))
+                (when (facep face)
+                    (set-face-attribute face nil :family family))))))
 
 (joes-theme-apply-default-faces)
 
