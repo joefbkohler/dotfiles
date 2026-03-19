@@ -30,32 +30,37 @@
 	"My little modifications."
 	:group 'convenience)
 
-(defcustom joes-ollama-host "localhost:11434"
-	"Ollama host address with port."
+(defcustom joes-ollama-reasoning-host "localhost:11434"
+	"Ollama for reasoning models host address with port."
 	:type 'string)
 
-(defcustom joes-ollama-completion-model "qwen2.5-coder:3b"
+(defcustom joes-ollama-completion-host "localhost:11434"
+	"Ollama for completion models host address with port."
+	:type 'string)
+
+(defcustom joes-ollama-completion-model "qwen2.5-coder:1.5b-512"
 	"Ollama completion model.  Ideally a light and quick model.
-Must have FIM support."
+Must have openai compatible FIM support."
 	:type 'string)
 
-(defcustom joes-ollama-gptel-models '(deepseek-r1:1.5b qwen2.5-coder:3b)
+(defcustom joes-ollama-reasoning-models '("qwen3:8b-12k")
 	"Ollama reasoning model.  Model for more complex tasks."
 	:type 'list)
 
-(setq gptel-model (car joes-ollama-gptel-models))
-
 (setq gptel-backend (gptel-make-ollama "Ollama PC"
 						:stream t
-						:host joes-ollama-host
-						:models joes-ollama-gptel-models
+						:host joes-ollama-reasoning-host
+						:models joes-ollama-reasoning-models
 						:endpoint "/api/chat"))
 
-(defun joes-init-complete-ai()
+(defun joes-init-ai()
 	"Try to start ai models.  Depends on Ollama servers being up."
 	(interactive)
 	(async-shell-command (concat "curl http://"
-							 joes-ollama-host
+							 joes-ollama-reasoning-host
+							 "/api/generate -d '{\"model\": \"" (car joes-ollama-reasoning-models) "\"}'"))
+	(async-shell-command (concat "curl http://"
+							 joes-ollama-completion-host
 							 "/api/generate -d '{\"model\": \"" joes-ollama-completion-model "\"}'")))
 
 (setq minuet-provider 'openai-fim-compatible)
@@ -67,9 +72,10 @@ Must have FIM support."
 (plist-put minuet-openai-fim-compatible-options :name "Ollama")
 (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 50)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :temperature 0.2)
+(minuet-set-optional-options minuet-openai-fim-compatible-options :stop ["\n" "<|endoftext|>"])
 
 (plist-put minuet-openai-fim-compatible-options
-	:end-point (concat "http://" joes-ollama-host "/v1/completions"))
+	:end-point (concat "http://" joes-ollama-completion-host "/v1/completions"))
 (plist-put minuet-openai-fim-compatible-options :model joes-ollama-completion-model)
 
 (joes-keybinding-ai)
