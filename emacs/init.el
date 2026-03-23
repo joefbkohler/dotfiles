@@ -218,7 +218,7 @@
     (declare-function nerd-icons-completion-mode "nerd-icons-completion")
     (nerd-icons-completion-mode)
     (add-hook 'marginalia-mode-hook 'nerd-icons-completion-marginalia-setup)
-    (joes-theme-set-nerd-icon-completions))
+    (setq nerd-icons-font-family joes-default-font-family))
 
 (use-package consult
     :demand t
