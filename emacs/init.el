@@ -76,14 +76,14 @@
 (joes-package-treesit-init-langs)
 
 (eval-when-compile
-	(require 'use-package))
+    (require 'use-package))
 
 (setq use-package-compute-statistics t)
 
 (use-package joes-major-modes
     :hook ((text-mode . joes-text-mode-config)
-    	   (prog-mode . joes-prog-mode-config)
-    	   (python-ts-mode . joes-python-mode-config)
+           (prog-mode . joes-prog-mode-config)
+           (python-ts-mode . joes-python-mode-config)
            (emacs-lisp-mode . joes-elisp-mode-config)
            (c-mode-common . joes-c-mode-common-config)
            (csharp-ts-mode . joes-c-mode-common-config)
@@ -118,10 +118,10 @@
 (use-package joes-ispell)
  
 (use-package joes-mode-line
-	:demand t
-	:hook ((after-save . joes-mode-line-update-vc)
-			  (find-file . joes-mode-line-update-vc)
-			  (window-configuration-change . joes-mode-line-update-vc))
+    :demand t
+    :hook ((after-save . joes-mode-line-update-vc)
+              (find-file . joes-mode-line-update-vc)
+              (window-configuration-change . joes-mode-line-update-vc))
     :config
     (add-hook 'window-selection-change-functions 'joes-mode-line-update-window))
   
@@ -143,8 +143,8 @@
     :commands magit-status
     :init
     (defun joes-git-commit-mode-config ()
-    	(setq-local company-dabbrev-ignore-case nil)
-    	(setq-local company-dabbrev-downcase nil)
+        (setq-local company-dabbrev-ignore-case nil)
+        (setq-local company-dabbrev-downcase nil)
         (joes-keybindings-git-commit)
         (joes-theme-apply-magit))
     :hook (git-commit-mode . joes-git-commit-mode-config)
@@ -155,7 +155,7 @@
 (use-package flymake
     :config
     (setq-default elisp-flymake-byte-compile-load-path
-    	(append elisp-flymake-byte-compile-load-path load-path))
+        (append elisp-flymake-byte-compile-load-path load-path))
     (joes-theme-apply-flymake))
  
 (use-package logview

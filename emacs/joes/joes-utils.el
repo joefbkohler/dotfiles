@@ -174,5 +174,12 @@ ARGS are sent to the command."
             (quit (progn (quit-window (get-buffer-window xref-buffer-name))
                       (select-window (get-buffer-window orig-buffer)))))))
 
+(defun joes-tabify-or-untabify ()
+    "Check if using tab or spaces and enforce throught the file."
+    (interactive)
+    (if indent-tabs-mode
+        (tabify (point-min) (point-max))
+        (untabify (point-min) (point-max))))
+
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

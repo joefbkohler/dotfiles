@@ -31,6 +31,7 @@
 					  "^\s+[^[:blank:]]"
 					  (buffer-substring-no-properties 1 (point-max)))) t))
 	
+	(add-hook 'before-save-hook #'joes-tabify-or-untabify nil t)
 	(hl-line-mode)
 	(declare-function flymake-eldoc-function "flymake")
 	(flymake-mode 1)
