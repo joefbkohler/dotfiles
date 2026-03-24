@@ -1,3 +1,6 @@
 *.extmap
 emacs/local.el
 emacs/early-local.el
+emacs/eln-cache
+emacs/elpa
+emacs/tramp
