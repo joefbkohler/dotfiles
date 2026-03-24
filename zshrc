@@ -26,4 +26,9 @@ alias less=cless
 alias cat=ccat
 alias su="su -p"
 
+# FCITX keyboard module. (required to work with Wayland)
+export GTK_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+export QT_IM_MODULES="wayland;fcitx;ibus"
+
 . ~/.localrc &> /dev/null
