@@ -1,4 +1,4 @@
-;;; joes-ai.el --- AI assistant configuration        -*- lexical-binding: t; -*-
+;;; joes-ai.el --- AI assistant configuration		 -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Joe Köhler
 
@@ -11,11 +11,11 @@
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -38,34 +38,42 @@
 	"Ollama for completion models host address with port."
 	:type 'string)
 
-(defcustom joes-ollama-completion-model "qwen2.5-coder:1.5b-512"
+(defcustom joes-ollama-completion-model "qwen2.5-coder:1.5b"
 	"Ollama completion model.  Ideally a light and quick model.
 Must have openai compatible FIM support."
 	:type 'string)
 
-(defcustom joes-ollama-reasoning-models '("qwen3:8b-12k")
+(defcustom joes-ollama-reasoning-models '(qwen3:8b-16k)
 	"Ollama reasoning model.  Model for more complex tasks."
 	:type 'list)
-
-(setq gptel-backend (gptel-make-ollama "Ollama PC"
-						:stream t
-						:host joes-ollama-reasoning-host
-						:models joes-ollama-reasoning-models
-						:endpoint "/api/chat"))
 
 (defun joes-init-ai()
 	"Try to start ai models.  Depends on Ollama servers being up."
 	(interactive)
 	(async-shell-command (concat "curl http://"
 							 joes-ollama-reasoning-host
-							 "/api/generate -d '{\"model\": \"" (car joes-ollama-reasoning-models) "\"}'"))
+							 "/api/generate -d '{\"model\": \"" (symbol-name (car joes-ollama-reasoning-models)) "\"}'")
+		"Ollama Reasoning Load")
 	(async-shell-command (concat "curl http://"
 							 joes-ollama-completion-host
-							 "/api/generate -d '{\"model\": \"" joes-ollama-completion-model "\"}'")))
+							 "/api/generate -d '{\"model\": \"" joes-ollama-completion-model "\"}'")
+		"Ollama Completion Load "))
+
+(defun joes-gptel-magit-commit-context ()
+	"Add `magit-diff' buffer to `gptel-context' locally."
+	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode))))
+
+(setq gptel-use-context 'user)
+(setq gptel-model (car joes-ollama-reasoning-models))
+(setq gptel-backend (gptel-make-ollama "Ollama PC"
+						:stream t
+						:host joes-ollama-reasoning-host
+						:models joes-ollama-reasoning-models
+						:endpoint "/api/chat"))
 
 (setq minuet-provider 'openai-fim-compatible)
 (setq minuet-n-completions 2)
-(setq minuet-context-window 512)
+(setq minuet-context-window 4096)
 (setq minuet-request-timeout 3)
 
 (plist-put minuet-openai-fim-compatible-options :api-key "TERM")

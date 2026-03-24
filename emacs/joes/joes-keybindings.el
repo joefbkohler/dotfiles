@@ -106,7 +106,7 @@
 	(keymap-set minuet-active-mode-map "M-p" 'minuet-previous-suggestion)
 	(keymap-set minuet-active-mode-map "C-g" 'minuet-dismiss-suggestion)
 	(keymap-set minuet-active-mode-map "<tab>" 'minuet-accept-suggestion)
-	(keymap-global-set "C-M-/" 'minuet-show-suggestion))
+	(keymap-global-set "M-i" 'minuet-show-suggestion))
 
 (defun joes-latex-keybinding ()
 	"Keys for TeX mode."

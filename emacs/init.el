@@ -172,7 +172,9 @@
 (use-package joes-latex
   :hook (latex-mode . joes-latex-mode-config))
  
-(use-package joes-ai)
+(use-package joes-ai
+    :after magit
+    :hook (git-commit-mode .joes-gptel-magit-commit-context))
  
 ;; Terminal Emulator
 (use-package eat
