@@ -86,6 +86,9 @@ Must have openai compatible FIM support."
 	:end-point (concat "http://" joes-ollama-completion-host "/v1/completions"))
 (plist-put minuet-openai-fim-compatible-options :model joes-ollama-completion-model)
 
+(with-eval-after-load 'magit
+	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
+
 (joes-keybinding-ai)
 
 (provide 'joes-ai)

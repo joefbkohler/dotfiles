@@ -1,4 +1,4 @@
-;;; joes-latex.el --- Latex configuration            -*- lexical-binding: t; -*-
+;;; joes-latex.el --- Latex configuration			 -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Joe Köhler
 
@@ -11,11 +11,11 @@
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -27,17 +27,6 @@
 (require 'joes-utils)
 (require 'joes-keybindings)
 (require 'project)
-
-(defun joes-latex-mode-config ()
-	"Latex mode hook configuration."
-	(advice-add 'eglot-completion-at-point
-		:around #'joes-latex-capf-wrap-latex-code)
-	(joes-latex-keybinding)
-	(eglot-ensure)
-	(flyspell-mode 1)
-	(flymake-mode 1)
-	(set-fill-column 79)
-	(auto-fill-mode 1))
 
 (defun joes-latex-find-main-file()
 	"Find and open main TeX file."
@@ -55,19 +44,19 @@
 		(split-window-right))
 	(joes-latex-find-main-file)
 	(let* ((pdf-file-name (replace-regexp-in-string "tex$" "pdf" (tex-main-file)))
-	 		  (pdf-buffer (get-buffer pdf-file-name)))
+			  (pdf-buffer (get-buffer pdf-file-name)))
 		(save-selected-window
 			(if pdf-buffer
-	 			(progn
-	 				(switch-to-buffer-other-window pdf-buffer)
-	 				(revert-buffer :noconfirm t))
+				(progn
+					(switch-to-buffer-other-window pdf-buffer)
+					(revert-buffer :noconfirm t))
 				(find-file-other-window
-	 				(car (split-string
+					(car (split-string
 							 (shell-command-to-string
-	 							 (concat "find " (project-root (project-current)) " -name " pdf-file-name)))))))))
+								 (concat "find " (project-root (project-current)) " -name " pdf-file-name)))))))))
 
 (defun joes-latex-compile-project ()
-	"Ask to save relevant files.  Try to run Makefile.  Compile to PDF."
+	"Ask to save relevant files.  Try to run Makefile.	Compile to PDF."
 	(interactive)
 	(let ((project (project-current)))
 		(save-some-buffers nil
