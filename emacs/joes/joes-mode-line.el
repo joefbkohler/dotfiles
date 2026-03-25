@@ -28,8 +28,8 @@
 (require 'color)
 
 (defgroup joe nil
-	"My little modifications."
-	:group 'convenience)
+    "My little modifications."
+    :group 'convenience)
 
 (defvar-local joes-mode-line-vc-branch nil
     "Branch of the current buffer repo with modified information.")
@@ -68,22 +68,22 @@
     (force-mode-line-update))
 
 (defun joes-mode-line-update-vc ()
-	"Update VC branch and modified in mode-line."
-	(setq joes-mode-line-vc-branch nil)
-	(when (buffer-file-name) ;; short circuit to avoid unecessary git calls.
-		(let ((branch (car (vc-git-branches))))
-			(when branch ;; is inside a git repo.
-				(joes-async-shell-command-to-string
-					(lambda (result)
-						(setq joes-mode-line-vc-branch
+    "Update VC branch and modified in mode-line."
+    (setq joes-mode-line-vc-branch nil)
+    (when (buffer-file-name) ;; short circuit to avoid unecessary git calls.
+        (let ((branch (car (vc-git-branches))))
+            (when branch ;; is inside a git repo.
+                (joes-async-shell-command-to-string
+                    (lambda (result)
+                        (setq joes-mode-line-vc-branch
                             (format "%s%s%s"
-								(propertize joes-mode-line-vc-symbol 'face
-									(if (string-empty-p result)
+                                (propertize joes-mode-line-vc-symbol 'face
+                                    (if (string-empty-p result)
                                         '(:foreground nil)
                                         `(:foreground ,joes-mode-line-vc-modified-color)))
-								branch
+                                branch
                                 (if (string-empty-p result) "" ""))))
-					"git" "status" "--porcelain" "-z")))))
+                    "git" "status" "--porcelain" "-z")))))
 
 
 (defun joes-mode-line-colorize-recursive (section &optional color)
@@ -98,7 +98,7 @@
                           (current-bg (car (cdr (assoc :background (ensure-list current-face))))))
                     (when (not (string= color current-bg))
                         (add-face-text-property 0 (length section) face nil section))
-					)
+                    )
                 )))
     section)
 
@@ -136,11 +136,11 @@ NEW-COLOR can be set to override the color selected."
         (face-background 'mode-line-inactive)))
 
 (setq-default mode-line-format
-	'((:eval (list
+    '((:eval (list
                  mode-line-front-space
                  `((2 ,(if buffer-read-only "󰷪" "󰲶"))
-				      (2 ,(if (file-remote-p default-directory) "󰲁" "󰉖"))
-				      (2 ,(if (buffer-modified-p) "󰷈" "󱪚")))
+                      (2 ,(if (file-remote-p default-directory) "󰲁" "󰉖"))
+                      (2 ,(if (buffer-modified-p) "󰷈" "󱪚")))
                  (joes-mode-line-colorized-section
                      (list
                          (format-mode-line mode-line-buffer-identification)
@@ -151,17 +151,22 @@ NEW-COLOR can be set to override the color selected."
                      joes-mode-line-area-divider 1)
                  (joes-mode-line-colorized-section
                      (list (when (bound-and-true-p flymake-mode) (format-mode-line flymake-mode-line-format))
-				         (when (not (string-empty-p (format-mode-line mode-line-misc-info))) (format-mode-line mode-line-misc-info)))
+                         (when (not (string-empty-p (format-mode-line mode-line-misc-info))) (format-mode-line mode-line-misc-info)))
                      joes-mode-line-area-divider 2)
                  (joes-mode-line-colorized-section '("") joes-mode-line-area-divider 3 (joes-mode-line-current-background))))
          mode-line-format-right-align
-		 (:eval (list
+         (:eval (list
                     (joes-mode-line-colorized-section '("") joes-mode-line-area-divider-right 2 (joes-mode-line-current-background))
                     (joes-mode-line-colorized-section (format-mode-line mode-name) joes-mode-line-area-divider-right 1)
                     (joes-mode-line-colorized-section '("%3l%3C") joes-mode-line-area-divider-right 0)
                     '((-3 "%p") (1 " "))))
          mode-line-end-spaces
          ))
+
+(add-hook 'after-save-hook #'joes-mode-line-update-vc)
+(add-hook 'find-file-hook #'joes-mode-line-update-vc)
+(add-hook 'window-configuration-change-hook #'joes-mode-line-update-vc)
+(add-hook 'window-selection-change-functions #'joes-mode-line-update-window)
 
 (provide 'joes-mode-line)
 ;;; joes-mode-line.el ends here

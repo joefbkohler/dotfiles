@@ -1,4 +1,4 @@
-;;; joes-major-modes.el --- prog modes configs and hooks    -*- lexical-binding: t; -*-
+;;; joes-major-modes.el --- prog modes configs and hooks	-*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Joe Köhler
 
@@ -11,11 +11,11 @@
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 ;;; Commentary:
 
 ;;; Code:
@@ -78,6 +78,40 @@
 	(declare-function eglot-inlay-hints-mode "eglot")
 	(joes-keybinding-eglot)
 	(eglot-inlay-hints-mode -1))
+
+(defun joes-latex-mode-config ()
+	"Latex mode hook configuration."
+	(declare-function joes-latex-capf-wrap-latex-code "joes-latex")
+	(advice-add 'eglot-completion-at-point
+		:around #'joes-latex-capf-wrap-latex-code)
+	(joes-latex-keybinding)
+	(eglot-ensure)
+	(flyspell-mode 1)
+	(flymake-mode 1)
+	(set-fill-column 79)
+	(auto-fill-mode 1))
+
+(setq auto-mode-alist
+	(append auto-mode-alist
+		'(("\\.[yY][mM][lL]\\'$" . yaml-ts-mode)
+			 ("\\.[yY][aA][mM][lL]\\'$" . yaml-ts-mode))))
+
+(setq major-mode-remap-alist
+	(append major-mode-remap-alist
+		'((c-or-c++-mode . c-or-c++-ts-mode)
+			 (c-mode . c-ts-mode)
+			 (c++-mode . c++-ts-mode)
+			 (python-mode . python-ts-mode)
+			 (csharp-mode . csharp-ts-mode))))
+
+(add-hook 'text-mode-hook  #'joes-text-mode-config)
+(add-hook 'prog-mode-hook  #'joes-prog-mode-config)
+(add-hook 'python-ts-mode-hook	#'joes-python-mode-config)
+(add-hook 'emacs-lisp-mode-hook	 #'joes-elisp-mode-config)
+(add-hook 'c-mode-hook-common  #'joes-c-mode-common-config)
+(add-hook 'csharp-ts-mode-hook	#'joes-c-mode-common-config)
+(add-hook 'ediff-mode-hook	#'joes-ediff-mode-config)
+(add-hook 'latex-mode-hook #'joes-latex-mode-config)
 
 (provide 'joes-major-modes)
 ;;; joes-major-modes.el ends here

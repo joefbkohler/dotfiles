@@ -19,15 +19,16 @@
 
 ;; TODO:
 ;; dependency checker: aspell/hunspell
-;; Check on Vertico.
-;; remove company? counsel completion-at-point the convolluted
 ;; fix xref-apropos so it's useful.  counsel, vertico, something!
 ;; Use tree-sitter whenever possible
 
 ;;; Code:
+;; Basic required packages that should always be loaded. Mostly just functions
+;; declarations, variable settings and keybindings. Other packages require
+;; these as well.
 (require 'joes-utils)
-(require 'joes-theme)
 (require 'joes-keybindings)
+(require 'joes-theme)
 (require 'joes-package)
 (require 'xdg)
 
@@ -46,7 +47,13 @@
     compilation-ask-about-save nil
     compilation-save-buffers-predicate 'ignore
     grep-save-buffers nil
-    completions-detailed t)
+    completions-detailed t
+    ;; Allow flymake to run in my init secondary files.
+    ;; It needs to be abbreviated (for reasons) and use file-truename to follow
+    ;; symlink. But first expand-file-name allows me to use xdg
+    trusted-content `(,(abbreviate-file-name
+                           (file-truename
+                               (expand-file-name "emacs/joes/" (xdg-config-home))))))
 
 (put 'narrow-to-region 'disabled nil)
 (setq-default tab-width 4)
@@ -81,26 +88,18 @@
 (setq use-package-compute-statistics t)
 
 (use-package joes-major-modes
-    :hook ((text-mode . joes-text-mode-config)
-           (prog-mode . joes-prog-mode-config)
-           (python-ts-mode . joes-python-mode-config)
-           (emacs-lisp-mode . joes-elisp-mode-config)
-           (c-mode-common . joes-c-mode-common-config)
-           (csharp-ts-mode . joes-c-mode-common-config)
-           (ediff-mode . joes-ediff-mode-config)))
- 
-(setq auto-mode-alist
-    (append auto-mode-alist
-        '(("\\.[yY][mM][lL]\\'$" . yaml-ts-mode)
-             ("\\.[yY][aA][mM][lL]\\'$" . yaml-ts-mode))))
+    :demand t)
 
-(setq major-mode-remap-alist
-    (append major-mode-remap-alist
-        '((c-or-c++-mode . c-or-c++-ts-mode)
-             (c-mode . c-ts-mode)
-             (c++-mode . c++-ts-mode)
-             (python-mode . python-ts-mode)
-             (csharp-mode . csharp-ts-mode))))
+(use-package joes-ispell)
+
+(use-package joes-mode-line
+    :demand t)
+
+(use-package joes-latex
+    :commands latex-mode)
+
+(use-package joes-ai
+    :commands (gptel gptel-menu joes-init-ai))
 
 ;; Useful to get the environment variables, only run in OSX
 (use-package exec-path-from-shell
@@ -114,17 +113,7 @@
     (joes-theme-apply-zenburn)
     (when joes-use-transparency
         (joes-theme-darker-transparent-background)))
-  
-(use-package joes-ispell)
- 
-(use-package joes-mode-line
-    :demand t
-    :hook ((after-save . joes-mode-line-update-vc)
-              (find-file . joes-mode-line-update-vc)
-              (window-configuration-change . joes-mode-line-update-vc))
-    :config
-    (add-hook 'window-selection-change-functions 'joes-mode-line-update-window))
-  
+
 (use-package eglot
     :commands eglot-ensure
     :hook (eglot-managed-mode . joes-eglot-config))
@@ -143,8 +132,6 @@
     :commands magit-status
     :init
     (defun joes-git-commit-mode-config ()
-        (setq-local company-dabbrev-ignore-case nil)
-        (setq-local company-dabbrev-downcase nil)
         (joes-keybindings-git-commit)
         (joes-theme-apply-magit))
     :hook (git-commit-mode . joes-git-commit-mode-config)
@@ -168,14 +155,7 @@
     :config
     (declare-function pdf-tools-install "pdf-tools")
     (pdf-tools-install :no-query))
- 
-(use-package joes-latex
-  :hook (latex-mode . joes-latex-mode-config))
- 
-(use-package joes-ai
-    :after magit
-    :hook (git-commit-mode .joes-gptel-magit-commit-context))
- 
+  
 ;; Terminal Emulator
 (use-package eat
     :commands eat eat-other-window
