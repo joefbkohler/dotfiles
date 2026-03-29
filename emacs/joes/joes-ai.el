@@ -23,53 +23,55 @@
 
 (require 'minuet)
 (require 'gptel)
-(require 'gptel-ollama)
+(require 'gptel-openai)
 (require 'joes-keybindings)
 
 (defgroup joe nil
 	"My little modifications."
 	:group 'convenience)
 
-(defcustom joes-ollama-reasoning-host "localhost:11434"
-	"Ollama for reasoning models host address with port."
+(defcustom joes-ai-reasoning-host "localhost:11434"
+	"Reasoning models host address with port."
 	:type 'string)
 
-(defcustom joes-ollama-completion-host "localhost:11434"
-	"Ollama for completion models host address with port."
+(defcustom joes-ai-completion-host "localhost:11434"
+	"Completion models host address with port."
 	:type 'string)
 
-(defcustom joes-ollama-completion-model "qwen2.5-coder:1.5b"
-	"Ollama completion model.  Ideally a light and quick model.
+(defcustom joes-ai-completion-model "qwen2.5-coder"
+	"Completion model.	Ideally a light and quick model.
 Must have openai compatible FIM support."
 	:type 'string)
 
-(defcustom joes-ollama-reasoning-models '(qwen3:8b-16k)
-	"Ollama reasoning model.  Model for more complex tasks."
+(defcustom joes-ai-reasoning-models '(qwen3.5)
+	"Reasoning model.  Model for more complex tasks."
 	:type 'list)
 
 (defun joes-init-ai()
-	"Try to start ai models.  Depends on Ollama servers being up."
+	"Try to start models.  Depends on llm servers being up."
 	(interactive)
 	(async-shell-command (concat "curl http://"
-							 joes-ollama-reasoning-host
-							 "/api/generate -d '{\"model\": \"" (symbol-name (car joes-ollama-reasoning-models)) "\"}'")
-		"Ollama Reasoning Load")
+							 joes-ai-reasoning-host
+							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" (symbol-name (car joes-ai-reasoning-models)) "\"}'")
+		"Reasoning Model Loaded")
 	(async-shell-command (concat "curl http://"
-							 joes-ollama-completion-host
-							 "/api/generate -d '{\"model\": \"" joes-ollama-completion-model "\"}'")
-		"Ollama Completion Load "))
+							 joes-ai-completion-host
+							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" joes-ai-completion-model "\"}'")
+		"Completion Model Loaded "))
+
+(setq gptel-use-context 'user)
+(setq gptel-model (car joes-ai-reasoning-models))
+
+(setq gptel-backend (gptel-make-openai "llama-cpp"
+						:stream t
+						:protocol "http"
+						:host joes-ai-reasoning-host
+						:models joes-ai-reasoning-models))
 
 (defun joes-gptel-magit-commit-context ()
 	"Add `magit-diff' buffer to `gptel-context' locally."
+	(declare-function magit-get-mode-buffer "magit")
 	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode))))
-
-(setq gptel-use-context 'user)
-(setq gptel-model (car joes-ollama-reasoning-models))
-(setq gptel-backend (gptel-make-ollama "Ollama PC"
-						:stream t
-						:host joes-ollama-reasoning-host
-						:models joes-ollama-reasoning-models
-						:endpoint "/api/chat"))
 
 (setq minuet-provider 'openai-fim-compatible)
 (setq minuet-n-completions 2)
@@ -77,14 +79,14 @@ Must have openai compatible FIM support."
 (setq minuet-request-timeout 3)
 
 (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
-(plist-put minuet-openai-fim-compatible-options :name "Ollama")
-(minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 50)
+(plist-put minuet-openai-fim-compatible-options :name "qwen")
+(minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 100)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :temperature 0.2)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :stop ["\n" "<|endoftext|>"])
 
 (plist-put minuet-openai-fim-compatible-options
-	:end-point (concat "http://" joes-ollama-completion-host "/v1/completions"))
-(plist-put minuet-openai-fim-compatible-options :model joes-ollama-completion-model)
+	:end-point (concat "http://" joes-ai-completion-host "/v1/completions"))
+(plist-put minuet-openai-fim-compatible-options :model joes-ai-completion-model)
 
 (with-eval-after-load 'magit
 	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
