@@ -184,6 +184,9 @@
 
 (use-package orderless
     :config
+    (setq orderless-smart-case nil)
+    (setq completion-ignore-case t)
+    (setq read-file-name-completion-ignore-case t)
     (setopt completion-styles '(basic orderless partial-completion)))
 
 (use-package marginalia
