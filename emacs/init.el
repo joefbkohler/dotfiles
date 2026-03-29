@@ -19,8 +19,6 @@
 
 ;; TODO:
 ;; dependency checker: aspell/hunspell
-;; fix xref-apropos so it's useful.  counsel, vertico, something!
-;; Use tree-sitter whenever possible
 
 ;;; Code:
 ;; Basic required packages that should always be loaded. Mostly just functions
