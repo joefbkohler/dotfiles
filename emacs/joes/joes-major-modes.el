@@ -44,7 +44,10 @@
 	(display-fill-column-indicator-mode t)
 	
 	(setq whitespace-style '(face trailing space-before-tab empty space-after-tab tab-mark))
-	(whitespace-mode -1))
+	(whitespace-mode -1)
+	(with-eval-after-load 'minuet
+		(declare-function minuet-auto-suggestion-mode "minuet")
+		(minuet-auto-suggestion-mode)))
 
 (defun joes-ediff-mode-config()
 	"Ediff mode config."
