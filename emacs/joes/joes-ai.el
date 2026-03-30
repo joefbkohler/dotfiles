@@ -43,7 +43,7 @@
 Must have openai compatible FIM support."
 	:type 'string)
 
-(defcustom joes-ai-reasoning-models '(qwen3.5)
+(defcustom joes-ai-reasoning-models '(qwen3.5 qwen2.5-coder)
 	"Reasoning model.  Model for more complex tasks."
 	:type 'list)
 
@@ -59,7 +59,6 @@ Must have openai compatible FIM support."
 							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" joes-ai-completion-model "\"}'")
 		"Completion Model Loaded "))
 
-(setq gptel-use-context 'user)
 (setq gptel-model (car joes-ai-reasoning-models))
 
 (setq gptel-backend (gptel-make-openai "llama-cpp"
