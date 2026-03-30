@@ -82,10 +82,15 @@ Must have openai compatible FIM support."
 (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 100)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :temperature 0.2)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :stop ["\n" "<|endoftext|>"])
-
 (plist-put minuet-openai-fim-compatible-options
 	:end-point (concat "http://" joes-ai-completion-host "/v1/completions"))
 (plist-put minuet-openai-fim-compatible-options :model joes-ai-completion-model)
+
+(defun joes-minuet-setup-auto-suggestion (func)
+	"Ignore `FUNC' and setup auto-suggestion for Minuet to work only on insert."
+	(add-hook 'post-self-insert-hook #'minuet--maybe-show-suggestion nil t))
+
+(advice-add 'minuet--setup-auto-suggestion :around #'joes-minuet-setup-auto-suggestion)
 
 (with-eval-after-load 'magit
 	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
