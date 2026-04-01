@@ -30,8 +30,8 @@
 	"My little modifications."
 	:group 'convenience)
 
-(defcustom joes-ai-reasoning-host "localhost:11434"
-	"Reasoning models host address with port."
+(defcustom joes-ai-chat-host "localhost:11434"
+	"Chat models host address with port."
 	:type 'string)
 
 (defcustom joes-ai-completion-host "localhost:11434"
@@ -43,34 +43,44 @@
 Must have openai compatible FIM support."
 	:type 'string)
 
-(defcustom joes-ai-reasoning-models '(qwen3.5 qwen2.5-coder)
-	"Reasoning model.  Model for more complex tasks."
+(defcustom joes-ai-chat-models '(qwen3.5 qwen2.5-coder)
+	"Chat model.  Model for more complex tasks."
 	:type 'list)
 
 (defun joes-init-ai()
 	"Try to start models.  Depends on llm servers being up."
 	(interactive)
 	(async-shell-command (concat "curl http://"
-							 joes-ai-reasoning-host
-							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" (symbol-name (car joes-ai-reasoning-models)) "\"}'")
-		"Reasoning Model Loaded")
+							 joes-ai-chat-host
+							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" (symbol-name (car joes-ai-chat-models)) "\"}'")
+		"Chat Model Loaded")
 	(async-shell-command (concat "curl http://"
 							 joes-ai-completion-host
 							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" joes-ai-completion-model "\"}'")
 		"Completion Model Loaded "))
 
-(setq gptel-model (car joes-ai-reasoning-models))
+(setq gptel-model (car joes-ai-chat-models))
 
-(setq gptel-backend (gptel-make-openai "llama-cpp"
-						:stream t
-						:protocol "http"
-						:host joes-ai-reasoning-host
-						:models joes-ai-reasoning-models))
+(gptel-make-openai "chat"
+	:stream t
+	:protocol "http"
+	:host joes-ai-chat-host
+	:models joes-ai-chat-models
+	:request-params '(:chat_template_kwargs (:enable_thinking :json-false)))
+
+(setq gptel-backend
+	(gptel-make-openai "thinking"
+		:stream t
+		:protocol "http"
+		:host joes-ai-chat-host
+		:models joes-ai-chat-models
+		:request-params '(:chat_template_kwargs nil)))
 
 (defun joes-gptel-magit-commit-context ()
 	"Add `magit-diff' buffer to `gptel-context' locally."
 	(declare-function magit-get-mode-buffer "magit")
-	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode))))
+	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode)))
+	(setq-local gptel-backend (gptel-get-backend "chat")))
 
 (setq minuet-provider 'openai-fim-compatible)
 (setq minuet-n-completions 1)
@@ -78,6 +88,7 @@ Must have openai compatible FIM support."
 (setq minuet-request-timeout 3)
 (setq minuet-auto-suggestion-debounce-delay 0.2)
 (setq minuet-auto-suggestion-throttle-delay 0.5)
+(setq minuet-after-cursor-filter-length 2)
 
 (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
 (plist-put minuet-openai-fim-compatible-options :name "qwen")
