@@ -59,9 +59,12 @@ Must have openai compatible FIM support."
 							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" joes-ai-completion-model "\"}'")
 		"Completion Model Loaded "))
 
+;; --- GPTEL configuration ---
+
+(setq gptel-expert-commands t)
 (setq gptel-model (car joes-ai-chat-models))
 
-(gptel-make-openai "chat"
+(gptel-make-openai "ai-chat"
 	:stream t
 	:protocol "http"
 	:host joes-ai-chat-host
@@ -69,7 +72,7 @@ Must have openai compatible FIM support."
 	:request-params '(:chat_template_kwargs (:enable_thinking :json-false)))
 
 (setq gptel-backend
-	(gptel-make-openai "thinking"
+	(gptel-make-openai "ai-thinking"
 		:stream t
 		:protocol "http"
 		:host joes-ai-chat-host
@@ -80,7 +83,12 @@ Must have openai compatible FIM support."
 	"Add `magit-diff' buffer to `gptel-context' locally."
 	(declare-function magit-get-mode-buffer "magit")
 	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode)))
-	(setq-local gptel-backend (gptel-get-backend "chat")))
+	(setq-local gptel-backend (gptel-get-backend "ai-chat")))
+
+(with-eval-after-load 'magit
+	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
+
+;; --- Minuet configuration ---
 
 (setq minuet-provider 'openai-fim-compatible)
 (setq minuet-n-completions 1)
@@ -88,7 +96,7 @@ Must have openai compatible FIM support."
 (setq minuet-request-timeout 3)
 (setq minuet-auto-suggestion-debounce-delay 0.2)
 (setq minuet-auto-suggestion-throttle-delay 0.5)
-(setq minuet-after-cursor-filter-length 2)
+(setq minuet-after-cursor-filter-length 1)
 
 (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
 (plist-put minuet-openai-fim-compatible-options :name "qwen")
@@ -107,7 +115,8 @@ Must have openai compatible FIM support."
 	(not (eq last-command 'self-insert-command)))
 
 (defun joes-ai-minuet-check-auto-suggestion ()
-	"Check if auto-suggestion should be enabled."
+	"Check if auto-suggestion should be enabled.
+Disable if too many characters in buffer."
 	(when (and minuet-auto-suggestion-mode
 			  (> (buffer-size) minuet-context-window))
 		(minuet-auto-suggestion-mode -1)))
@@ -115,8 +124,7 @@ Must have openai compatible FIM support."
 (add-to-list 'minuet-auto-suggestion-block-predicates #'joes-ai-minuet-check-if-insert-command-p)
 (add-hook 'minuet-auto-suggestion-mode-hook #'joes-ai-minuet-check-auto-suggestion)
 
-(with-eval-after-load 'magit
-	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
+;; --- AI end ---
 
 (joes-keybinding-ai)
 
