@@ -96,6 +96,11 @@
 (use-package joes-latex
     :commands latex-mode)
 
+(use-package transient
+    :init
+    (setopt transient-values-file
+        (locate-user-emacs-file "transient-values.el")))
+
 (use-package joes-ai
     :commands (gptel gptel-menu joes-init-ai))
 
