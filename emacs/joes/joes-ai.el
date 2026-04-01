@@ -97,7 +97,6 @@ Must have openai compatible FIM support."
 
 (defun joes-ai-minuet-check-auto-suggestion ()
 	"Check if auto-suggestion should be enabled."
-	(message "joes-ai-minuet-check-auto-suggestion")
 	(when (and minuet-auto-suggestion-mode
 			  (> (buffer-size) minuet-context-window))
 		(minuet-auto-suggestion-mode -1)))
