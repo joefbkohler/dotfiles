@@ -18,7 +18,10 @@
 ;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
+;;; TODO: Write directives per mode (start with git commit)
+;;; TODO: Skill system.	 Add dynamic directive that can fetch skills
+;;; from list.	Create tool to fetch skills from a file and add to skills list.
+;;; TODO: Create/add tools to modify files and other Emacs functionality.
 ;;; Code:
 
 (require 'minuet)
@@ -45,7 +48,7 @@ Must have openai compatible FIM support."
 
 (defcustom joes-ai-chat-models '(qwen3.5 qwen2.5-coder)
 	"Chat model.  Model for more complex tasks."
-	:type 'list)
+	:type '(list (string)))
 
 (defun joes-init-ai()
 	"Try to start models.  Depends on llm servers being up."
