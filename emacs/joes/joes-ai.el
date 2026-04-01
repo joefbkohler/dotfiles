@@ -73,24 +73,37 @@ Must have openai compatible FIM support."
 	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode))))
 
 (setq minuet-provider 'openai-fim-compatible)
-(setq minuet-n-completions 2)
-(setq minuet-context-window 4096)
+(setq minuet-n-completions 1)
+(setq minuet-context-window 16500)
 (setq minuet-request-timeout 3)
+(setq minuet-auto-suggestion-debounce-delay 0.2)
+(setq minuet-auto-suggestion-throttle-delay 0.5)
 
 (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
 (plist-put minuet-openai-fim-compatible-options :name "qwen")
+(plist-put minuet-openai-fim-compatible-options :n 3)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 100)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :temperature 0.2)
-(minuet-set-optional-options minuet-openai-fim-compatible-options :stop ["\n" "<|endoftext|>"])
+(minuet-set-optional-options minuet-openai-fim-compatible-options :stop ["\n"])
+
 (plist-put minuet-openai-fim-compatible-options
 	:end-point (concat "http://" joes-ai-completion-host "/v1/completions"))
 (plist-put minuet-openai-fim-compatible-options :model joes-ai-completion-model)
 
-(defun joes-minuet-setup-auto-suggestion (func)
-	"Ignore `FUNC' and setup auto-suggestion for Minuet to work only on insert."
-	(add-hook 'post-self-insert-hook #'minuet--maybe-show-suggestion nil t))
+;; Minuet auto suggestion configuration
+(defun joes-ai-minuet-check-if-insert-command-p ()
+	"Check if the current command is an insert command."
+	(not (eq last-command 'self-insert-command)))
 
-(advice-add 'minuet--setup-auto-suggestion :around #'joes-minuet-setup-auto-suggestion)
+(defun joes-ai-minuet-check-auto-suggestion ()
+	"Check if auto-suggestion should be enabled."
+	(message "joes-ai-minuet-check-auto-suggestion")
+	(when (and minuet-auto-suggestion-mode
+			  (> (buffer-size) minuet-context-window))
+		(minuet-auto-suggestion-mode -1)))
+
+(add-to-list 'minuet-auto-suggestion-block-predicates #'joes-ai-minuet-check-if-insert-command-p)
+(add-hook 'minuet-auto-suggestion-mode-hook #'joes-ai-minuet-check-auto-suggestion)
 
 (with-eval-after-load 'magit
 	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
@@ -98,4 +111,5 @@ Must have openai compatible FIM support."
 (joes-keybinding-ai)
 
 (provide 'joes-ai)
+
 ;;; joes-ai.el ends here
