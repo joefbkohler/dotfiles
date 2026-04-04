@@ -46,26 +46,39 @@
 Must have openai compatible FIM support."
 	:type 'string)
 
-(defcustom joes-ai-chat-models '(qwen3.5 qwen2.5-coder)
-	"Chat model.  Model for more complex tasks."
+(defcustom joes-ai-chat-models '((qwen3.5
+									 :capabilities (media tool-use json url)
+									 :mime-types ("image/jpeg" "image/png" "image/gif" "image/webp" "application/pdf"))
+									qwen2.5-coder)
+	"Chat models.  Models for more complex tasks."
 	:type '(list (string)))
 
-(defun joes-init-ai()
-	"Try to start models.  Depends on llm servers being up."
+(defun joes-init-ai ()
+	"Initialize chat and completion models.	 Depends on llm servers being up."
 	(interactive)
-	(async-shell-command (concat "curl http://"
-							 joes-ai-chat-host
-							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" (symbol-name (car joes-ai-chat-models)) "\"}'")
-		"Chat Model Loaded")
-	(async-shell-command (concat "curl http://"
-							 joes-ai-completion-host
-							 "/v1/chat/completions -d '{\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"" joes-ai-completion-model "\"}'")
-		"Completion Model Loaded "))
+	(let ((host
+			  "http://%s/v1/chat/completions")
+			 (body "{\"reset\": true,\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"%s\"}"))
+		(dolist (model joes-ai-chat-models)
+			(let ((name (symbol-name (if (consp model) (car model) model))))
+				(plz 'post
+					(format host joes-ai-chat-host)
+					:body (format body name)
+					:then (lambda (_) (message "%s:%s" "Loaded Chat Model" name)))))
+		(plz 'post
+			(format host joes-ai-completion-host)
+			:body (format body joes-ai-completion-model)
+			:then (lambda (_) (message "%s" "Loaded Completion Model")))))
 
 ;; --- GPTEL configuration ---
 
+(setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
-(setq gptel-model (car joes-ai-chat-models))
+(setq-default gptel-model
+	(let ((model (car joes-ai-chat-models))) ;; Default to the first model
+		(if (consp model)					 ;; Check if the model is a list eg. (qwen3.5 . capabilities)
+			(car model)
+			model)))
 
 (gptel-make-openai "ai-chat"
 	:stream t
