@@ -137,6 +137,10 @@
     (add-to-list 'default-frame-alist '(mouse-color . "#cca"))
     (add-to-list 'default-frame-alist '(cursor-color . "#cca")))
 
+(defun joes-theme-apply-eglot ()
+    "Eglot theme."
+    (set-face-attribute 'eglot-highlight-symbol-face nil :background nil :box '(:line-width -1 :color "#333")))
+
 (defun joes-theme-set-ligatures ()
     "Set list of ligatures for each mode."
     (declare-function ligature-set-ligatures "ligature")

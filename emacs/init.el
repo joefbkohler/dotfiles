@@ -119,7 +119,9 @@
 
 (use-package eglot
     :commands eglot-ensure
-    :hook (eglot-managed-mode . joes-eglot-config))
+    :hook (eglot-managed-mode . joes-eglot-config)
+    :config
+    (joes-theme-apply-eglot))
  
 (use-package cape
     :config
