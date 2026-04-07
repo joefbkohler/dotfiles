@@ -26,7 +26,7 @@ alias less=cless
 alias cat=ccat
 alias su="su -p"
 
-[[ $UID -eq 0 ]] && export PS1=$PS1"%{%F{$AGNOSTER_STATUS_ROOT_FG}%}⚡"
+[[ $UID -eq 0 ]] && export PS1=$PS1"⚡"
 
 # FCITX keyboard module. (required to work with Wayland)
 export GTK_IM_MODULE=fcitx
