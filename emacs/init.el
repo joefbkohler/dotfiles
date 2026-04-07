@@ -129,8 +129,11 @@
     (declare-function cape-dabbrev "cape")
     (declare-function cape-file "cape")
     (declare-function cape-wrap-inside-code "cape")
+    (declare-function cape-wrap-nonexclusive "cape")
     (add-hook 'completion-at-point-functions (cape-capf-super #'cape-dabbrev #'ispell-completion-at-point))
     (add-hook 'completion-at-point-functions #'cape-file)
+    
+    (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-nonexclusive)
     (advice-add 'eglot-completion-at-point :around #'cape-wrap-inside-code))
 
 (use-package magit
