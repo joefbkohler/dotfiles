@@ -94,6 +94,10 @@
 	(set-fill-column 79)
 	(auto-fill-mode 1))
 
+(defun joes-org-mode-config ()
+	"Org mode config."
+	(joes-org-kebinding))
+
 (setq auto-mode-alist
 	(append auto-mode-alist
 		'(("\\.[yY][mM][lL]\\'$" . yaml-ts-mode)
@@ -115,6 +119,7 @@
 (add-hook 'csharp-ts-mode-hook	#'joes-c-mode-common-config)
 (add-hook 'ediff-mode-hook	#'joes-ediff-mode-config)
 (add-hook 'latex-mode-hook #'joes-latex-mode-config)
+(add-hook 'org-mode-hook  #'joes-org-mode-config)
 
 (provide 'joes-major-modes)
 ;;; joes-major-modes.el ends here

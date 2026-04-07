@@ -105,7 +105,7 @@
     (keymap-set minuet-active-mode-map "M-n" 'minuet-next-suggestion)
     (keymap-set minuet-active-mode-map "M-p" 'minuet-previous-suggestion)
     (keymap-set minuet-active-mode-map "C-g" 'minuet-dismiss-suggestion)
-    (keymap-set minuet-active-mode-map "<tab>" 'minuet-accept-suggestion)
+    (keymap-set minuet-active-mode-map "C-<tab>" 'minuet-accept-suggestion)
     (keymap-global-set "M-i" 'minuet-show-suggestion)
     (keymap-global-set "C-c C-g" 'gptel-menu))
 
@@ -115,6 +115,11 @@
     (keymap-unset latex-mode-map "C-c C-p")
     (keymap-unset latex-mode-map "C-c C-f")
     (keymap-substitute latex-mode-map 'tex-compile 'joes-latex-compile-and-show))
+
+(defun joes-org-kebinding ()
+    "Keys for Org mode."
+    (defvar org-mode-map)
+    (keymap-substitute org-mode-map 'org-cycle #'joes-org-cycle-or-complete))
 
 (joes-keybindings-common)
 
