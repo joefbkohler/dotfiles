@@ -90,6 +90,8 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 	:model 'qwen3.5
 	:parents '(chat)
 	:context '(:eval (list (magit-get-mode-buffer 'magit-diff-mode)))
+	:use-context 'system
+	:include-reasoning nil
 	:system '(:append "\n[Commit Message Instructions]
 * Be concise and direct.
 * Use precise language, avoid adjectives (like better, easier, or improved) and superlatives.
@@ -114,8 +116,7 @@ test – including new or correcting previous tests
 perf – performance improvements
 ci – continuous integration related
 build – changes that affect the build system or external dependencies
-revert – reverts a previous commit")
-	:use-context 'system)
+revert – reverts a previous commit"))
 
 ;; --- Minuet configuration ---
 
