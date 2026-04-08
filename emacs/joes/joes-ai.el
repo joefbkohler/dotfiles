@@ -18,15 +18,11 @@
 ;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; TODO: Write directives per mode (start with git commit)
-;;; TODO: Skill system.	 Add dynamic directive that can fetch skills
-;;; from list.	Create tool to fetch skills from a file and add to skills list.
+;;; TODO: Skill system.	 Skills are presets.  Create tool to fetch available
+;;; skills and apply preset.
 ;;; TODO: Create/add tools to modify files and other Emacs functionality.
 ;;; Code:
 
-(require 'minuet)
-(require 'gptel)
-(require 'gptel-openai)
 (require 'joes-keybindings)
 
 (defgroup joe nil
@@ -53,24 +49,18 @@ Must have openai compatible FIM support."
 	"Chat models.  Models for more complex tasks."
 	:type '(list (string)))
 
-(defun joes-init-ai ()
-	"Initialize chat and completion models.	 Depends on llm servers being up."
-	(interactive)
-	(let ((host
-			  "http://%s/v1/chat/completions")
-			 (body "{\"reset\": true,\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"%s\"}"))
-		(dolist (model joes-ai-chat-models)
-			(let ((name (symbol-name (if (consp model) (car model) model))))
-				(plz 'post
-					(format host joes-ai-chat-host)
-					:body (format body name)
-					:then (lambda (_) (message "%s:%s" "Loaded Chat Model" name)))))
-		(plz 'post
-			(format host joes-ai-completion-host)
-			:body (format body joes-ai-completion-model)
-			:then (lambda (_) (message "%s" "Loaded Completion Model")))))
-
 ;; --- GPTEL configuration ---
+
+(setopt gptel-directives
+	'(
+		 (default . "[General Instruction]
+You are an efficient and professional reasoning assistant. Prioritize direct, accurate answers. Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
+		 ;;(rewrite . "[Rewriting Instructions]\n")
+))
+
+(require 'gptel)
+(require 'gptel-openai)
+(require 'gptel-request)
 
 (setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
@@ -80,31 +70,56 @@ Must have openai compatible FIM support."
 			(car model)
 			model)))
 
-(gptel-make-openai "ai-chat"
-	:stream t
-	:protocol "http"
-	:host joes-ai-chat-host
-	:models joes-ai-chat-models
-	:request-params '(:chat_template_kwargs (:enable_thinking :json-false)))
-
 (setq gptel-backend
-	(gptel-make-openai "ai-thinking"
+	(gptel-make-openai "ai-chat"
 		:stream t
 		:protocol "http"
 		:host joes-ai-chat-host
-		:models joes-ai-chat-models
-		:request-params '(:chat_template_kwargs nil)))
+		:models joes-ai-chat-models))
 
-(defun joes-gptel-magit-commit-context ()
-	"Add `magit-diff' buffer to `gptel-context' locally."
-	(declare-function magit-get-mode-buffer "magit")
-	(setq-local gptel-context (list (magit-get-mode-buffer 'magit-diff-mode)))
-	(setq-local gptel-backend (gptel-get-backend "ai-chat")))
+(gptel-make-preset 'disable-thinking
+	:parents '(chat)
+	:request-params '(:chat_template_kwargs (:enable_thinking :json-false)))
 
-(with-eval-after-load 'magit
-	(add-hook 'git-commit-setup-hook #'joes-gptel-magit-commit-context))
+(gptel-make-preset 'chat
+	:model 'qwen3.5
+	:request-params nil)
+
+(declare-function magit-get-mode-buffer "magit")
+(gptel-make-preset 'commit-message
+	:model 'qwen3.5
+	:parents '(chat)
+	:context '(:eval (list (magit-get-mode-buffer 'magit-diff-mode)))
+	:system '(:append "\n[Commit Message Instructions]
+* Be concise and direct.
+* Use precise language, avoid adjectives (like better, easier, or improved) and superlatives.
+* Pay attention to whitespace and style changes.
+* Answer with no markup guards nor explanation.
+* Use `Conventional Commit' format:
+```
+<type>[optional scope]: <description>
+
+[optional body]
+```
+* The description is a short summary of the code changes, e.g., fix: array parsing issue when multiple spaces were contained in string.
+* Provide a longer commit body, if change is too complex to for a single line. If so, detail each change individually.
+The types are:
+feat – a new feature is introduced with the changes
+fix – a bug fix has occurred
+chore – changes that do not relate to a fix or feature and don't modify src or test files (for example updating dependencies)
+refactor – refactored code that neither fixes a bug nor adds a feature
+docs – updates to documentation such as a the README
+style – changes that do not affect the meaning of the code, likely related to code formatting such as white-space, missing semi-colons, and so on.
+test – including new or correcting previous tests
+perf – performance improvements
+ci – continuous integration related
+build – changes that affect the build system or external dependencies
+revert – reverts a previous commit")
+	:use-context 'system)
 
 ;; --- Minuet configuration ---
+
+(require 'minuet)
 
 (setq minuet-provider 'openai-fim-compatible)
 (setq minuet-n-completions 1)
@@ -116,7 +131,6 @@ Must have openai compatible FIM support."
 
 (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
 (plist-put minuet-openai-fim-compatible-options :name "qwen")
-(plist-put minuet-openai-fim-compatible-options :n 3)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 100)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :temperature 0.2)
 (minuet-set-optional-options minuet-openai-fim-compatible-options :stop ["\n"])
@@ -141,6 +155,39 @@ Disable if too many characters in buffer."
 (add-hook 'minuet-auto-suggestion-mode-hook #'joes-ai-minuet-check-auto-suggestion)
 
 ;; --- AI end ---
+
+(defun joes-init-ai ()
+	"Initialize chat and completion models.	 Depends on llm servers being up."
+	(interactive)
+	(let ((host
+			  "http://%s/v1/chat/completions")
+			 (body "{\"reset\": true,\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"%s\"}"))
+		(dolist (model joes-ai-chat-models)
+			(let ((name (symbol-name (if (consp model) (car model) model))))
+				(plz 'post
+					(format host joes-ai-chat-host)
+					:body (format body name)
+					:then (lambda (_) (message "%s:%s" "Loaded Chat Model" name)))))
+		(plz 'post
+			(format host joes-ai-completion-host)
+			:body (format body joes-ai-completion-model)
+			:then (lambda (_) (message "%s" "Loaded Completion Model")))))
+
+(defun joes-ai-magit-gen-commit-message (&optional summary)
+	"Commit message generator for Magit with SUMMARY."
+	(interactive)
+	(defvar git-commit-mode)
+	(gptel-with-preset 'commit-message
+	(if (not git-commit-mode)
+		(message "%s" "Not in git commit mode")
+		(gptel-with-preset 'commit-message
+			(message "COntext: %s" gptel-context)
+			(let* ((summary (or summary
+									(read-from-minibuffer "Commit Summary: ")))
+					  (prompt (concat "Write a commit message for the changes."
+								  (when (not (string-empty-p summary))
+									  (concat "\nCommit Summary: " summary)))))
+			(gptel-request prompt :transforms gptel-prompt-transform-functions :stream t))))))
 
 (joes-keybinding-ai)
 
