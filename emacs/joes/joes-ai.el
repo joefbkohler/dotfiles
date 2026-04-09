@@ -52,11 +52,10 @@ Must have openai compatible FIM support."
 ;; --- GPTEL configuration ---
 
 (setopt gptel-directives
-	'(
-		 (default . "[General Instruction]
+	'((default . "[General Instruction]
 You are an efficient and professional reasoning assistant. Prioritize direct, accurate answers. Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
 		 ;;(rewrite . "[Rewriting Instructions]\n")
-))
+		 ))
 
 (require 'gptel)
 (require 'gptel-openai)
@@ -79,17 +78,20 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 
 (gptel-make-preset 'disable-thinking
 	:parents '(chat)
-	:request-params '(:chat_template_kwargs (:enable_thinking :json-false)))
+	:request-params '(:chat_template_kwargs (:enable_thinking :json-false))
+	:system "[General Instruction]
+You are an efficient and professional assistant. Prioritize direct, accurate answers. Avoid embelishing language and fillers.")
+
+(gptel-make-preset 'programming
+	:parents '(chat))
 
 (gptel-make-preset 'chat
-	:model 'qwen3.5
-	:request-params nil)
+	:model 'qwen3.5)
 
 (declare-function magit-get-mode-buffer "magit")
 (gptel-make-preset 'commit-message
 	:model 'qwen3.5
 	:parents '(chat)
-	:context '(:eval (list (magit-get-mode-buffer 'magit-diff-mode)))
 	:use-context 'system
 	:include-reasoning nil
 	:system '(:append "\n[Commit Message Instructions]
@@ -99,7 +101,7 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 * Answer with no markup guards nor explanation.
 * Use `Conventional Commit' format:
 ```
-<type>[optional scope]: <description>
+<type>[scope]: <description>
 
 [optional body]
 ```
@@ -178,17 +180,16 @@ Disable if too many characters in buffer."
 	"Commit message generator for Magit with SUMMARY."
 	(interactive)
 	(defvar git-commit-mode)
-	(gptel-with-preset 'commit-message
-	(if (not git-commit-mode)
-		(message "%s" "Not in git commit mode")
-		(gptel-with-preset 'commit-message
-			(message "COntext: %s" gptel-context)
-			(let* ((summary (or summary
-									(read-from-minibuffer "Commit Summary: ")))
-					  (prompt (concat "Write a commit message for the changes."
-								  (when (not (string-empty-p summary))
-									  (concat "\nCommit Summary: " summary)))))
-			(gptel-request prompt :transforms gptel-prompt-transform-functions :stream t))))))
+	(let* ((diff-buffer (magit-get-mode-buffer 'magit-diff-mode))
+			  (diff-buffer-string (with-current-buffer diff-buffer
+									  (buffer-substring-no-properties (point-min) (point-max))))
+			  (summary (or summary (read-string "Summary: "))))
+		(if (and diff-buffer git-commit-mode)
+			(gptel-with-preset 'commit-message
+				(let ((prompt (concat "Write a commit message for the diff:\n```" diff-buffer-string "\n```"
+								  (when summary (format "\nCommit Summary: %s" summary)))))
+					(gptel-request prompt :transforms gptel-prompt-transform-functions :stream t)))
+			(error "No diff buffer or not in git-commit-mode"))))
 
 (joes-keybinding-ai)
 
