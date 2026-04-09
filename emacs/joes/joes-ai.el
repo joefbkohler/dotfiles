@@ -54,7 +54,10 @@ Must have openai compatible FIM support."
 (setopt gptel-directives
 	'((default . "[General Instruction]
 You are an efficient and professional reasoning assistant. Prioritize direct, accurate answers. Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
-		 ;;(rewrite . "[Rewriting Instructions]\n")
+		 (rewrite . "[Rewriting Instructions]
+* Add no markdown or markup code fences.
+* Output exclusivelly the new text, without any explanations or comments.
+* Follow the instructions to rewrite the provided snippet.")
 		 ))
 
 (require 'gptel)
@@ -95,18 +98,19 @@ You are an efficient and professional assistant. Prioritize direct, accurate ans
 	:use-context 'system
 	:include-reasoning nil
 	:system '(:append "\n[Commit Message Instructions]
-* Be concise and direct.
-* Use precise language, avoid adjectives (like better, easier, or improved) and superlatives.
+* Be concise and direct. Focus on the WHAT, not the WHY.
+* Use precise language, avoid adjectives (like better, easier) and superlatives.
+* Instead of descriptions like 'improved function', just describe what was done.
 * Pay attention to whitespace and style changes.
 * Answer with no markup guards nor explanation.
 * Use `Conventional Commit' format:
 ```
-<type>[scope]: <description>
+<type>: <description>
 
 [optional body]
 ```
 * The description is a short summary of the code changes, e.g., fix: array parsing issue when multiple spaces were contained in string.
-* Provide a longer commit body, if change is too complex to for a single line. If so, detail each change individually.
+* Provide a longer commit body, if change is too complex to for a single line. If so, detail each change individually. Seperate each change with a blank line.
 The types are:
 feat – a new feature is introduced with the changes
 fix – a bug fix has occurred
