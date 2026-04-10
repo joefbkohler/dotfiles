@@ -18,6 +18,8 @@
 ;;; Commentary:
 
 ;; TODO:
+;; Create tree-sitter based which-function-func
+;; Configure which-function-mode: face, format, functions
 ;; dependency checker: aspell/hunspell
 
 ;;; Code:
@@ -68,6 +70,7 @@
 (electric-indent-mode 1)
 (delete-selection-mode 1)
 (cua-selection-mode 1)
+(which-function-mode 1)
 (fringe-mode '(8 . 0))
 
 ;; Minor modes globally unloaded
