@@ -63,6 +63,7 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 (require 'gptel)
 (require 'gptel-openai)
 (require 'gptel-request)
+(require 'gptel-context)
 
 (setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
@@ -161,7 +162,7 @@ Disable if too many characters in buffer."
 (add-to-list 'minuet-auto-suggestion-block-predicates #'joes-ai-minuet-check-if-insert-command-p)
 (add-hook 'minuet-auto-suggestion-mode-hook #'joes-ai-minuet-check-auto-suggestion)
 
-;; --- AI end ---
+;; --- Helper Functions ---
 
 (defun joes-init-ai ()
 	"Initialize chat and completion models.	 Depends on llm servers being up."
@@ -194,6 +195,18 @@ Disable if too many characters in buffer."
 								  (when summary (format "\nCommit Summary: %s" summary)))))
 					(gptel-request prompt :transforms gptel-prompt-transform-functions :stream t)))
 			(error "No diff buffer or not in git-commit-mode"))))
+
+(defun joes-ai-add-project-dir ()
+	"Add project files to `gptel-context'."
+	(interactive)
+	(when-let ((project (project-current))
+				  (dir (read-directory-name "Choose directory to add: "))
+				  (ext (read-string "File extension: "
+						   (file-name-extension (buffer-file-name)))))
+		(declare-function project-files "project")
+		(dolist (file (project-files project (list dir)))
+			(when (string= (file-name-extension file) ext)
+				(gptel-add-file file)))))
 
 (joes-keybinding-ai)
 
