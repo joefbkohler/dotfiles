@@ -87,10 +87,12 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 You are an efficient and professional assistant. Prioritize direct, accurate answers. Avoid embelishing language and fillers.")
 
 (gptel-make-preset 'programming
-	:parents '(chat))
+	:parents '(chat)
+	:temperature 0.5)
 
 (gptel-make-preset 'chat
-	:model 'qwen3.5)
+	:model 'qwen3.5
+	:request-params '(:chat_template_kwargs nil))
 
 (declare-function magit-get-mode-buffer "magit")
 (gptel-make-preset 'commit-message
@@ -207,6 +209,8 @@ Disable if too many characters in buffer."
 		(dolist (file (project-files project (list dir)))
 			(when (string= (file-name-extension file) ext)
 				(gptel-add-file file)))))
+
+;; --- End of configuration ---
 
 (joes-keybinding-ai)
 
