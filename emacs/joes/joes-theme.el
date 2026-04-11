@@ -34,7 +34,8 @@
     :type 'boolean)
 
 (defcustom joes-default-font-family "Iosevka Nerd Font"
-    "Default font family.")
+    "Default font family."
+    :type 'string)
 
 (defface documents-face '((t :font "Iosevka Etoile"))
     "Face for text documents.")
