@@ -139,7 +139,9 @@
 
 (defun joes-theme-apply-eglot ()
     "Eglot theme."
-    (set-face-attribute 'eglot-highlight-symbol-face nil :background nil :box '(:line-width -1 :color "#333")))
+    (set-face-attribute 'eglot-highlight-symbol-face nil :background nil :box '(:line-width -1 :color "#333"))
+    (set-face-attribute 'eglot-semantic-static nil :inherit 'font-lock-function-name-face :foreground "#A7B")
+    (set-face-attribute 'eglot-semantic-namespace nil :inherit 'font-lock-type-face :foreground "#659"))
 
 (defun joes-theme-set-ligatures ()
     "Set list of ligatures for each mode."
