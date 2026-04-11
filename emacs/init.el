@@ -105,7 +105,7 @@
         (locate-user-emacs-file "transient-values.el")))
 
 (use-package joes-ai
-    :commands (gptel gptel-menu joes-init-ai))
+    :commands (gptel gptel-menu joes-ai-init))
 
 ;; Useful to get the environment variables, only run in OSX
 (use-package exec-path-from-shell

@@ -86,13 +86,15 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 	:system "[General Instruction]
 You are an efficient and professional assistant. Prioritize direct, accurate answers. Avoid embelishing language and fillers.")
 
+(gptel-make-preset 'chat
+	:model 'qwen3.5
+	:temperature 1.0
+	:system 'default
+	:request-params '(:chat_template_kwargs nil))
+
 (gptel-make-preset 'programming
 	:parents '(chat)
 	:temperature 0.5)
-
-(gptel-make-preset 'chat
-	:model 'qwen3.5
-	:request-params '(:chat_template_kwargs nil))
 
 (declare-function magit-get-mode-buffer "magit")
 (gptel-make-preset 'commit-message
@@ -166,7 +168,7 @@ Disable if too many characters in buffer."
 
 ;; --- Helper Functions ---
 
-(defun joes-init-ai ()
+(defun joes-ai-init ()
 	"Initialize chat and completion models.	 Depends on llm servers being up."
 	(interactive)
 	(let ((host
@@ -198,8 +200,8 @@ Disable if too many characters in buffer."
 					(gptel-request prompt :transforms gptel-prompt-transform-functions :stream t)))
 			(error "No diff buffer or not in git-commit-mode"))))
 
-(defun joes-ai-add-project-dir ()
-	"Add project files to `gptel-context'."
+(defun joes-ai-add-project-dir-to-context ()
+	"Add files with specific ext in dir to `gptel-context'."
 	(interactive)
 	(when-let ((project (project-current))
 				  (dir (read-directory-name "Choose directory to add: "))
