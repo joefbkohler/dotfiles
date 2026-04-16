@@ -67,32 +67,30 @@
     "General colors based on zenburn."
     (load-theme 'zenburn t)
     (joes-theme-apply-default-faces)
+
     (set-face-attribute 'default nil
         :background "#111"
         :foreground "#D6D0BC")
-    
     (set-face-attribute 'hl-line nil :background "#0D0D0D" :box '(:line-width -1 :color "#555"))
-    (set-face-attribute 'region nil :foreground 'unspecified :background "#322")
-    (set-face-attribute 'isearch nil :foreground 'unspecified)
-    (set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
-    
     (set-face-attribute 'fringe nil :foreground 'unspecified :background "#222")
-
+    (set-face-attribute 'region nil :foreground 'unspecified :background "#322")
     (set-face-attribute 'mode-line nil :background "#161616" :height 140)
     (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626")
+    (set-face-attribute 'line-number nil :background "#141414")
+    (set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
+    (set-face-attribute 'org-block nil :background "#122012")
 
+    (set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
+    (set-face-attribute 'isearch nil :foreground 'unspecified)
     (set-face-attribute 'font-lock-keyword-face nil :foreground "#AA6" :weight 'bold)
     (set-face-attribute 'font-lock-constant-face nil :inherit 'font-lock-keyword-face :foreground "#C66")
     (set-face-attribute 'font-lock-builtin-face nil :foreground "#A5A5A5" :weight 'bold)
-
     (set-face-attribute 'font-lock-type-face nil :foreground "#6292A8")
-    (set-face-attribute 'line-number nil :background "#141414")
-    (set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
-
     (set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF")
 
     (set-frame-parameter (selected-frame) 'alpha-background 100)
-    (set-frame-parameter (selected-frame) 'alpha '(100 100)))
+    (set-frame-parameter (selected-frame) 'alpha '(100 100))
+    )
 
 (defun joes-theme-darker-transparent-background()
     "Darker background colors for use with transparency."
@@ -105,7 +103,8 @@
     (set-face-attribute 'line-number nil :background "#060606")
     (set-face-attribute 'line-number-current-line nil :background "#000")
     (set-frame-parameter (selected-frame) 'alpha-background 90)
-    (set-frame-parameter (selected-frame) 'alpha '(100 90)))
+    (set-frame-parameter (selected-frame) 'alpha '(100 90))
+    (set-face-attribute 'org-block nil :background "#051005"))
 
 (defun joes-theme-apply-vertico()
     "Vertico theme."
