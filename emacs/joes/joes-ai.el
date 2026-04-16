@@ -104,8 +104,9 @@ You are an efficient and professional assistant. Prioritize direct, accurate ans
 	:include-reasoning nil
 	:system '(:append "\n[Commit Message Instructions]
 * Be concise and direct. Focus on the WHAT, not the WHY.
-* Use precise language, avoid adjectives (like better, easier) and superlatives.
+* Use precise language, avoid adjectives (like better, easier, faster) and superlatives.
 * Instead of descriptions like 'improved function', just describe what was done.
+* When describing a change, only describe the change, not the expected effect.
 * Pay attention to whitespace and style changes.
 * Answer with no markup guards nor explanation.
 * Use `Conventional Commit' format:
