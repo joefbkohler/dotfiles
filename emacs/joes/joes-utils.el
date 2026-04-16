@@ -23,6 +23,14 @@
 
 ;;; Code:
 
+(defun joes-add-to-color (color-name rgb)
+    "Add RGB value to COLOR-NAME."
+    (let ((old-rgb (color-name-to-rgb (face-attribute 'default :background))))
+        (color-rgb-to-hex
+            (+ (nth 0 old-rgb) (nth 0 rgb))
+            (+ (nth 1 old-rgb) (nth 1 rgb))
+            (+ (nth 2 old-rgb) (nth 2 rgb)))))
+
 (defun joes-header-has-c++-implementation (file-name)
     "Find if c++ source file with FILE-NAME in sibling folders exists."
     (or (joes-search-file-regex-upward
