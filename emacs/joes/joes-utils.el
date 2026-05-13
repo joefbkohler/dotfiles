@@ -23,9 +23,14 @@
 
 ;;; Code:
 
+(require 'dom)
+(require 'color)
+(require 'xref)
+
 (defun joes-add-to-color (color-name rgb)
     "Add RGB value to COLOR-NAME."
-    (let ((old-rgb (color-name-to-rgb (face-attribute 'default :background))))
+    (declare-function color-rgb-to-hex "color")
+    (let ((old-rgb (color-name-to-rgb color-name)))
         (color-rgb-to-hex
             (+ (nth 0 old-rgb) (nth 0 rgb))
             (+ (nth 1 old-rgb) (nth 1 rgb))
@@ -93,6 +98,7 @@
                 ))))
 
 (defun joes-utils-toggle-eldoc ()
+    "Toggle ELDOC window."
     (interactive)
     (let ((eldoc-window (get-buffer-window (eldoc-doc-buffer))))
         (if eldoc-window
@@ -166,10 +172,10 @@ ARGS are sent to the command."
     (interactive)
     (let ((orig-buffer (current-buffer)))
         (switch-to-buffer-other-window xref-buffer-name)
-        (condition-case completion-err
+        (condition-case _
             (progn
                 (completing-read "Regexp I-apropos: "
-                    (lambda (input predicate action)
+                    (lambda (input _ _)
                         (when (> (length input) 2)
                             (with-current-buffer orig-buffer
                                 (condition-case err
@@ -195,6 +201,17 @@ ARGS are sent to the command."
     (if (eq (point) (line-beginning-position))
         (org-cycle)
         (joes-indent-or-complete)))
+
+(defun joes-get-list-of-ddg-results(html-string)
+    "Get a list of search results from HTML-STRING."
+    (let* ((dom (with-temp-buffer
+                    (insert html-string)
+                    (libxml-parse-html-region (point-min) (point-max))))
+              (class-name "result__snippet")
+              matches)
+        (dolist (link (dom-by-class dom class-name))
+            (push (cons (concat "https:" (dom-attr link 'href)) (dom-texts link)) matches))
+        (nreverse matches)))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
