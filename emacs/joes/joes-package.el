@@ -1,4 +1,4 @@
-;;; joes-package.el --- joes package.el configuration and functions  -*- lexical-binding: t; -*-
+;;; joes-package.el --- joes package.el configuration and functions	 -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025
 
@@ -11,11 +11,11 @@
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -23,6 +23,7 @@
 
 ;;; Code:
 (require 'package)
+(require 'treesit)
 
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
@@ -59,12 +60,12 @@
 		 (yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
 
 (defun joes-package-initialize ()
-	"Intialize.  Check for required packages."
+	"Intialize.	 Check for required packages."
 	(package-initialize)
 	(when (and (length> (seq-remove #'package-installed-p package-selected-packages) 0)
- 			  (y-or-n-p "Required packages not installed.  Install them?"))
- 		(package-refresh-contents)
- 		(package-install-selected-packages t)))
+			  (y-or-n-p "Required packages not installed.  Install them?"))
+		(package-refresh-contents)
+		(package-install-selected-packages t)))
 
 (defun joes-package-treesit-init-langs ()
 	(let ((langs (seq-filter

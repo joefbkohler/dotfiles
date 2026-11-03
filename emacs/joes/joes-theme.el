@@ -78,7 +78,6 @@
     (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626")
     (set-face-attribute 'line-number nil :background "#141414")
     (set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
-
     (set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
     (set-face-attribute 'isearch nil :foreground 'unspecified)
     (set-face-attribute 'font-lock-keyword-face nil :foreground "#AA6" :weight 'bold)
@@ -88,8 +87,7 @@
     (set-face-attribute 'highlight nil :background 'unspecified :weight 'ultra-bold :underline "#FFF")
 
     (set-frame-parameter (selected-frame) 'alpha-background 100)
-    (set-frame-parameter (selected-frame) 'alpha '(100 100))
-    )
+    (set-frame-parameter (selected-frame) 'alpha '(100 100)))
 
 (defun joes-theme-darker-transparent-background()
     "Darker background colors for use with transparency."

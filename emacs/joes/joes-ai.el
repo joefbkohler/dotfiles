@@ -51,19 +51,11 @@ Must have openai compatible FIM support."
 
 ;; --- GPTEL configuration ---
 
-(setopt gptel-directives
-	'((default . "[General Instruction]
-You are an efficient and professional reasoning assistant. Prioritize direct, accurate answers. Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
-		 (rewrite . "[Rewriting Instructions]
-* Add no markdown or markup code fences.
-* Output exclusivelly the new text, without any explanations or comments.
-* Follow the instructions to rewrite the provided snippet.")
-		 ))
-
 (require 'gptel)
 (require 'gptel-openai)
 (require 'gptel-request)
 (require 'gptel-context)
+(require 'joes-ai-directives)
 
 (setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
@@ -80,55 +72,6 @@ You are an efficient and professional reasoning assistant. Prioritize direct, ac
 		:host joes-ai-chat-host
 		:models joes-ai-chat-models))
 
-(gptel-make-preset 'disable-thinking
-	:parents '(chat)
-	:request-params '(:chat_template_kwargs (:enable_thinking :json-false))
-	:system "[General Instruction]
-You are an efficient and professional assistant. Prioritize direct, accurate answers. Avoid embelishing language and fillers.")
-
-(gptel-make-preset 'chat
-	:model 'qwen3.5
-	:temperature 1.0
-	:system 'default
-	:request-params '(:chat_template_kwargs nil))
-
-(gptel-make-preset 'programming
-	:parents '(chat)
-	:temperature 0.5)
-
-(declare-function magit-get-mode-buffer "magit")
-(gptel-make-preset 'commit-message
-	:model 'qwen3.5
-	:parents '(chat)
-	:use-context 'system
-	:include-reasoning nil
-	:system '(:append "\n[Commit Message Instructions]
-* Be concise and direct. Focus on the WHAT, not the WHY.
-* Use precise language, avoid adjectives (like better, easier, faster) and superlatives.
-* Instead of descriptions like 'improved function', just describe what was done.
-* When describing a change, only describe the change, not the expected effect.
-* Pay attention to whitespace and style changes.
-* Answer with no markup guards nor explanation.
-* Use `Conventional Commit' format:
-```
-<type>: <description>
-
-[optional body]
-```
-* The description is a short summary of the code changes, e.g., fix: array parsing issue when multiple spaces were contained in string.
-* Provide a longer commit body, if change is too complex to for a single line. If so, detail each change individually. Seperate each change with a blank line.
-The types are:
-feat – a new feature is introduced with the changes
-fix – a bug fix has occurred
-chore – changes that do not relate to a fix or feature and don't modify src or test files (for example updating dependencies)
-refactor – refactored code that neither fixes a bug nor adds a feature
-docs – updates to documentation such as a the README
-style – changes that do not affect the meaning of the code, likely related to code formatting such as white-space, missing semi-colons, and so on.
-test – including new or correcting previous tests
-perf – performance improvements
-ci – continuous integration related
-build – changes that affect the build system or external dependencies
-revert – reverts a previous commit"))
 
 ;; --- Minuet configuration ---
 
