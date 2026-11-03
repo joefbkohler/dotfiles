@@ -160,6 +160,11 @@
     :mode ("\\.[lL][oO][gG]\\'$" . logview-mode)
     :config
     (joes-theme-apply-logview))
+
+(use-package org
+    :defer t
+    :config
+    (joes-theme-apply-org))
  
 (use-package pdf-tools
     :mode ("\\.[pP][dD][fF]\\'$" . pdf-view-mode)

@@ -78,7 +78,6 @@
     (set-face-attribute 'mode-line-inactive nil :inherit 'mode-line :background "#262626")
     (set-face-attribute 'line-number nil :background "#141414")
     (set-face-attribute 'line-number-current-line nil :background "#111" :box '(:line-width -1 :color "#555"))
-    (set-face-attribute 'org-block nil :background "#122012")
 
     (set-face-attribute 'lazy-highlight nil :foreground 'unspecified)
     (set-face-attribute 'isearch nil :foreground 'unspecified)
@@ -103,8 +102,12 @@
     (set-face-attribute 'line-number nil :background "#060606")
     (set-face-attribute 'line-number-current-line nil :background "#000")
     (set-frame-parameter (selected-frame) 'alpha-background 90)
-    (set-frame-parameter (selected-frame) 'alpha '(100 90))
-    (set-face-attribute 'org-block nil :background "#051005"))
+    (set-frame-parameter (selected-frame) 'alpha '(100 90)))
+
+(defun joes-theme-apply-org()
+    "Org theme config."
+    (set-face-attribute 'org-block nil
+        :background (if joes-use-transparency "#051005" "#122012")))
 
 (defun joes-theme-apply-vertico()
     "Vertico theme."
