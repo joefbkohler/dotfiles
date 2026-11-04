@@ -33,6 +33,18 @@
 	"Chat models host address with port."
 	:type 'string)
 
+(defcustom joes-ai-chat-protocol "http"
+	"Chat models protocol."
+	:type 'string)
+
+(defcustom joes-ai-chat-endpoint "/v1/chat/completions"
+	"Chat models API endpoint path."
+	:type 'string)
+
+(defcustom joes-ai-chat-key nil
+	"Chat models API key.	Either a string, or a function returning one."
+	:type '(choice (const nil) string function))
+
 (defcustom joes-ai-completion-host "localhost:11434"
 	"Completion models host address with port."
 	:type 'string)
@@ -48,6 +60,18 @@ Must have openai compatible FIM support."
 									qwen2.5-coder)
 	"Chat models.  Models for more complex tasks."
 	:type '(list (string)))
+
+(defcustom joes-ai-chat-reasoning-off
+	'(:chat_template_kwargs (:enable_thinking :json-false))
+	"Request params sent to disable or minimize chat model reasoning.
+nil sends nothing."
+	:type '(choice (const nil) plist))
+
+(defcustom joes-ai-chat-reasoning-on
+	'(:chat_template_kwargs (:enable_thinking t))
+	"Request params sent to enable chat model reasoning.
+nil sends nothing."
+	:type '(choice (const nil) plist))
 
 ;; --- GPTEL configuration ---
 
@@ -68,8 +92,10 @@ Must have openai compatible FIM support."
 (setq gptel-backend
 	(gptel-make-openai "ai-chat"
 		:stream t
-		:protocol "http"
+		:protocol joes-ai-chat-protocol
 		:host joes-ai-chat-host
+		:endpoint joes-ai-chat-endpoint
+		:key joes-ai-chat-key
 		:models joes-ai-chat-models))
 
 
@@ -112,11 +138,11 @@ Disable if too many characters in buffer."
 
 ;; --- Helper Functions ---
 
-(defun joes-ai-init ()
+(defun joes-ai-preload-local-models ()
 	"Initialize chat and completion models.	 Depends on llm servers being up."
 	(interactive)
 	(let ((host
-			  "http://%s/v1/chat/completions")
+			  (concat joes-ai-chat-protocol "://%s" joes-ai-chat-endpoint))
 			 (body "{\"reset\": true,\"messages\":[{\"role\":\"user\",\"content\":\"\"}],\"model\": \"%s\"}"))
 		(dolist (model joes-ai-chat-models)
 			(let ((name (symbol-name (if (consp model) (car model) model))))

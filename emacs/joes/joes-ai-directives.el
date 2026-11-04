@@ -51,16 +51,15 @@ You can use the Warning emoji ⚠️ in a title to inform of dangers or caveats.
 (gptel-make-preset 'disable-thinking
 	:parents '(joe-default)
 	:tools '("search_web" "read_url")
-	:request-params '(:chat_template_kwargs (:enable_thinking :json-false)))
+	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
-	:model 'qwen3.5
 	:temperature 1.0
 	:parents '(joe-default)
 	:tools '("search_web" "read_url")
 	:system '(:append "\n[Reasoning Instructions]
 Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
-	:request-params '(:chat_template_kwargs nil))
+	:request-params '(:eval joes-ai-chat-reasoning-on))
 
 (gptel-make-preset 'programming
 	:parents '(chat)
@@ -70,7 +69,6 @@ When answering a question about code or other technical content, explain usage, 
 
 (declare-function magit-get-mode-buffer "magit")
 (gptel-make-preset 'commit-message
-	:model 'qwen3.5
 	:parents '(chat)
 	:use-context 'system
 	:include-reasoning nil
