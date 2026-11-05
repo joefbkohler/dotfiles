@@ -64,9 +64,6 @@ You can use the Warning emoji ⚠️ in a title to inform of dangers or caveats.
 (defconst joes-ai-reasoning-instructions "\n[Reasoning Instructions]
 Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
 
-(defconst joes-ai-programming-instructions "\n[Programming Instructions]
-When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
-
 (gptel-make-preset 'joe-default
 	:tools '("search_web" "read_url")
 	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
@@ -85,7 +82,10 @@ When answering a question about code or other technical content, explain usage, 
 (gptel-make-preset 'programming
 	:parents '(chat)
 	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions joes-ai-programming-instructions (joes-ai-project-info)))
+				(concat joes-ai-default-system joes-ai-reasoning-instructions
+					"\n[Programming Instructions]
+When answering a question about code or other technical content, explain usage, and warnings, but not implementation details."
+					(joes-ai-project-info)))
 	:temperature 0.5)
 
 (declare-function magit-get-mode-buffer "magit")
@@ -119,15 +119,6 @@ perf – performance improvements
 ci – continuous integration related
 build – changes that affect the build system or external dependencies
 revert – reverts a previous commit")))
-
-(defun joes-ai-apply-default-preset ()
-	"Apply the `chat' preset in new gptel chat buffers."
-	(unless gptel--preset
-		(gptel--apply-preset
-			'chat
-			(lambda (sym val) (set (make-local-variable sym) val)))))
-
-(add-hook 'gptel-mode-hook #'joes-ai-apply-default-preset)
 
 (provide 'joes-ai-directives)
 ;;; joes-ai-directives.el ends here

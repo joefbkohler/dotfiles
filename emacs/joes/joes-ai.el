@@ -182,6 +182,14 @@ Disable if too many characters in buffer."
 			(when (string= (file-name-extension file) ext)
 				(gptel-add-file file)))))
 
+(defun joes-ai-apply-default-preset ()
+	"Apply the `chat' preset in new gptel chat buffers."
+	(unless gptel--preset
+		(gptel--apply-preset
+			'chat
+			(lambda (sym val) (set (make-local-variable sym) val)))))
+
+(add-hook 'gptel-mode-hook #'joes-ai-apply-default-preset)
 ;; --- End of configuration ---
 
 (joes-keybinding-ai)
