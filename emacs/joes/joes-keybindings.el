@@ -36,8 +36,8 @@
     (keymap-unset emacs-lisp-mode-map "C-c C-f")
 
     (keymap-global-set "C-z" 'undo)
-    (keymap-global-set "M-n" (lambda () (interactive) (scroll-up 1)))
-    (keymap-global-set "M-p" (lambda () (interactive) (scroll-down 1)))
+    (keymap-global-set "M-n" (lambda () (interactive) (scroll-up 5)))
+    (keymap-global-set "M-p" (lambda () (interactive) (scroll-down 5)))
     (keymap-global-set "C-|" 'joes-toggle-window-split)
     (keymap-global-set "C-<tab>" (lambda () (interactive) (insert-tab)))
     (keymap-global-set "<backtab>" 'indent-according-to-mode)
