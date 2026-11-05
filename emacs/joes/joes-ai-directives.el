@@ -24,6 +24,20 @@
 (require 'gptel)
 (require 'joes-ai-tools)
 
+(declare-function magit-get-current-branch "magit-branch")
+
+(defun joes-ai-project-info ()
+	"Return project root and git branch block, or an empty string outside a project."
+	(if-let* ((project (project-current))
+				 (root (project-root project)))
+		(progn
+			(require 'magit-branch)
+			(format "\n[Project Context]\nRoot: %s\nBranch: %s"
+				root
+				(let ((default-directory root))
+					(or (magit-get-current-branch) "detached"))))
+		""))
+
 (setopt gptel-directives
 	`((default . "[General Instruction]
 You are an efficient reasoning AI assistant. Answer like a command line tool would answer: with a single, dry, direct answer, without pleasantries, summaries, .
@@ -45,34 +59,42 @@ You can use the Warning emoji ⚠️ in a title to inform of dangers or caveats.
 * Output exclusivelly the new text, without any explanations or comments.
 * Follow the instructions to rewrite the provided snippet.")))
 
+(defconst joes-ai-default-system (alist-get 'default gptel-directives))
+
+(defconst joes-ai-reasoning-instructions "\n[Reasoning Instructions]
+Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
+
+(defconst joes-ai-programming-instructions "\n[Programming Instructions]
+When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
+
 (gptel-make-preset 'joe-default
-	:system 'default)
+	:tools '("search_web" "read_url")
+	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
 
 (gptel-make-preset 'disable-thinking
 	:parents '(joe-default)
-	:tools '("search_web" "read_url")
 	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
 	:temperature 1.0
 	:parents '(joe-default)
-	:tools '("search_web" "read_url")
-	:system '(:append "\n[Reasoning Instructions]
-Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
+	:system (lambda ()
+				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info)))
 	:request-params '(:eval joes-ai-chat-reasoning-on))
 
 (gptel-make-preset 'programming
 	:parents '(chat)
-	:system '(:append "\n[Programming Instructions]
-When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
+	:system (lambda ()
+				(concat joes-ai-default-system joes-ai-reasoning-instructions joes-ai-programming-instructions (joes-ai-project-info)))
 	:temperature 0.5)
 
 (declare-function magit-get-mode-buffer "magit")
 (gptel-make-preset 'commit-message
-	:parents '(chat)
+	:parents '(joe-default)
 	:use-context 'system
 	:include-reasoning nil
-	:system '(:append "\n[Commit Message Instructions]
+	:system (lambda ()
+				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info) "\n[Commit Message Instructions]
 * Be concise and direct. Focus on the WHAT, not the WHY.
 * Use precise language, avoid subjective words like better, easier, faster, enhances, improves, etc...
 * Instead of descriptions like 'improved function', just describe what was done.
@@ -96,7 +118,16 @@ test – including new or correcting previous tests
 perf – performance improvements
 ci – continuous integration related
 build – changes that affect the build system or external dependencies
-revert – reverts a previous commit"))
+revert – reverts a previous commit")))
+
+(defun joes-ai-apply-default-preset ()
+	"Apply the `chat' preset in new gptel chat buffers."
+	(unless gptel--preset
+		(gptel--apply-preset
+			'chat
+			(lambda (sym val) (set (make-local-variable sym) val)))))
+
+(add-hook 'gptel-mode-hook #'joes-ai-apply-default-preset)
 
 (provide 'joes-ai-directives)
 ;;; joes-ai-directives.el ends here
