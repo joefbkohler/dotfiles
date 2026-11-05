@@ -80,11 +80,9 @@ When answering a question about code or other technical content, explain usage, 
 * Pay attention to whitespace and style changes.
 * Answer with no markup guards nor explanation.
 * Use `Conventional Commit' format:
-```
 <type>: <description>
 
 [optional body]
-```
 * The description is a short summary of the code changes, e.g., fix: array parsing issue when multiple spaces were contained in string.
 * Provide a longer commit body, if change is too complex to for a single line. If so, detail each change individually. Seperate each change with a blank line.
 The types are:
