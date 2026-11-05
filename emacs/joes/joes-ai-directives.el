@@ -88,11 +88,12 @@ When answering a question about code or other technical content, explain usage, 
 					(joes-ai-project-info)))
 	:temperature 0.5)
 
-(declare-function magit-get-mode-buffer "magit")
+(defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
 	:parents '(joe-default)
 	:use-context 'system
 	:include-reasoning nil
+	:model (or joes-ai-commit-message-model (default-value 'gptel-model))
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info) "\n[Commit Message Instructions]
 * Be concise and direct. Focus on the WHAT, not the WHY.

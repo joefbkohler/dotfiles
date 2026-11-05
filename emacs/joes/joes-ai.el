@@ -61,6 +61,10 @@ Must have openai compatible FIM support."
 	"Chat models.  Models for more complex tasks."
 	:type '(list (string)))
 
+(defcustom joes-ai-commit-message-model nil
+	"Model for the `commit-message' preset.	 nil uses the default `gptel-model'."
+	:type '(choice (const :tag "Default chat model" nil) symbol))
+
 (defcustom joes-ai-chat-reasoning-off
 	'(:chat_template_kwargs (:enable_thinking :json-false))
 	"Request params sent to disable or minimize chat model reasoning.
@@ -159,6 +163,7 @@ Disable if too many characters in buffer."
 	"Commit message generator for Magit with SUMMARY."
 	(interactive)
 	(defvar git-commit-mode)
+	(declare-function magit-get-mode-buffer "magit")
 	(let* ((diff-buffer (magit-get-mode-buffer 'magit-diff-mode))
 			  (diff-buffer-string (with-current-buffer diff-buffer
 									  (buffer-substring-no-properties (point-min) (point-max))))
