@@ -24,6 +24,12 @@
 (require 'gptel)
 (require 'joes-utils)
 
+(defcustom joes-ai-read-url-max-chars 16000
+	"Maximum characters returned by the read_url tool.
+Avoids context overloading.  nil means no limit."
+	:group 'joe
+	:type '(choice (const :tag "No limit" nil) integer))
+
 (gptel-make-tool
 	:name "search_web"
 	:description "Search web for the given string. Returns a list of urls with a short description."
@@ -59,7 +65,8 @@
 								  (dom-print html-tree)
 								  (let ((html-text (replace-regexp-in-string ">[[:space:]]+" " " (buffer-substring-no-properties (point-min) (point-max)))))
 									  (funcall ai-callback
-										  (if (length< html-text 16000) ;; 16000 characters max to avoid context overloading
+										  (if (or (null joes-ai-read-url-max-chars)
+												  (length< html-text joes-ai-read-url-max-chars))
 											  html-text
 											  (format "The content of the web page is too long: %i. Use local retriever." (length html-text)))))))
 						  (kill-buffer (current-buffer)))
