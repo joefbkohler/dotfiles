@@ -70,15 +70,17 @@ When answering a question about code or other technical content, explain usage, 
 (gptel-make-preset 'base-preset
 	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
 
+(gptel-make-preset 'base-edit-preset
+	:tools '("search_web" "read_url" "rgrep" "find_files" "read_file")
+	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
+
 (gptel-make-preset 'disable-thinking
-	:tools '("search_web" "read_url")
-	:parents '(base-preset)
+	:parents 'base-edit-preset
 	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
-	:tools '("search_web" "read_url")
 	:temperature 1.0
-	:parents '(base-preset)
+	:parents 'base-edit-preset
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info)))
 	:request-params '(:eval joes-ai-chat-reasoning-on))
