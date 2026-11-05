@@ -173,7 +173,7 @@ Disable if too many characters in buffer."
 (defun joes-ai-add-project-dir-to-context ()
 	"Add files with specific ext in dir to `gptel-context'."
 	(interactive)
-	(when-let ((project (project-current))
+	(when-let* ((project (project-current))
 				  (dir (read-directory-name "Choose directory to add: "))
 				  (ext (read-string "File extension: "
 						   (file-name-extension (buffer-file-name)))))
