@@ -64,17 +64,21 @@ You can use the Warning emoji ⚠️ in a title to inform of dangers or caveats.
 (defconst joes-ai-reasoning-instructions "\n[Reasoning Instructions]
 Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
 
-(gptel-make-preset 'joe-default
-	:tools '("search_web" "read_url")
+(defconst joes-ai-programming-instructions "\n[Programming Instructions]
+When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
+
+(gptel-make-preset 'base-preset
 	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
 
 (gptel-make-preset 'disable-thinking
-	:parents '(joe-default)
+	:tools '("search_web" "read_url")
+	:parents '(base-preset)
 	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
+	:tools '("search_web" "read_url")
 	:temperature 1.0
-	:parents '(joe-default)
+	:parents '(base-preset)
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info)))
 	:request-params '(:eval joes-ai-chat-reasoning-on))
@@ -83,14 +87,13 @@ Reason internally but be concise and focused. In your internal reasoning, avoid 
 	:parents '(chat)
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
-					"\n[Programming Instructions]
-When answering a question about code or other technical content, explain usage, and warnings, but not implementation details."
+					joes-ai-programming-instructions
 					(joes-ai-project-info)))
 	:temperature 0.5)
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
-	:parents '(joe-default)
+	:parents '(base-preset)
 	:use-context 'system
 	:include-reasoning nil
 	:model (or joes-ai-commit-message-model (default-value 'gptel-model))
