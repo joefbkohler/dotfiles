@@ -43,6 +43,7 @@
 		 dape ;Debugger using Debug
 		 eat ;Terminal emulator
 		 gptel ;AI chat
+		 mcp ;AI MCP tool integration
 		 minuet ;AI completion suggestion.
 		 vertico ;minibuffer completion UI
 		 consult ;utilitarian commands based on complete-read - grep, line and completion.

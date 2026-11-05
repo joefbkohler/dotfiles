@@ -80,6 +80,8 @@ nil sends nothing."
 ;; --- GPTEL configuration ---
 
 (require 'gptel)
+(require 'mcp-hub)
+(require 'gptel-integrations)
 (require 'gptel-openai)
 (require 'gptel-request)
 (require 'gptel-context)
@@ -196,6 +198,9 @@ Disable if too many characters in buffer."
 
 (add-hook 'gptel-mode-hook #'joes-ai-apply-default-preset)
 ;; --- End of configuration ---
+
+(when mcp-hub-servers
+	(gptel-mcp-connect nil t t))
 
 (joes-keybinding-ai)
 
