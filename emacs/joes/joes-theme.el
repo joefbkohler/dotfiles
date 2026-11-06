@@ -33,7 +33,7 @@
 	"Should use transparency in background."
 	:type 'boolean)
 
-(defcustom joes-default-font-family "Iosevka Nerd Font"
+(defcustom joes-default-font-family "Iosevka Nerd Font Mono"
 	"Default font family."
 	:type 'string)
 
