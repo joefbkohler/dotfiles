@@ -71,7 +71,7 @@ When answering a question about code or other technical content, explain usage, 
 	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
 
 (gptel-make-preset 'base-edit-preset
-	:tools '("search_web" "read_url" "rgrep" "find_files" "read_file")
+	:tools '("filesystem")
 	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
 
 (gptel-make-preset 'disable-thinking
@@ -79,6 +79,7 @@ When answering a question about code or other technical content, explain usage, 
 	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
+	:tools '(:append ("web"))
 	:temperature 1.0
 	:parents 'base-edit-preset
 	:system (lambda ()
