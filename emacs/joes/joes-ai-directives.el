@@ -29,7 +29,7 @@
 (defun joes-ai-project-info ()
 	"Return project root and git branch block, or an empty string outside a project."
 	(if-let* ((project (project-current))
-				 (root (project-root project)))
+				 (root (expand-file-name (project-root project))))
 		(progn
 			(require 'magit-branch)
 			(format "\n[Project Context]\nRoot: %s\nBranch: %s"
