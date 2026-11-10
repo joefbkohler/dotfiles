@@ -204,5 +204,41 @@ Avoids context overloading.	 nil means no limit."
 					 :type string
 					 :description "Unified diff with absolute file paths.")))
 
+(gptel-make-tool
+	:name "emacs_function_definition"
+	:description "Return the whole body of an elisp function"
+	:category "emacs"
+	:function (lambda (function-name)
+				  (let ((function-symbol (intern function-name)))
+					  (if (fboundp function-symbol)
+						  (let* ((buffer-and-point (find-function-noselect function-symbol))
+									(buffer (car buffer-and-point))
+									(point (cdr buffer-and-point)))
+							  (with-current-buffer buffer
+								  (goto-char point)
+								  (let ((start (line-number-at-pos)))
+									  (end-of-defun)
+									  (buffer-substring-no-properties start (point)))))
+						  "Function doesn't exist or not loaded")))
+	:args (list '(:name "function-name"
+					 :type string
+					 :description "Name of the function")))
+
+(gptel-make-tool
+	:name "emacs_describe_symbol"
+	:description "Return the documentation of an Emacs Lisp function or variable."
+	:category "emacs"
+	:function (lambda (name)
+				  (let ((symbol (intern-soft name)))
+					  (or (cond
+						  ((null symbol) (format "No symbol named %s" name))
+						  ((fboundp symbol) (documentation symbol t))
+						  ((boundp symbol)
+							  (documentation-property symbol 'variable-documentation t)))
+						  (format "No documentation for %s" name))))
+	:args (list '(:name "symbol"
+					 :type string
+					 :description "Name of the function or variable to describe.")))
+
 (provide 'joes-ai-tools)
 ;;; joes-ai-tools.el ends here.
