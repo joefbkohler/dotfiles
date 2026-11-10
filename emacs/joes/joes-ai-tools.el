@@ -23,12 +23,51 @@
 
 (require 'gptel)
 (require 'joes-utils)
+(require 'diff-mode)
+(require 'xdg)
 
 (defcustom joes-ai-read-url-max-chars 16000
 	"Maximum characters returned by the read_url tool.
 Avoids context overloading.	 nil means no limit."
 	:group 'joe
 	:type '(choice (const :tag "No limit" nil) integer))
+
+;; -- Helper functions
+
+(defun joes-ai-show-patches ()
+	"Show all saved AI patches in the `*AI Buffer*' diff buffer, read-only."
+	(interactive)
+	(let ((dir (joes-ai-patches-cache-dir))
+			 (buf (get-buffer-create "*AI Patches*")))
+		(pop-to-buffer buf)
+		(setq inhibit-read-only t)
+		(erase-buffer)
+		(when (file-directory-p dir)
+			(dolist (file (directory-files dir t "\\.patch\\'"))
+				(insert-file-contents file)
+				(goto-char (point-max))
+				(unless (bolp) (insert "\n"))))
+		(diff-mode)
+		(read-only-mode 1)
+		(goto-char (point-min))))
+
+(defun joes-ai-accept-patches ()
+	"Accept the saved AI patches by deleting them and the `*AI Patches*'."
+	(interactive)
+	(when (y-or-n-p "Accept all AI patches and delete the saved copies? ")
+		(let ((dir (joes-ai-patches-cache-dir)))
+			(when (file-directory-p dir)
+				(delete-directory dir t)))
+		(when-let* ((buf (get-buffer "*AI Buffer*")))
+			(kill-buffer buf))
+		(message "AI patches accepted.")))
+
+(defun joes-ai-patches-cache-dir ()
+	"Return the directory where applied patches are saved."
+	(expand-file-name "joes-ai/patches/" (xdg-cache-home)))
+
+
+;; ----------------
 
 (gptel-make-tool
 	:name "search_web"
@@ -56,11 +95,11 @@ Avoids context overloading.	 nil means no limit."
 						  (re-search-forward "<head[^>]*>" nil t)
 						  (let ((html-tree (libxml-parse-html-region (point) (point-max)))
 								   (tag-to-remove '(style script nav img svg form button)))
-							  
+
 							  (dolist (tag tag-to-remove)
 								  (dolist (node (dom-by-tag html-tree tag))
 									  (dom-remove-node html-tree node)))
-							  
+
 							  (with-temp-buffer
 								  (dom-print html-tree)
 								  (let ((html-text (replace-regexp-in-string ">[[:space:]]+" " " (buffer-substring-no-properties (point-min) (point-max)))))
@@ -140,6 +179,30 @@ Avoids context overloading.	 nil means no limit."
 				   :type integer
 				   :optional t
 				   :description "Last line to return, 1-based and inclusive.")))
+
+(gptel-make-tool
+	:name "write_files"
+	:description "Write to files by applying a multi-file unified diff. Nothing is changed if any hunk does not match the current files."
+	:category "filesystem"
+	:function (lambda (patch)
+				  (with-temp-buffer
+					  (insert patch)
+					  (diff-mode)
+					  (if-let* ((failures (diff-apply-buffer)))
+						  (error "%d hunk(s) failed; no files changed" failures)
+						  (let ((dir (joes-ai-patches-cache-dir)))
+							  (make-directory dir t)
+							  (write-region patch nil
+								  (expand-file-name
+									  (format "%s-%06d.patch"
+										  (format-time-string "%Y%m%d-%H%M%S") (random 1000000))
+									  dir)
+								  nil 'silent)
+							  (joes-ai-show-patches)
+							  "Patch applied and saved."))))
+	:args (list '(:name "patch"
+					 :type string
+					 :description "Unified diff with absolute file paths.")))
 
 (provide 'joes-ai-tools)
 ;;; joes-ai-tools.el ends here.
