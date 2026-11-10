@@ -196,7 +196,6 @@ Disable if too many characters in buffer."
 			'chat
 			(lambda (sym val) (set (make-local-variable sym) val)))))
 
-(add-hook 'gptel-mode-hook #'joes-ai-apply-default-preset)
 ;; --- End of configuration ---
 
 (when mcp-hub-servers

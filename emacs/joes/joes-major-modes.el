@@ -98,6 +98,11 @@
 	"Org mode config."
 	(joes-org-kebinding))
 
+(defun joes-gptel-mode-config ()
+	"Gptel mode config."
+	(declare-function joes-ai-apply-default-preset "joes-ai")
+	(joes-ai-apply-default-preset))
+
 (setq auto-mode-alist
 	(append auto-mode-alist
 		'(("\\.[yY][mM][lL]\\'$" . yaml-ts-mode)
@@ -120,6 +125,7 @@
 (add-hook 'ediff-mode-hook	#'joes-ediff-mode-config)
 (add-hook 'latex-mode-hook #'joes-latex-mode-config)
 (add-hook 'org-mode-hook  #'joes-org-mode-config)
+(add-hook 'gptel-mode-hook #'joes-gptel-mode-config)
 
 (provide 'joes-major-modes)
 ;;; joes-major-modes.el ends here
