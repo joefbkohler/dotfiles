@@ -75,7 +75,7 @@ When answering a question about code or other technical content, explain usage, 
 	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
 
 (gptel-make-preset 'disable-thinking
-	:parents 'base-edit-preset
+	:parents 'base-preset
 	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
@@ -95,7 +95,8 @@ When answering a question about code or other technical content, explain usage, 
 	:temperature 0.5)
 
 (gptel-make-preset 'emacs-programming
-	:parents '(programming)
+	:parents '(chat)
+	:temperature 0.5
 	:tools '(:append ("emacs"))
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
