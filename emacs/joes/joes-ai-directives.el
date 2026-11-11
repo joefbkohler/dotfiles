@@ -70,10 +70,11 @@ Reason internally but be concise and focused. In your internal reasoning, avoid 
 When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
 
 (gptel-make-preset 'base-preset
-	:system joes-ai-default-system )
+	:system joes-ai-default-system
+	:request-params '(:eval joes-ai-chat-reasoning-on))
 
 (gptel-make-preset 'base-edit-preset
-	:parent 'base-preset
+	:parents 'base-preset
 	:tools '("filesystem"))
 
 (gptel-make-preset 'disable-thinking
@@ -85,18 +86,17 @@ When answering a question about code or other technical content, explain usage, 
 	:temperature 1.0
 	:parents 'base-edit-preset
 	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions))
-	:request-params '(:eval joes-ai-chat-reasoning-on))
+				(concat joes-ai-default-system joes-ai-reasoning-instructions)))
 
 (gptel-make-preset 'programming
-	:parents '(chat)
+	:parents 'chat
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
 					joes-ai-programming-instructions))
 	:temperature 0.5)
 
 (gptel-make-preset 'emacs-programming
-	:parents '(chat)
+	:parents 'chat
 	:temperature 0.5
 	:tools '(:append ("emacs"))
 	:system (lambda ()
@@ -106,7 +106,7 @@ When answering a question about code or other technical content, explain usage, 
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
-	:parents '(base-preset)
+	:parents 'base-preset
 	:use-context 'system
 	:include-reasoning nil
 	:model (or joes-ai-commit-message-model (default-value 'gptel-model))
