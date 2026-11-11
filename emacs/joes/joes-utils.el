@@ -227,5 +227,13 @@ Call this before starting the compilation command that writes into BUFFER-NAME."
 			(push (cons (concat "https:" (dom-attr link 'href)) (dom-texts link)) matches))
 		(nreverse matches)))
 
+(defun joes-split-window-skip-leftmost (&optional window)
+	"Avoid splitting WINDOW if it is leftmost window and not the only window."
+  (let* ((window (or window (selected-window)))
+		 (frame (window-frame window)))
+	(unless (and (= (nth 0 (window-edges window)) 0)
+				 (> (length (window-list frame 'no-minibuf)) 1))
+	  (split-window-sensibly window))))
+
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

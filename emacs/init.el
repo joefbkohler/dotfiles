@@ -49,6 +49,7 @@
     grep-save-buffers nil
     completions-detailed t
     treesit-font-lock-level 4
+    split-window-preferred-function #'joes-split-window-skip-leftmost
     ;; Allow flymake to run in my init secondary files.
     ;; It needs to be abbreviated (for reasons) and use file-truename to follow
     ;; symlink. But first expand-file-name allows me to use xdg
