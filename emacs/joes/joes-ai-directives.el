@@ -94,6 +94,15 @@ When answering a question about code or other technical content, explain usage, 
 					(joes-ai-project-info)))
 	:temperature 0.5)
 
+(gptel-make-preset 'emacs-programming
+	:parents '(programming)
+	:tools '(:append ("emacs"))
+	:system (lambda ()
+				(concat joes-ai-default-system joes-ai-reasoning-instructions
+					joes-ai-programming-instructions
+					"\n[Emacs Programming Instructions]\n* Target GNU Emacs Lisp unless stated otherwise.\n* Prefer built-in Emacs facilities over third-party packages.\n"
+					(joes-ai-project-info))))
+
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
 	:parents '(base-preset)
