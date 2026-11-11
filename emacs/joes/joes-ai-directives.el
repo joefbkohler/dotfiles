@@ -40,7 +40,7 @@
 
 (setopt gptel-directives
 	`((default . "[General Instruction]
-You are an efficient reasoning AI assistant. Answer like a command line tool would answer: with a single, dry, direct answer, without pleasantries, summaries, .
+You are an efficient reasoning AI assistant. Answer like a command line tool would answer: with a single, dry, direct answer, without pleasantries, or summaries.
 [User Profile]
 Your user is an experienced software engineer. He can understand code, hardware details, and other technical concepts without explanation. He is used to writing and reading requirements and specifications. Limit your code and commands explanations to usage, instead of implementation details.
 [Answers Instructions]
@@ -53,13 +53,15 @@ Follow this rules when answering questions:
 [Emoji Usage Instruction]
 Avoid emoji. Do not use emoji in a paragraph, or in a title. The only place emojis are acceptable are as values of a table, like the check mark ✅, the negative ❌, and others.
 You can use the Warning emoji ⚠️ in a title to inform of dangers or caveats.
-** Never use emojis in code, or any other generated content intended to be copied or directly used **")
+** Never use emojis in code, or any other generated content intended to be copied or directly used **
+[Tool Use]
+Use available tools to confirm temporal information that were not provided. You can use read-only tools liberaly, but only use write/modify tools when the user's request explicitly requires it. Never use write tools to answer questions, or when the user request is to just generate something.")
 		 (rewrite . "[Rewriting Instructions]
 * Add no markdown or markup code fences.
 * Output exclusivelly the new text, without any explanations or comments.
 * Follow the instructions to rewrite the provided snippet.")))
 
-(defconst joes-ai-default-system (alist-get 'default gptel-directives))
+(defconst joes-ai-default-system (concat (alist-get 'default gptel-directives) (joes-ai-project-info)))
 
 (defconst joes-ai-reasoning-instructions "\n[Reasoning Instructions]
 Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
@@ -68,11 +70,11 @@ Reason internally but be concise and focused. In your internal reasoning, avoid 
 When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
 
 (gptel-make-preset 'base-preset
-	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
+	:system joes-ai-default-system )
 
 (gptel-make-preset 'base-edit-preset
-	:tools '("filesystem")
-	:system (lambda () (concat joes-ai-default-system (joes-ai-project-info))))
+	:parent 'base-preset
+	:tools '("filesystem"))
 
 (gptel-make-preset 'disable-thinking
 	:parents 'base-preset
@@ -83,15 +85,14 @@ When answering a question about code or other technical content, explain usage, 
 	:temperature 1.0
 	:parents 'base-edit-preset
 	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info)))
+				(concat joes-ai-default-system joes-ai-reasoning-instructions))
 	:request-params '(:eval joes-ai-chat-reasoning-on))
 
 (gptel-make-preset 'programming
 	:parents '(chat)
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
-					joes-ai-programming-instructions
-					(joes-ai-project-info)))
+					joes-ai-programming-instructions))
 	:temperature 0.5)
 
 (gptel-make-preset 'emacs-programming
@@ -101,8 +102,7 @@ When answering a question about code or other technical content, explain usage, 
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
 					joes-ai-programming-instructions
-					"\n[Emacs Programming Instructions]\n* Target GNU Emacs Lisp unless stated otherwise.\n* Prefer built-in Emacs facilities over third-party packages.\n"
-					(joes-ai-project-info))))
+					"[Emacs Programming Instructions]\n* Target GNU Emacs Lisp unless stated otherwise.\n* Prefer built-in Emacs facilities over third-party packages.\n")))
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
