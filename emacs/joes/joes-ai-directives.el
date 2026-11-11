@@ -61,7 +61,21 @@ Use available tools to confirm temporal information that were not provided. You 
 * Output exclusivelly the new text, without any explanations or comments.
 * Follow the instructions to rewrite the provided snippet.")))
 
-(defconst joes-ai-default-system (concat (alist-get 'default gptel-directives) (joes-ai-project-info)))
+(defun joes-ai-os-info ()
+	"Return operating system block."
+	(format "\n[Operating System]\nName: %s\nType: %s\nRelease: %s"
+		(pcase system-type
+			('darwin "macOS")
+			('gnu/linux "Linux")
+			('windows-nt "Windows")
+			('cygwin "Windows (Cygwin)")
+			('android "Android")
+			('berkeley-unix "BSD")
+			(_ (symbol-name system-type)))
+		system-type
+		(or (ignore-errors (operating-system-release)) "unknown")))
+
+(defconst joes-ai-default-system (concat (alist-get 'default gptel-directives) (joes-ai-project-info) (joes-ai-os-info)))
 
 (defconst joes-ai-reasoning-instructions "\n[Reasoning Instructions]
 Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
