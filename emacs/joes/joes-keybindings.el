@@ -107,7 +107,11 @@
     (keymap-set minuet-active-mode-map "C-g" 'minuet-dismiss-suggestion)
     (keymap-set minuet-active-mode-map "C-<tab>" 'minuet-accept-suggestion)
     (keymap-global-set "M-i" 'minuet-show-suggestion)
-    (keymap-global-set "C-c C-g" 'gptel-menu))
+    (keymap-global-set "C-c C-g" 'gptel-menu)
+    (defvar joes-ai-edits-mode-map)
+    (keymap-set joes-ai-edits-mode-map "A" 'joes-ai-accept-edits)
+    (keymap-set joes-ai-edits-mode-map "u" 'joes-ai-revert-edit-hunk)
+    (keymap-set joes-ai-edits-mode-map "g" 'joes-ai-show-edits))
 
 (defun joes-latex-keybinding ()
     "Keys for TeX mode."
