@@ -72,6 +72,7 @@ base copy created by this call is deleted."
 			  (done nil))
 		(unless groups
 			(error "No edits given"))
+		(joes-ai--check-not-in-base-dir paths)
 		(joes-ai--save-visiting-buffers paths)
 		(joes-ai--check-writable paths)
 		(unwind-protect
@@ -120,6 +121,17 @@ Return a list of (PATH EDIT...)."
 					(push cell groups))
 				(setcdr cell (append (cdr cell) (list edit)))))
 		(nreverse groups)))
+
+(defun joes-ai--check-not-in-base-dir (paths)
+	"Signal an error if any of PATHS is inside `joes-ai-base-dir'."
+	(let* ((dir (expand-file-name (joes-ai-base-dir)))
+		   (bad (seq-filter
+				 (lambda (path)
+					 (file-in-directory-p (expand-file-name path) dir))
+				 paths)))
+		(when bad
+			(error "Refusing to write inside %s: %s; no files changed"
+				   dir (string-join bad ", ")))))
 
 (defun joes-ai--check-writable (paths)
 	"Signal an error listing PATHS that cannot be written or created."
