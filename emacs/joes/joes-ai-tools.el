@@ -94,13 +94,19 @@ Avoids context overloading.	 nil means no limit."
 
 (gptel-make-tool
 	:name "rgrep"
-	:description "Search files under a directory for a regexp. Returns matching lines as file:line:text."
+	:description "Search files under a directory for a regexp. Return file path, line, and text of matches."
 	:category "filesystem"
 	:async t
 	:function (lambda (callback directory regexp file-glob)
-				  (let ((default-directory (expand-file-name directory)))
+				  (let* ((default-directory (expand-file-name directory))
+						 (buffer-name (generate-new-buffer-name "*rgrep-ai*"))
+						 (compilation-buffer-name-function (lambda (_mode) buffer-name)))
 					  (save-window-excursion
-						  (joes-compilation-buffer-string-async callback "*grep*")
+						  (joes-compilation-buffer-async
+							  (lambda (buf)
+								  (funcall callback (joes-rgrep-extract-matches buf))
+								  (kill-buffer buf))
+							  buffer-name)
 						  (rgrep regexp file-glob default-directory))))
 	:args (list '(:name "directory"
 					 :type string

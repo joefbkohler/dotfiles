@@ -202,18 +202,15 @@ ARGS are sent to the command."
 		(org-cycle)
 		(joes-indent-or-complete)))
 
-(defun joes-compilation-buffer-string-async (callback buffer-name)
-	"Call CALLBACK with the text of compilation buffer BUFFER-NAME once it finishes.
+(defun joes-compilation-buffer-async (callback buffer-name)
+	"Call CALLBACK with compilation buffer BUFFER-NAME once it finishes.
 Call this before starting the compilation command that writes into BUFFER-NAME."
 	(let ((hook nil))
 		(setq hook
 			(lambda (buf _msg)
 				(when (equal (buffer-name buf) buffer-name)
 					(remove-hook 'compilation-finish-functions hook)
-					(funcall callback
-						(with-current-buffer buf
-							(buffer-substring-no-properties
-								(point-min) (point-max)))))))
+					(funcall callback buf))))
 		(add-hook 'compilation-finish-functions hook)))
 
 (defun joes-get-list-of-ddg-results(html-string)
@@ -226,6 +223,25 @@ Call this before starting the compilation command that writes into BUFFER-NAME."
 		(dolist (link (dom-by-class dom class-name))
 			(push (cons (concat "https:" (dom-attr link 'href)) (dom-texts link)) matches))
 		(nreverse matches)))
+
+(defun joes-rgrep-extract-matches (buffer)
+	"Return the number of matches in grep BUFFER, followed by the matching lines.
+Matches are collected by iterating `compilation-next-error'."
+	(with-current-buffer buffer
+		(let ((matches nil))
+			(save-excursion
+				(goto-char (point-min))
+				(condition-case nil
+					(while t
+						(compilation-next-error 1)
+						(push (buffer-substring-no-properties
+								  (line-beginning-position) (line-end-position))
+							matches))
+					(error nil)))
+			(setq matches (nreverse matches))
+			(format "Number of matches: %d\n%s"
+				(length matches)
+				(mapconcat #'identity matches "\n")))))
 
 (defun joes-split-window-skip-leftmost (&optional window)
 	"Avoid splitting WINDOW if it is leftmost window and not the only window."
