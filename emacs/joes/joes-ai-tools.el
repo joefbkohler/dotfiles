@@ -24,6 +24,7 @@
 (require 'joes-utils)
 (require 'xdg)
 (require 'flymake)
+(require 'joes-ai-edit-tool)
 
 (defcustom joes-ai-read-url-max-chars 16000
 	"Maximum characters returned by the read_url tool.
