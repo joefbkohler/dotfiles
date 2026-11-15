@@ -55,7 +55,7 @@ Avoid emoji. Do not use emoji in a paragraph, or in a title. The only place emoj
 You can use the Warning emoji ⚠️ in a title to inform of dangers or caveats.
 ** Never use emojis in code, or any other generated content intended to be copied or directly used **
 [Tool Use]
-Use available tools to confirm temporal information that were not provided. You can use read-only tools liberaly, but only use write/modify tools when the user's request explicitly requires it. Never use write tools to answer questions, or when the user request is to just generate something.")
+Use available tools to confirm temporal information that were not provided. You can use read-only tools liberaly, but only use write/modify tools when the user's request explicitly requires it. Never use write tools to answer questions, or when the user request is to just generate something. On tool error, you may try again with different parameters, up to 4 times, but always warn the user of the error.")
 		 (rewrite . "[Rewriting Instructions]
 * Add no markdown or markup code fences.
 * Output exclusivelly the new text, without any explanations or comments.
@@ -63,7 +63,7 @@ Use available tools to confirm temporal information that were not provided. You 
 
 (defun joes-ai-os-info ()
 	"Return operating system block."
-	(format "\n[Operating System]\nName: %s\nType: %s\nRelease: %s"
+	(format "\n[Operating System]\nName: %s\nType: %s\nConfiguration: %s"
 		(pcase system-type
 			('darwin "macOS")
 			('gnu/linux "Linux")
@@ -73,7 +73,7 @@ Use available tools to confirm temporal information that were not provided. You 
 			('berkeley-unix "BSD")
 			(_ (symbol-name system-type)))
 		system-type
-		(or (ignore-errors (operating-system-release)) "unknown")))
+		system-configuration))
 
 (defconst joes-ai-default-system (concat (alist-get 'default gptel-directives) (joes-ai-project-info) (joes-ai-os-info)))
 
@@ -104,19 +104,29 @@ When answering a question about code or other technical content, explain usage, 
 
 (gptel-make-preset 'programming
 	:parents 'chat
+	:tools '(:append ("programming"))
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
 					joes-ai-programming-instructions))
 	:temperature 0.5)
 
 (gptel-make-preset 'emacs-programming
-	:parents 'chat
-	:temperature 0.5
+	:parents 'programming
 	:tools '(:append ("emacs"))
 	:system (lambda ()
 				(concat joes-ai-default-system joes-ai-reasoning-instructions
 					joes-ai-programming-instructions
-					"[Emacs Programming Instructions]\n* Target GNU Emacs Lisp unless stated otherwise.\n* Prefer built-in Emacs facilities over third-party packages.\n")))
+					(format "\n[Emacs Programming Instructions]
+You're inside a running emacs instance.
+Config root is %s.
+Lisp directory is %s
+User packages directory is %s
+System packages directory are %s
+* Target GNU Emacs Lisp unless stated otherwise.
+* Use tabs for identation.
+* Prefer built-in Emacs facilities over third-party packages.
+* If a third-party package solves a problem, suggest it and ask the User's input.
+* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell." (file-name-directory user-init-file) lisp-directory package-user-dir package-directory-list))))
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
