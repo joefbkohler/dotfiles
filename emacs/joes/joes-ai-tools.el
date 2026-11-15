@@ -83,7 +83,7 @@ Avoids context overloading.	 nil means no limit."
 	:category "filesystem"
 	:function (lambda (directory regexp)
 				  (let ((files (directory-files-recursively
-								   (expand-file-name directory) regexp)))
+								   (expand-file-name directory) regexp nil t)))
 					  (mapconcat #'identity files "\n")))
 	:args (list '(:name "directory"
 					 :type string

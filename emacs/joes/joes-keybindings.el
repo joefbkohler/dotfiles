@@ -111,7 +111,7 @@
     (defvar joes-ai-edits-mode-map)
     (keymap-set joes-ai-edits-mode-map "A" 'joes-ai-accept-all-edits)
     (keymap-set joes-ai-edits-mode-map "a" 'joes-ai-accept-edit-hunk)
-    (keymap-set joes-ai-edits-mode-map "u" 'joes-ai-revert-edit-hunk)
+    (keymap-set joes-ai-edits-mode-map "k" 'joes-ai-revert-edit-hunk)
     (keymap-set joes-ai-edits-mode-map "g" 'joes-ai-show-edits))
 
 (defun joes-latex-keybinding ()
