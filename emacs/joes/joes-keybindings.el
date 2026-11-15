@@ -109,7 +109,8 @@
     (keymap-global-set "M-i" 'minuet-show-suggestion)
     (keymap-global-set "C-c C-g" 'gptel-menu)
     (defvar joes-ai-edits-mode-map)
-    (keymap-set joes-ai-edits-mode-map "A" 'joes-ai-accept-edits)
+    (keymap-set joes-ai-edits-mode-map "A" 'joes-ai-accept-all-edits)
+    (keymap-set joes-ai-edits-mode-map "a" 'joes-ai-accept-edit-hunk)
     (keymap-set joes-ai-edits-mode-map "u" 'joes-ai-revert-edit-hunk)
     (keymap-set joes-ai-edits-mode-map "g" 'joes-ai-show-edits))
 
