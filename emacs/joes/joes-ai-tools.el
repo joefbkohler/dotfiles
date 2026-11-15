@@ -22,17 +22,14 @@
 
 (require 'gptel)
 (require 'joes-utils)
-(require 'diff-mode)
 (require 'xdg)
+(require 'flymake)
 
 (defcustom joes-ai-read-url-max-chars 16000
 	"Maximum characters returned by the read_url tool.
 Avoids context overloading.	 nil means no limit."
 	:group 'joe
 	:type '(choice (const :tag "No limit" nil) integer))
-
-(defconst joes-ai--edits-buffer-name "*AI Edits*"
-	"Name of the buffer showing the diff of AI edited files.")
 
 (gptel-make-tool
 	:name "search_web"
@@ -146,32 +143,6 @@ Avoids context overloading.	 nil means no limit."
 				   :description "Last line to return, 1-based and inclusive.")))
 
 (gptel-make-tool
-	:name "write_files"
-	:description "Edit or create files by exact text replacement. Each edit replaces the single exact occurrence of text_to_replace in file_path with new_text. text_to_replace must match exactly once (including whitespace and indentation); add surrounding lines to make it unique. To insert, use nearby text as an anchor and repeat it in new_text. To delete, use an empty new_text. To create a file, use an empty text_to_replace on a non-existent file. Multiple edits on the same file are applied in order. Nothing is changed if any edit fails."
-	:category "filesystem"
-	:function (lambda (edits)
-			(condition-case err
-				(progn
-				  (joes-ai--write-edits edits)
-				  (ignore-errors (joes-ai-show-edits))
-				  "Edits applied and saved.")
-			  (error (format "Error: %s" (error-message-string err)))))
-	:args (list '(:name "edits"
-					 :type array
-					 :description "List of edits to apply atomically."
-					 :items (:type object
-								:properties (:file_path
-												(:type string
-													:description "Absolute path of the file to edit or create.")
-												:text_to_replace
-												(:type string
-													:description "Exact existing text to replace, matching once. Empty to create a new file.")
-												:new_text
-												(:type string
-													:description "Replacement text. Empty to delete text_to_replace."))
-								:required ["file_path" "text_to_replace" "new_text"]))))
-
-(gptel-make-tool
 	:name "emacs_function_definition"
 	:description "Return the whole body of an elisp function"
 	:category "emacs"
@@ -207,230 +178,57 @@ Avoids context overloading.	 nil means no limit."
 					 :type string
 					 :description "Name of the function or variable to describe.")))
 
-;; -- Helper functions
-
-(defun joes-ai--write-edits (edits)
-	"Apply EDITS to their files, saving a base copy of each first.
-All edits are applied to work buffers first; files are written only if
-every edit succeeds.  On failure, the work buffers are discarded."
-	(let* ((groups (joes-ai--group-edits edits))
-			  (paths (mapcar #'car groups))
-			  (works nil))
-		(unless groups
-			(error "No edits given"))
-		(joes-ai--check-visiting-buffers paths)
-		(joes-ai--check-writable paths)
-		(unwind-protect
-			(progn
-				(dolist (group groups)
-					(let ((buffer (joes-ai--make-work-buffer (car group))))
-						(push (cons (car group) buffer) works)
-						(joes-ai--apply-edits buffer (car group) (cdr group))))
-				(setq works (nreverse works))
-				(dolist (path paths)
-					(joes-ai--ensure-base path))
-				(pcase-dolist (`(,path . ,buffer) works)
-					(joes-ai--write-work-buffer buffer path))
-				(dolist (path paths)
-					(with-demoted-errors "joes-ai: %S"
-						(joes-ai--sync-visiting-buffer path))))
-			(pcase-dolist (`(,_ . ,buffer) works)
-				(kill-buffer buffer)))))
-
-(defun joes-ai--replace-text (path old new)
-	"Replace the unique occurrence of OLD with NEW in the current buffer.
-An empty OLD inserts NEW, and is only allowed if the buffer is empty.
-PATH is used in error messages."
-	(let ((case-fold-search nil)
-			 (new (or new "")))
-		(goto-char (point-min))
-		(if (or (null old) (string-empty-p old))
-			(if (> (buffer-size) 0)
-				(error "%s: empty text_to_replace is only allowed for new or empty files" path)
-				(insert new))
-			(unless (search-forward old nil t)
-				(error "%s: text_to_replace not found: %S" path
-					(truncate-string-to-width old 80 nil nil "...")))
-			(let ((beg (match-beginning 0))
-					 (end (match-end 0)))
-				(goto-char (1+ beg))
-				(when (search-forward old nil t)
-					(error "%s: text_to_replace matches more than once, add context: %S" path
-						(truncate-string-to-width old 80 nil nil "...")))
-				(delete-region beg end)
-				(goto-char beg)
-				(insert new)))))
-
-(defun joes-ai--make-work-buffer (path)
-	"Return a new buffer holding the contents of PATH.
-The buffer is empty if PATH does not exist."
-	(let ((buffer (generate-new-buffer " *joes-ai-work*")))
-		(with-current-buffer buffer
-			(when (file-exists-p path)
-				(insert-file-contents path)
-				(setq-local buffer-file-coding-system last-coding-system-used)))
-		buffer))
-
-(defun joes-ai--apply-edits (buffer path edits)
-	"Apply EDITS, in order, to BUFFER holding PATH."
-	(with-current-buffer buffer
-		(dolist (edit edits)
-			(joes-ai--replace-text path
-				(plist-get edit :text_to_replace)
-				(plist-get edit :new_text)))))
-
-(defun joes-ai--ensure-base (path)
-	"Copy PATH to its base unless the base exists.
-An empty base is created when PATH does not exist."
-	(let ((base (joes-ai--base-path path)))
-		(unless (file-exists-p base)
-			(make-directory (file-name-directory base) t)
-			(if (file-exists-p path)
-				(copy-file path base nil t)
-				(write-region "" nil base nil 'silent)))))
-
-(defun joes-ai--write-work-buffer (buffer path)
-	"Write BUFFER to PATH, creating its parent directories."
-	(make-directory (file-name-directory path) t)
-	(with-current-buffer buffer
-		(write-region nil nil path nil 'silent)))
-
-(defun joes-ai--group-edits (edits)
-	"Group EDITS by absolute file path, preserving order.
-Return a list of (PATH EDIT...)."
-	(let (groups)
-		(seq-doseq (edit edits)
-			(let* ((path (expand-file-name (plist-get edit :file_path)))
-					  (cell (assoc path groups)))
-				(unless cell
-					(setq cell (list path))
-					(push cell groups))
-				(setcdr cell (append (cdr cell) (list edit)))))
-		(nreverse groups)))
-
-(defun joes-ai-base-dir ()
-	"Return the directory holding the base copies of AI edited files.
-Before the write_files tool first edits a file, it copies the file to
-`<base-dir>/<absolute path>'."
-	(expand-file-name "joes-ai/base/" (xdg-cache-home)))
-
-(defun joes-ai--base-path (path)
-	"Return the base copy of PATH, mirrored under `joes-ai-base-dir'."
-	(concat (directory-file-name (joes-ai-base-dir)) (expand-file-name path)))
-
-(defun joes-ai--base-target (base)
-	"Return the real file path of the BASE copy."
-	(substring base (length (directory-file-name (joes-ai-base-dir)))))
-
-(defun joes-ai--nearest-existing-ancestor (path)
-	"Return the closest existing ancestor directory of PATH."
-	(let ((dir (file-name-directory (directory-file-name (expand-file-name path)))))
-		(while (not (file-exists-p dir))
-			(setq dir (file-name-directory (directory-file-name dir))))
-		dir))
-
-(defun joes-ai--writable-p (path)
-	"Return non-nil if PATH can be written, or created when it does not exist."
-	(if (file-exists-p path)
-		(file-writable-p path)
-		(let ((dir (joes-ai--nearest-existing-ancestor path)))
-			(and (file-directory-p dir) (file-writable-p dir)))))
-
-(defun joes-ai--check-writable (paths)
-	"Signal an error listing PATHS that cannot be written or created."
-	(when-let* ((bad (seq-remove #'joes-ai--writable-p paths)))
-		(error "Not writable: %s; no files changed" (string-join bad ", "))))
-
-(defun joes-ai--check-visiting-buffers (paths)
-	"Signal an error if any of PATHS is visited by a modified buffer.
-Run before any file is touched."
-	(dolist (path paths)
-		(when-let* ((buf (find-buffer-visiting path)))
-			(when (buffer-modified-p buf)
-				(error "%s has unsaved changes in buffer %s; no files changed"
-					path (buffer-name buf))))))
-
-(defun joes-ai--sync-visiting-buffer (path)
-	"Revert the buffer visiting PATH, or kill it if PATH no longer exists."
-	(when-let* ((buf (find-buffer-visiting path)))
-		(with-current-buffer buf
-			(if (file-exists-p path)
-				(revert-buffer t t t)
-				(set-buffer-modified-p nil)
-				(kill-buffer buf)))))
-
-;; AI Edit functions
-
-(defun joes-ai-show-edits ()
-	"Show the diff of every base file against its current file."
-	(interactive)
-	(let ((dir (joes-ai-base-dir))
-			 (buf (get-buffer-create joes-ai--edits-buffer-name)))
-		(with-current-buffer buf
-			(let ((inhibit-read-only t))
-				(erase-buffer)
-				(when (file-directory-p dir)
-					(dolist (base (directory-files-recursively dir ""))
-						(let ((path (joes-ai--base-target base))
-								 (text nil))
-							(with-temp-buffer
-								(diff-no-select base path '("-u" "-N") t (current-buffer))
-								(goto-char (point-min))
-								(when (re-search-forward "^--- " nil t)
-									(let ((beg (match-beginning 0)))
-										;; Drop the trailing "Diff finished" line and its blank line.
-										(when (re-search-forward "^\n?Diff finished" nil t)
-											(delete-region (match-beginning 0) (point-max)))
-										;; Replace the base and temp file names in the headers with PATH.
-										(goto-char beg)
-										(delete-region (point) (line-end-position))
-										(insert "--- " path)
-										(forward-line 1)
-										(delete-region (point) (line-end-position))
-										(insert "+++ " path)
-										(setq text (concat "diff " path "\n"
-													   (buffer-substring-no-properties beg (point-max)))))))
-							(when text
-								(insert text)))))
-				(diff-mode)
-				(read-only-mode 1)
-				(joes-ai-edits-mode 1)
-				(goto-char (point-min))))
-		(pop-to-buffer buf)))
-
-(defun joes-ai-accept-edits ()
-	"Accept the AI edits by deleting all base files."
-	(interactive)
-	(when (y-or-n-p "Accept AI edits and delete their base files? ")
-		(let ((dir (joes-ai-base-dir)))
-			(when (file-directory-p dir)
-				(delete-directory dir t)))
-		(when-let* ((buf (get-buffer joes-ai--edits-buffer-name)))
-			(delete-windows-on buf t)
-			(kill-buffer buf))
-		(message "AI edits accepted.")))
-
-(defun joes-ai-revert-edit-hunk ()
-	"Revert the AI edit hunk at point, or the hunks in the region.
-The hunk is reverse-applied to its file, the file is saved, and the
-edits buffer is refreshed."
-	(interactive)
-	(let ((line (line-number-at-pos)))
-		(call-interactively #'diff-revert-and-kill-hunk)
-		(joes-ai-show-edits)
-		(goto-char (point-min))
-		(forward-line (1- line))))
-
-(defvar-keymap joes-ai-edits-mode-map
-	:doc "Keymap for `joes-ai-edits-mode'.	Keys are set in `joes-keybinding-ai'.")
-
-(define-minor-mode joes-ai-edits-mode
-	"Minor mode for the AI edits diff buffer."
-	:lighter " AI-Edits"
-	:keymap joes-ai-edits-mode-map
-	(when joes-ai-edits-mode
-		(setq-local outline-minor-mode-cycle t)
-		(outline-minor-mode 1)))
+(gptel-make-tool
+	:name "flymake_diagnostics"
+	:description "Return the flymake diagnostics (errors, warnings, notes) for a file."
+	:category "programming"
+	:confirm nil
+	:async t
+	:function (lambda (callback file)
+				  (if (not (file-name-absolute-p file))
+					  (funcall callback (format "Error: path must be absolute: %s" file))
+					  (let* ((path (expand-file-name file))
+								(buf (or (find-buffer-visiting path)
+										 (find-file-noselect path)))
+								(deadline (+ (float-time) 30)))
+						  (cl-labels
+							  ((format-diags ()
+								   (with-current-buffer buf
+									   (let ((diags (flymake-diagnostics)))
+										   (if (null diags)
+											   "No flymake diagnostics."
+											   (mapconcat
+												   (lambda (d)
+													   (let* ((beg (flymake-diagnostic-beg d))
+																 (line (line-number-at-pos beg t))
+																 (col (save-excursion
+																		  (goto-char beg)
+																		  (current-column))))
+														   (format "%s:%d:%d: %s: %s"
+															   path line col
+															   (string-remove-prefix ":" (format "%s" (flymake-diagnostic-type d)))
+															   (flymake-diagnostic-text d))))
+												   diags
+												   "\n")))))
+								  (poll ()
+									  (cond
+										  ((> (float-time) deadline)
+											  (funcall callback
+												  (format "Error: timed out waiting for flymake on %s" path)))
+										  ((with-current-buffer buf
+											   (cl-set-difference (flymake-running-backends)
+												   (flymake-reporting-backends)))
+											  (run-with-timer 0.2 nil #'poll))
+										  (t
+											  (funcall callback (format-diags))))))
+							  (with-current-buffer buf
+								  (unless flymake-mode
+									  (flymake-mode 1))
+								  (flymake-start))
+							  (run-with-timer 0.2 nil #'poll)))))
+	:args (list '(:name "file"
+					 :type string
+					 :description "Absolute path of the file to inspect.")))
 
 (provide 'joes-ai-tools)
 ;;; joes-ai-tools.el ends here.
