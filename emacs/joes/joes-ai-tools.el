@@ -80,7 +80,7 @@ Avoids context overloading.	 nil means no limit."
 (gptel-make-tool
 	:name "find_files"
 	:description "Find files whose names match a regexp under a directory. Returns a list of absolute file paths."
-	:category "filesystem"
+	:category "filesystem-read"
 	:function (lambda (directory regexp)
 				  (let ((files (directory-files-recursively
 								   (expand-file-name directory) regexp nil t)))
@@ -95,7 +95,7 @@ Avoids context overloading.	 nil means no limit."
 (gptel-make-tool
 	:name "rgrep"
 	:description "Search files under a directory for a regexp. Return file path, line, and text of matches."
-	:category "filesystem"
+	:category "filesystem-read"
 	:async t
 	:function (lambda (callback directory regexp file-glob)
 				  (let* ((default-directory (expand-file-name directory))
@@ -121,7 +121,7 @@ Avoids context overloading.	 nil means no limit."
 (gptel-make-tool
 	:name "read_file"
 	:description "Visit a file and return its contents. If start-line and end-line are given (1-based, inclusive), return only those lines."
-	:category "filesystem"
+	:category "filesystem-read"
 	:function (lambda (file-path &optional start-line end-line)
 				  (with-current-buffer (find-file-noselect (expand-file-name file-path))
 					  (if (not (or start-line end-line))

@@ -40,7 +40,7 @@
 
 (setopt gptel-directives
 	`((default . "[General Instruction]
-You are an efficient reasoning AI assistant. Answer like a command line tool would answer: with a single, dry, direct answer, without pleasantries, or summaries.
+You are an AI Agent living inside Emacs. Answer like a command line tool would answer: with a single, dry, direct answer, without pleasantries, or summaries.
 [User Profile]
 Your user is an experienced software engineer. He can understand code, hardware details, and other technical concepts without explanation. He is used to writing and reading requirements and specifications. Limit your code and commands explanations to usage, instead of implementation details.
 [Answers Instructions]
@@ -77,46 +77,15 @@ Use available tools to confirm temporal information that were not provided. You 
 
 (defconst joes-ai-default-system (concat (alist-get 'default gptel-directives) (joes-ai-project-info) (joes-ai-os-info)))
 
-(defconst joes-ai-reasoning-instructions "\n[Reasoning Instructions]
-Reason internally but be concise and focused. In your internal reasoning, avoid unnecessary step-by-step breakdowns, self-correction loops, or filler. Be decisive and get to the point quickly.")
-
 (defconst joes-ai-programming-instructions "\n[Programming Instructions]
-When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.")
+* When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.
+* When creating new features, or functions, look or request for references in the working project and follow its pattern.
+* Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input.")
 
-(gptel-make-preset 'base-preset
-	:system joes-ai-default-system
-	:request-params '(:eval joes-ai-chat-reasoning-on))
+(defconst joes-ai-planning-instructions "\n[Planning]
+You can't write files or modify the system. When a technical task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands.")
 
-(gptel-make-preset 'base-edit-preset
-	:parents 'base-preset
-	:tools '("filesystem"))
-
-(gptel-make-preset 'disable-thinking
-	:parents 'base-preset
-	:request-params '(:eval joes-ai-chat-reasoning-off))
-
-(gptel-make-preset 'chat
-	:tools '(:append ("web"))
-	:temperature 1.0
-	:parents 'base-edit-preset
-	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions)))
-
-(gptel-make-preset 'programming
-	:parents 'chat
-	:tools '(:append ("programming"))
-	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions
-					joes-ai-programming-instructions))
-	:temperature 0.5)
-
-(gptel-make-preset 'emacs-programming
-	:parents 'programming
-	:tools '(:append ("emacs"))
-	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions
-					joes-ai-programming-instructions
-					(format "\n[Emacs Programming Instructions]
+(defconst joes-ai-emacs-programming-instructions (format "\n[Emacs Programming Instructions]
 You're inside a running emacs instance.
 Config root is %s.
 Lisp directory is %s
@@ -126,7 +95,46 @@ System packages directory are %s
 * Use tabs for identation.
 * Prefer built-in Emacs facilities over third-party packages.
 * If a third-party package solves a problem, suggest it and ask the User's input.
-* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell." (file-name-directory user-init-file) lisp-directory package-user-dir package-directory-list))))
+* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell." (file-name-directory user-init-file) lisp-directory package-user-dir package-directory-list))
+
+(gptel-make-preset 'disable-thinking
+	:temperature 1.0
+	:system joes-ai-default-system
+	:request-params '(:eval joes-ai-chat-reasoning-off))
+
+(gptel-make-preset 'chat
+	:tools '("web")
+	:system joes-ai-default-system
+	:request-params '(:eval joes-ai-chat-reasoning-on)
+	:temperature 1.0)
+
+(gptel-make-preset 'pc-helper
+	:parents 'chat
+	:tools '(:append ("filesystem-read" "filesystem-write")))
+
+(gptel-make-preset 'programming-planning
+	:parents 'chat
+	:tools '(:append ("filesystem-read" "programming"))
+	:temperature 0.5
+	:system (lambda ()
+				(concat joes-ai-default-system joes-ai-programming-instructions
+					joes-ai-emacs-programming-instructions
+					joes-ai-planning-instructions)))
+
+(gptel-make-preset 'emacs-programming-planning
+	:parents 'programming-planning
+	:tools '(:append ("emacs"))
+	:system (lambda ()
+				(concat joes-ai-default-system joes-ai-programming-instructions
+					joes-ai-emacs-programming-instructions
+					joes-ai-planning-instructions)))
+
+(gptel-make-preset 'programming
+	:parents '(pc-helper programming-planning)
+	:temperature 0.5)
+
+(gptel-make-preset 'emacs-programming
+	:parents '(pc-helper emacs-programming-planning))
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
@@ -135,7 +143,7 @@ System packages directory are %s
 	:include-reasoning nil
 	:model (or joes-ai-commit-message-model (default-value 'gptel-model))
 	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-reasoning-instructions (joes-ai-project-info) "\n[Commit Message Instructions]
+				(concat joes-ai-default-system (joes-ai-project-info) "\n[Commit Message Instructions]
 * Be concise and direct. Focus on the WHAT, not the WHY.
 * Use precise language, avoid subjective words like better, easier, faster, enhances, improves, etc...
 * Instead of descriptions like 'improved function', just describe what was done.

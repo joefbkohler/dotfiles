@@ -19,7 +19,7 @@
 (gptel-make-tool
 	:name "write_files"
 	:description "Edit or create files by exact text replacement. Each edit replaces the single exact occurrence of text_to_replace in file_path with new_text. text_to_replace must match exactly once (including whitespace and indentation); add surrounding lines to make it unique. To insert, use nearby text as an anchor and repeat it in new_text. To delete text, use an empty new_text. To create a file, use an empty text_to_replace on a non-existent file. Multiple edits on the same file are applied in order. Nothing is changed if any edit fails."
-	:category "filesystem"
+	:category "filesystem-write"
 	:function (lambda (edits)
 			(condition-case err
 				(progn
