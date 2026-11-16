@@ -25,6 +25,7 @@
 (require 'xdg)
 (require 'flymake)
 (require 'joes-ai-edit-tool)
+(require 'package)
 
 (defcustom joes-ai-read-url-max-chars 16000
 	"Maximum characters returned by the read_url tool.
@@ -184,6 +185,20 @@ Avoids context overloading.	 nil means no limit."
 	:args (list '(:name "symbol"
 					 :type string
 					 :description "Name of the function or variable to describe.")))
+
+(gptel-make-tool
+	:name "list_installed_packages"
+	:description "Return the list of packages installed via package.el, one name-version per line."
+	:category "emacs"
+	:function (lambda ()
+				  (if (null package-alist)
+					  "No installed packages."
+				  (mapconcat
+					  (lambda (entry)
+						  (mapconcat #'package-desc-full-name (cdr entry) "\n"))
+					  package-alist
+					  "\n")))
+	:args nil)
 
 (gptel-make-tool
 	:name "flymake_diagnostics"
