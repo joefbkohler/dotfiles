@@ -85,6 +85,7 @@ nil sends nothing."
 (require 'gptel-request)
 (require 'gptel-context)
 (require 'joes-ai-directives)
+(require 'joes-ai-headerline)
 
 (setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
@@ -102,7 +103,6 @@ nil sends nothing."
 		:endpoint joes-ai-chat-endpoint
 		:key joes-ai-chat-key
 		:models joes-ai-chat-models))
-
 
 ;; --- Minuet configuration ---
 
