@@ -103,7 +103,6 @@ Use available tools to confirm temporal information that were not provided. You 
 * Output exclusivelly the new text, without any explanations or comments.
 * Follow the instructions to rewrite the provided snippet.")))
 
-
 (defun joes-ai--default-system-message ()
 	"Return the default system directive string."
 	(concat (alist-get 'default gptel-directives) (joes-ai--project-info) (joes-ai--buffer-info) (joes-ai--os-info)))
@@ -150,7 +149,11 @@ System packages directory are %s
 * Use tabs for identation.
 * Prefer built-in Emacs facilities over third-party packages.
 * If a third-party package solves a problem, suggest it and ask the User's input.
-* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell." (file-name-directory user-init-file) lisp-directory package-user-dir package-directory-list)))
+* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell."
+					(expand-file-name user-emacs-directory)
+					lisp-directory
+					package-user-dir
+					package-directory-list)))
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
