@@ -252,5 +252,100 @@ Avoids context overloading.	 nil means no limit."
 					 :type string
 					 :description "Absolute path of the file to inspect.")))
 
+(gptel-make-tool
+	:name "find_references"
+	:description "Find references to a symbol. The symbol is located by line-text, the full text of the line that contains it (leading and trailing whitespace ignored), and symbol-name. If more than one line matches, returns an error listing the candidate lines with context; call again with line set to the chosen line number. Returns the number of references, and one file:line: text entry per reference."
+	:category "programming"
+	:confirm nil
+	:function (lambda (file symbol-name line-text &optional line)
+				  (condition-case err
+					  (progn
+						  (unless (file-name-absolute-p file)
+							  (user-error "File must be an absolute path: %s" file))
+						  (with-current-buffer (find-file-noselect file)
+							  (save-excursion
+								  (joes-goto-symbol symbol-name line-text line)
+								  (joes-xrefs-text
+								   (lambda () (xref-find-references symbol-name))))))
+					(error (format "Error: %s" (error-message-string err)))))
+	:args (list '(:name "file"
+					 :type string
+					 :description "Absolute path of the file containing the symbol.")
+			  '(:name "symbol-name"
+				   :type string
+				   :description "Identifier to look up, e.g. foo-bar.")
+			  '(:name "line-text"
+				   :type string
+				   :description "Full text of the line containing the symbol, without leading or trailing whitespace.")
+			  '(:name "line"
+				   :type integer
+				   :optional t
+				   :description "1-based line number. Set it when a previous call reported more than one matching line.")))
+
+(gptel-make-tool
+	:name "find_implementations"
+	:description "Find implementations or derived classes of a symbol. Use it to find implementation of interfaces, inheritance of classes, and such.  The symbol is located by line-text, the full text of the line that contains it (leading and trailing whitespace ignored), and symbol-name. If more than one line matches, returns an error listing the candidate lines with context; call again with line set to the chosen line number. Returns the number of implementations, and one file:line: text entry per implementation."
+	:category "programming"
+	:confirm nil
+	:function (lambda (file symbol-name line-text &optional line)
+				  (declare-function eglot-current-server "eglot")
+				  (declare-function eglot-find-implementation "eglot")
+				  (condition-case err
+					  (progn
+						  (unless (featurep 'eglot)
+							  (user-error "Eglot is not loaded"))
+						  (unless (file-name-absolute-p file)
+							  (user-error "File must be an absolute path: %s" file))
+						  (with-current-buffer (find-file-noselect file)
+							  (unless (eglot-current-server)
+								  (user-error "No Eglot server manages %s" file))
+							  (save-excursion
+								  (joes-goto-symbol symbol-name line-text line)
+								  (joes-xrefs-text #'eglot-find-implementation))))
+					  (error (format "Error: %s" (error-message-string err)))))
+	:args (list '(:name "file"
+					 :type string
+					 :description "Absolute path of the file containing the symbol.")
+			  '(:name "symbol-name"
+				   :type string
+				   :description "Identifier to look up, e.g. foo-bar.")
+			  '(:name "line-text"
+				   :type string
+				   :description "Full text of the line containing the symbol, without leading or trailing whitespace.")
+			  '(:name "line"
+				   :type integer
+				   :optional t
+				   :description "1-based line number. Set it when a previous call reported more than one matching line.")))
+
+(gptel-make-tool
+	:name "find_definition"
+	:description "Find the definition/declaration of a symbol. The symbol is located by line-text, the full text of the line that contains it (leading and trailing whitespace ignored), and symbol-name. If more than one line matches, returns an error listing the candidate lines with context; call again with line set to the chosen line number. Returns one file:line: text entry per definition."
+	:category "programming"
+	:confirm nil
+	:function (lambda (file symbol-name line-text &optional line)
+				  (condition-case err
+					  (progn
+						  (unless (file-name-absolute-p file)
+							  (user-error "File must be an absolute path: %s" file))
+						  (with-current-buffer (find-file-noselect file)
+							  (save-excursion
+								  (joes-goto-symbol symbol-name line-text line)
+								  (joes-xrefs-text
+								   (lambda () (xref-find-definitions symbol-name))))))
+					(error (format "Error: %s" (error-message-string err)))))
+	:args (list '(:name "file"
+					 :type string
+					 :description "Absolute path of the file containing the symbol.")
+			  '(:name "symbol-name"
+				   :type string
+				   :description "Identifier to look up, e.g. foo-bar.")
+			  '(:name "line-text"
+				   :type string
+				   :description "Full text of the line containing the symbol, without leading or trailing whitespace.")
+			  '(:name "line"
+				   :type integer
+				   :optional t
+				   :description "1-based line number. Set it when a previous call reported more than one matching line.")))
+
 (provide 'joes-ai-tools)
 ;;; joes-ai-tools.el ends here.

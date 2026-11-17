@@ -251,5 +251,74 @@ Matches are collected by iterating `compilation-next-error'."
 					(> (length (window-list frame 'no-minibuf)) 1))
 			(split-window-sensibly window))))
 
+(defun joes-goto-symbol (symbol-name line-text line)
+	"Move point to SYMBOL-NAME on the line whose trimmed text is LINE-TEXT.
+LINE, when non-nil, selects one of several matching lines.	Signal a
+`user-error' when the match is missing or ambiguous."
+	(save-restriction
+		(widen)
+		(let* ((lines (vconcat (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n")))
+				  (word (concat "\\_<" (regexp-quote symbol-name) "\\_>"))
+				  (wanted (string-trim line-text))
+				  (found (cl-loop for text across lines
+							 for n from 1
+							 when (and (string= (string-trim text) wanted)
+									  (string-match-p word text))
+							 collect n))
+				  (chosen (if line (seq-filter (lambda (n) (= n line)) found) found)))
+			(cond
+				((and (null chosen) line)
+					(user-error "No match on line %d. Matching lines: %s" line
+						(if found (mapconcat #'number-to-string found ", ") "none")))
+				((null chosen)
+					(user-error "No line equal to line-text contains %s" symbol-name))
+				((cdr chosen)
+					(user-error "%s"
+						(concat
+							(format "Ambiguous: %d matches. Retry with line set to one of: %s\n\n"
+								(length chosen) (mapconcat #'number-to-string chosen ", "))
+							(mapconcat
+								(lambda (n)
+									(mapconcat
+										(lambda (k)
+											(format "%s%5d: %s" (if (= k n) ">" " ") k (aref lines (1- k))))
+										(number-sequence (max 1 (- n 2)) (min (length lines) (+ n 2)))
+										"\n"))
+								(seq-take chosen 10) "\n\n")
+							(when (> (length chosen) 10)
+								(format "\n\n... %d more not shown" (- (length chosen) 10))))))
+				(t
+					(goto-char (point-min))
+					(forward-line (1- (car chosen)))
+					(re-search-forward word (line-end-position) t)
+					(goto-char (match-beginning 0)))))))
+
+(defun joes-xrefs-text (xref-func)
+	"Call XREF-FUNC and return the xrefs it displays as text.
+One `file:line: summary' per line.	XREF-FUNC must display its results through
+`xref-show-xrefs-function' or `xref-show-definitions-function'.
+Return \"No results.\" when XREF-FUNC displays none."
+	(let* ((xrefs nil)
+			  (capture
+				  (lambda (fetcher _alist)
+					  (setq xrefs (condition-case nil
+									  (funcall fetcher)
+									  (user-error nil)))))
+				  (xref-show-xrefs-function capture)
+				  (xref-show-definitions-function capture))
+		(funcall xref-func)
+		(if (null xrefs)
+			"No results."
+			(format "%d results:\n%s"
+				(length xrefs)
+				(mapconcat
+					(lambda (xref)
+						(let ((location (xref-item-location xref)))
+							(format "%s:%s: %s"
+								(xref-location-group location)
+								(or (xref-location-line location) "?")
+								(string-trim (or (xref-item-summary xref) "")))))
+					xrefs "\n"))))
+
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

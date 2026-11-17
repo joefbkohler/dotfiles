@@ -147,7 +147,8 @@ Use available tools to confirm temporal information that were not provided. You 
 	:system (joes-ai-system-append "\n[Programming Instructions]
 * When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.
 * When creating new features, or functions, look or request for references in the working project and follow its pattern.
-* Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input."))
+* Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input.
+* Prefer using specialized tools (like find_references) instead of rgrep when navigating code."))
 
 (gptel-make-preset 'emacs-programming
 	:parents 'programming
