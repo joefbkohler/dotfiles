@@ -37,23 +37,6 @@
 			(lambda ()
 				(concat (if (functionp parent) (funcall parent) parent) system)))))
 
-(defun joes-ai--buffer-info ()
-	"Return info block of the last visited buffer visiting a file."
-	(if-let* ((buffer (seq-find
-							(lambda (buf)
-								(and (buffer-file-name buf)
-									(not (string-prefix-p " " (buffer-name buf)))
-									(not (with-current-buffer buf (bound-and-true-p gptel-mode)))))
-							(buffer-list))))
-		(with-current-buffer buffer
-			(format "\n[Last Visited Buffer]\nName: %s\nFile: %s\nPoint: %d (line %d, column %d)"
-				(buffer-name)
-				(buffer-file-name)
-				(point)
-				(line-number-at-pos)
-				(current-column)))
-		""))
-
 (defun joes-ai--project-info ()
 	"Return project root and git branch block, or an empty string outside a project."
 	(if-let* ((project joes-ai-project)
@@ -105,7 +88,7 @@ Use available tools to confirm temporal information that were not provided. You 
 
 (defun joes-ai--default-system-message ()
 	"Return the default system directive string."
-	(concat (alist-get 'default gptel-directives) (joes-ai--project-info) (joes-ai--buffer-info) (joes-ai--os-info)))
+	(concat (alist-get 'default gptel-directives) (joes-ai--project-info) (joes-ai--os-info)))
 
 (gptel-make-preset 'disable-thinking
 	:temperature 1.0
