@@ -124,8 +124,8 @@
 
     ;; gptel Buffer
     (defvar gptel-mode-map)
-    (keymap-set gptel-mode-map "C-c p" 'joes-ai-toggle-planning)
-    (keymap-set gptel-mode-map "C-c P" 'gptel-preset))
+    (keymap-set gptel-mode-map "C-c C-<backspace>" 'joes-ai-toggle-planning)
+    (keymap-set gptel-mode-map "C-c p" 'gptel-preset))
 
 (defun joes-latex-keybinding ()
     "Keys for TeX mode."
