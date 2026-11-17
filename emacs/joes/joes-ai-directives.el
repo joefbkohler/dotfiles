@@ -25,8 +25,6 @@
 (require 'project)
 (require 'joes-ai-tools)
 
-(declare-function magit-get-current-branch "magit-branch")
-
 (defvar-local joes-ai-project nil
 	"Project used by the AI directives.	 Set with `joes-ai-set-project'.")
 
@@ -39,6 +37,7 @@
 
 (defun joes-ai--project-info ()
 	"Return project root and git branch block, or an empty string outside a project."
+	(declare-function magit-get-current-branch "magit-branch")
 	(if-let* ((project joes-ai-project)
 				 (root (expand-file-name (project-root project))))
 		(progn
@@ -195,6 +194,7 @@ You're in Planning mode! You can't write to files or modify the system. When a t
 When off, save the system message and tools, then append the planning
 instructions and remove write tools.  When on, restore the saved state."
 	(interactive)
+	(declare-function gptel-preset "gptel-transient" (preset &optional setter))
 	(if (joes-ai--planning-saved-p)
 		(progn
 			(setq-local gptel-system-prompt (plist-get joes-ai--planning-saved :system))
@@ -203,7 +203,7 @@ instructions and remove write tools.  When on, restore the saved state."
 			(message "Planning off"))
 		(setq joes-ai--planning-saved
 			(list :system gptel-system-prompt :tools gptel-tools))
-		(gptel--apply-preset
+		(gptel-preset
 			`(:system ,(joes-ai--system-append joes-ai-planning-instructions)
 				:tools (:function ,(lambda (tools)
 									(cl-remove-if
