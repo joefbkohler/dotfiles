@@ -80,6 +80,7 @@
 
 (defun joes-keybindings-vertico()
     "Set keys used in vertico functions."
+    (defvar vertico-map)
     (keymap-set vertico-map "C-M-p" 'vertico-previous-group)
     (keymap-set vertico-map "C-M-n" 'vertico-next-group)
     (keymap-set vertico-map "DEL" 'vertico-directory-delete-char)
@@ -91,6 +92,7 @@
     (keymap-global-set "C-M-s" 'consult-line)
     (keymap-substitute (current-global-map) 'switch-to-buffer 'consult-buffer)
     (keymap-substitute (current-global-map) 'list-buffers 'consult-buffer)
+    (keymap-global-set "C-c o" 'consult-imenu)
     (setopt consult-preview-key "C-v"))
 
 (defun joes-keybinding-eglot ()
@@ -101,18 +103,28 @@
 
 (defun joes-keybinding-ai ()
     "Set keys used for AI assistant."
+
+    ;; Minuet (autocomplete)
     (defvar minuet-active-mode-map)
     (keymap-set minuet-active-mode-map "M-n" 'minuet-next-suggestion)
     (keymap-set minuet-active-mode-map "M-p" 'minuet-previous-suggestion)
     (keymap-set minuet-active-mode-map "C-g" 'minuet-dismiss-suggestion)
     (keymap-set minuet-active-mode-map "C-<tab>" 'minuet-accept-suggestion)
+
+    ;; global
     (keymap-global-set "M-i" 'minuet-show-suggestion)
     (keymap-global-set "C-c C-g" 'gptel-menu)
+
+    ;; Edit review mode
     (defvar joes-ai-edits-mode-map)
     (keymap-set joes-ai-edits-mode-map "A" 'joes-ai-accept-all-edits)
     (keymap-set joes-ai-edits-mode-map "a" 'joes-ai-accept-edit-hunk)
     (keymap-set joes-ai-edits-mode-map "k" 'joes-ai-revert-edit-hunk)
-    (keymap-set joes-ai-edits-mode-map "g" 'joes-ai-show-edits))
+    (keymap-set joes-ai-edits-mode-map "g" 'joes-ai-show-edits)
+
+    ;; gptel Buffer
+    (defvar gptel-mode-map)
+    (keymap-set gptel-mode-map "C-c p" 'joes-ai-toggle-planning))
 
 (defun joes-latex-keybinding ()
     "Keys for TeX mode."
