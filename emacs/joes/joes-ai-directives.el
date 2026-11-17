@@ -27,7 +27,7 @@
 
 (declare-function magit-get-current-branch "magit-branch")
 
-(defvar joes-ai-project nil
+(defvar-local joes-ai-project nil
 	"Project used by the AI directives.	 Set with `joes-ai-set-project'.")
 
 (defun joes-ai--system-append (system)

@@ -89,6 +89,8 @@ nil sends nothing."
 
 (setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
+(defvar gptel--set-buffer-locally)
+(setq gptel--set-buffer-locally t) ;; Menu scope defaults to buffer-local
 (setq-default gptel-model
 	(let ((model (car joes-ai-chat-models))) ;; Default to the first model
 		(if (consp model)					 ;; Check if the model is a list eg. (qwen3.5 . capabilities)
@@ -188,12 +190,37 @@ Disable if too many characters in buffer."
 			(when (string= (file-name-extension file) ext)
 				(gptel-add-file file)))))
 
-(defun joes-ai-apply-default-preset ()
-	"Apply the `chat' preset in new gptel chat buffers."
-	(unless gptel--preset
-		(gptel--apply-preset
-			'chat
-			(lambda (sym val) (set (make-local-variable sym) val)))))
+(declare-function gptel-preset "gptel-transient" (preset &optional setter))
+(defvar joes-ai-project)
+
+(defcustom joes-ai-gptel-preset-alist
+	'((emacs-lisp-mode . emacs)
+		(prog-mode . programming))
+	"Alist mapping major modes to gptel presets, used by `joes-ai-gptel'.
+Entries are checked in order with `derived-mode-p', so list more specific
+modes first."
+	:type '(alist :key-type symbol :value-type symbol)
+	:group 'joe)
+
+(defun joes-ai-gptel ()
+	"Create a gptel chat buffer from the current buffer with a preset.
+The preset is taken from `joes-ai-gptel-preset-alist' when the current buffer
+visits a file, `chat' otherwise.  The chat buffer's project is the current
+buffer's project."
+	(interactive)
+	(let* ((preset (or (and (buffer-file-name)
+							(cdr (seq-find (lambda (entry) (derived-mode-p (car entry)))
+											joes-ai-gptel-preset-alist)))
+						'chat))
+		   (project (project-current nil))
+		   (buffer (gptel (generate-new-buffer-name
+						  (format "*%s%s*" (gptel-backend-name gptel-backend)
+								  (if project (format ":%s" (project-name project)) ""))))))
+		(with-current-buffer buffer
+			(gptel-preset preset (lambda (sym val) (set (make-local-variable sym) val)))
+			(setq joes-ai-project project))
+		(pop-to-buffer buffer)
+		buffer))
 
 (defun joes-ai-enforce-utf-8 ()
 	"Set UTF-8 as the file coding system in gptel buffers."

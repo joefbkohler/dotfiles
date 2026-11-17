@@ -107,19 +107,17 @@
         (locate-user-emacs-file "transient-values.el")))
 
 (use-package joes-ai
-    :commands joes-ai-preload-local-models
-    :mode ("\\.gptel\\'" . joes-ai-gptel-file-mode)
+    :commands (joes-ai-preload-local-models joes-ai-gptel)
+    :mode ("\\.gptel\\'" . (lambda ()
+                               (org-mode)
+                               (gptel-mode 1)))
     :init
     (defun joes-ai-require (&rest _)
         "Load `joes-ai' before running gptel commands."
         (require 'joes-ai))
     (declare-function joes-ai-require "joes-ai")
     (advice-add 'gptel :before #'joes-ai-require)
-    (advice-add 'gptel-menu :before #'joes-ai-require)
-    (add-hook 'gptel-mode-hook #'joes-ai-require -90)
-    :config
-    (declare-function joes-ai-set-project "joes-ai-directives")
-    (add-hook 'buffer-list-update-hook #'joes-ai-set-project))
+    (advice-add 'gptel-menu :before #'joes-ai-require))
 
 ;; Useful to get the environment variables, only run in OSX
 (use-package exec-path-from-shell
