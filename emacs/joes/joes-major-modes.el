@@ -101,7 +101,15 @@
 (defun joes-gptel-mode-config ()
 	"Gptel mode config."
 	(declare-function joes-ai-apply-default-preset "joes-ai")
-	(joes-ai-apply-default-preset))
+	(declare-function joes-ai-enforce-utf-8 "joes-ai")
+	(joes-ai-apply-default-preset)
+	(joes-ai-enforce-utf-8))
+
+(defun joes-ai-gptel-file-mode ()
+	"Major mode for .gptel files: `org-mode' with `gptel-mode' enabled."
+	(declare-function gptel-mode "gptel")
+	(org-mode)
+	(gptel-mode 1))
 
 (setq auto-mode-alist
 	(append auto-mode-alist

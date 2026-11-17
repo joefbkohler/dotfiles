@@ -195,6 +195,10 @@ Disable if too many characters in buffer."
 			'chat
 			(lambda (sym val) (set (make-local-variable sym) val)))))
 
+(defun joes-ai-enforce-utf-8 ()
+	"Set UTF-8 as the file coding system in gptel buffers."
+	(set-buffer-file-coding-system 'utf-8))
+
 ;; --- End of configuration ---
 
 (when mcp-hub-servers
