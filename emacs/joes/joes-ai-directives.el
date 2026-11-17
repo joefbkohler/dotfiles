@@ -59,8 +59,8 @@ Nil projects are ignored and keep the previous value."
 (defvar-local joes-ai--planning-saved nil
 	"Session state saved by `joes-ai-toggle-planning', or nil when planning is off.")
 
-(defconst joes-ai-planning-instructions "\n[Planning]
-You can't write files or modify the system. When a technical task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands. Avoid directly generating code unless directly requested.")
+(defconst joes-ai-planning-instructions "\n[Planning Mode]
+You're in Planning mode! You can't write to files or modify the system. When a task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands. Avoid directly generating code or commands unless directly requested.")
 
 (defun joes-ai-toggle-planning ()
 	"Toggle the planning state in the current buffer's gptel session.
