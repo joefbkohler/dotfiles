@@ -1,4 +1,4 @@
-;;; joes-ai-headerline.el --- gptel header line for AI chat  -*- lexical-binding: t; -*-
+;;; joes-ai-headerline.el --- gptel header line for AI chat	 -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Joe Köhler
 
@@ -25,6 +25,8 @@
 
 (require 'gptel)
 (require 'gptel-context)
+
+(defvar joes-ai--planning-saved)
 
 (defvar-local joes-ai-gptel--turn-usage nil
 	"Token usage plist of the last turn in this gptel buffer.")
@@ -65,97 +67,99 @@
 
 (defvar joes-ai-gptel--header-line-info
 	'(:eval
-		(let* ((model (gptel--model-name gptel-model))
-				(preset
-					(propertize
-						(if gptel--preset
-							(format "[Preset: %s]" gptel--preset)
-						"[No Preset]")
-						'mouse-face 'highlight
-						'help-echo "Preset applied to this buffer"))
-				(usage
-					(when-let* ((text (joes-ai-gptel--header-usage)))
-						(propertize text
-							'mouse-face 'highlight
-							'help-echo "Last request: input, output, total, context window")))
-				(cost
-					(when-let* ((text (joes-ai-gptel--header-cost)))
-						(propertize text
-							'mouse-face 'highlight
-							'help-echo "Session cost (estimated from model prices)")))
-				(context
-					(and gptel-context
-						(cl-loop
-							for entry in gptel-context
-							if (bufferp (or (car-safe entry) entry)) count it into bufs
-							else count (stringp (or (car-safe entry) entry)) into files
-							finally return
+		 (let* ((model (gptel--model-name gptel-model))
+				   (preset
+					   (propertize
+						   (if gptel--preset
+							   (format "[Preset: %s%s]"
+								   gptel--preset
+								   (if joes-ai--planning-saved "(P)" ""))
+							   "[No Preset]")
+						   'mouse-face 'highlight
+						   'help-echo "Preset applied to this buffer"))
+				   (usage
+					   (when-let* ((text (joes-ai-gptel--header-usage)))
+						   (propertize text
+							   'mouse-face 'highlight
+							   'help-echo "Last request: input, output, total, context window")))
+				   (cost
+					   (when-let* ((text (joes-ai-gptel--header-cost)))
+						   (propertize text
+							   'mouse-face 'highlight
+							   'help-echo "Session cost (estimated from model prices)")))
+				   (context
+					   (and gptel-context
+						   (cl-loop
+							   for entry in gptel-context
+							   if (bufferp (or (car-safe entry) entry)) count it into bufs
+							   else count (stringp (or (car-safe entry) entry)) into files
+							   finally return
+							   (propertize
+								   (buttonize
+									   (concat "[" (and (> bufs 0) (format "%d buf" bufs))
+										   (and (> bufs 1) "s")
+										   (and (> bufs 0) (> files 0) ", ")
+										   (and (> files 0) (format "%d file" files))
+										   (and (> files 1) "s") "]")
+									   (lambda (&rest _)
+										   (require 'gptel-context)
+										   (gptel-context--buffer-setup)))
+								   'mouse-face 'highlight
+								   'help-echo "Active gptel context"))))
+				   (toggle-track-media
+					   (lambda (&rest _)
+						   (setq-local gptel-track-media (not gptel-track-media))
+						   (if gptel-track-media
+							   (progn
+								   (run-hooks 'gptel-refresh-buffer-hook)
+								   (message "Sending media from included links."))
+							   (without-restriction (gptel--annotate-link-clear))
+							   (message "Ignoring links.  Only link text will be sent."))
+						   (run-at-time 0 nil #'force-mode-line-update)))
+				   (track-media
+					   (and (gptel--model-capable-p 'media)
+						   (if gptel-track-media
+							   (propertize
+								   (buttonize "[Media: Send]" toggle-track-media)
+								   'mouse-face 'highlight
+								   'help-echo
+								   "Sending media from links/urls when supported.\nClick to toggle")
+							   (propertize
+								   (buttonize "[Media: No]" toggle-track-media)
+								   'mouse-face 'highlight
+								   'help-echo
+								   "Ignoring media from links/urls.\nClick to toggle"))))
+				   (toggle-tools (lambda (&rest _) (interactive)
+									 (run-at-time 0 nil
+										 (lambda () (call-interactively #'gptel-tools)))))
+				   (tools (when (and gptel-use-tools gptel-tools)
+							  (propertize
+								  (buttonize (pcase (length gptel-tools)
+												 (0 "[No tools]") (1 "[1 tool]")
+												 (len (format "[%d tools]" len)))
+									  toggle-tools)
+								  'mouse-face 'highlight
+								  'help-echo "Select tools"))))
+			 (let ((rhs (concat
+							usage (and usage " ")
+							cost (and cost " ")
+							tools (and tools " ")
+							track-media (and track-media " ")
+							context (and context " ")
+							preset " "
 							(propertize
-								(buttonize
-									(concat "[" (and (> bufs 0) (format "%d buf" bufs))
-										(and (> bufs 1) "s")
-										(and (> bufs 0) (> files 0) ", ")
-										(and (> files 0) (format "%d file" files))
-										(and (> files 1) "s") "]")
-									(lambda (&rest _)
-										(require 'gptel-context)
-										(gptel-context--buffer-setup)))
+								(buttonize (concat "[" model "]")
+									(lambda (&rest _) (gptel-menu)))
 								'mouse-face 'highlight
-								'help-echo "Active gptel context"))))
-				(toggle-track-media
-					(lambda (&rest _)
-						(setq-local gptel-track-media (not gptel-track-media))
-						(if gptel-track-media
-							(progn
-								(run-hooks 'gptel-refresh-buffer-hook)
-								(message "Sending media from included links."))
-							(without-restriction (gptel--annotate-link-clear))
-							(message "Ignoring links.  Only link text will be sent."))
-						(run-at-time 0 nil #'force-mode-line-update)))
-				(track-media
-					(and (gptel--model-capable-p 'media)
-						(if gptel-track-media
-							(propertize
-								(buttonize "[Media: Send]" toggle-track-media)
-								'mouse-face 'highlight
-								'help-echo
-								"Sending media from links/urls when supported.\nClick to toggle")
-							(propertize
-								(buttonize "[Media: No]" toggle-track-media)
-								'mouse-face 'highlight
-								'help-echo
-								"Ignoring media from links/urls.\nClick to toggle"))))
-				(toggle-tools (lambda (&rest _) (interactive)
-								(run-at-time 0 nil
-									(lambda () (call-interactively #'gptel-tools)))))
-				(tools (when (and gptel-use-tools gptel-tools)
-						(propertize
-							(buttonize (pcase (length gptel-tools)
-										(0 "[No tools]") (1 "[1 tool]")
-										(len (format "[%d tools]" len)))
-								toggle-tools)
-							'mouse-face 'highlight
-							'help-echo "Select tools"))))
-			(let ((rhs (concat
-						usage (and usage " ")
-						cost (and cost " ")
-						tools (and tools " ")
-						track-media (and track-media " ")
-						context (and context " ")
-						preset " "
-						(propertize
-							(buttonize (concat "[" model "]")
-								(lambda (&rest _) (gptel-menu)))
-							'mouse-face 'highlight
-							'help-echo "Model in use"))))
-				(concat
-					(propertize
-						" " 'display
-						(if (and (fboundp 'string-pixel-width)
-								(display-graphic-p))
-							`(space :align-to (- right (,(string-pixel-width rhs))))
-							`(space :align-to (- right ,(+ 5 (string-width rhs))))))
-					rhs))))
+								'help-echo "Model in use"))))
+				 (concat
+					 (propertize
+						 " " 'display
+						 (if (and (fboundp 'string-pixel-width)
+								 (display-graphic-p))
+							 `(space :align-to (- right (,(string-pixel-width rhs))))
+							 `(space :align-to (- right ,(+ 5 (string-width rhs))))))
+					 rhs))))
 	"Header-line info segment for gptel buffers.
 Replaces `gptel--header-line-info' set by the function `gptel-use-header-line'.")
 
