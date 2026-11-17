@@ -22,13 +22,24 @@
 ;;; Code:
 
 (require 'gptel)
+(require 'project)
 (require 'joes-ai-tools)
 
 (declare-function magit-get-current-branch "magit-branch")
 
+(defvar joes-ai-project nil
+	"Project used by the AI directives.	 Set with `joes-ai-set-project'.")
+
+(defun joes-ai-set-project ()
+	"Set `joes-ai-project' to the current project.
+Nil projects are ignored and keep the previous value."
+	(interactive)
+	(when-let* ((project (project-current)))
+		(setq joes-ai-project project)))
+
 (defun joes-ai-project-info ()
 	"Return project root and git branch block, or an empty string outside a project."
-	(if-let* ((project (project-current))
+	(if-let* ((project joes-ai-project)
 				 (root (expand-file-name (project-root project))))
 		(progn
 			(require 'magit-branch)
@@ -37,6 +48,44 @@
 				(let ((default-directory root))
 					(or (magit-get-current-branch) "detached"))))
 		""))
+
+(defun joes-ai-system-append (system)
+	"Return a :system spec that appends SYSTEM to the inherited system message."
+	(list :function
+		(lambda (parent)
+			(lambda ()
+				(concat (if (functionp parent) (funcall parent) parent) system)))))
+
+(defvar-local joes-ai--planning-saved nil
+	"Session state saved by `joes-ai-toggle-planning', or nil when planning is off.")
+
+(defconst joes-ai-planning-instructions "\n[Planning]
+You can't write files or modify the system. When a technical task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands. Avoid directly generating code unless directly requested.")
+
+(defun joes-ai-toggle-planning ()
+	"Toggle the planning state in the current buffer's gptel session.
+When off, save the system message and tools, then append the planning
+instructions and remove write tools.  When on, restore the saved state."
+	(interactive)
+	(if (and joes-ai--planning-saved
+			(string-search joes-ai-planning-instructions
+				(if (functionp gptel-system-prompt) (funcall gptel-system-prompt) gptel-system-prompt)))
+		(progn
+			(setq-local gptel-system-prompt (plist-get joes-ai--planning-saved :system))
+			(setq-local gptel-tools (plist-get joes-ai--planning-saved :tools))
+			(setq joes-ai--planning-saved nil)
+			(message "Planning off"))
+		(setq joes-ai--planning-saved
+			(list :system gptel-system-prompt :tools gptel-tools))
+		(gptel--apply-preset
+			`(:system ,(joes-ai-system-append joes-ai-planning-instructions)
+				:tools (:function ,(lambda (tools)
+									(cl-remove-if
+										(lambda (tool)
+											(equal (gptel-tool-category tool) "filesystem-write"))
+										tools))))
+			(lambda (sym val) (set (make-local-variable sym) val)))
+		(message "Planning on")))
 
 (setopt gptel-directives
 	`((default . "[General Instruction]
@@ -75,17 +124,42 @@ Use available tools to confirm temporal information that were not provided. You 
 		system-type
 		system-configuration))
 
-(defconst joes-ai-default-system (concat (alist-get 'default gptel-directives) (joes-ai-project-info) (joes-ai-os-info)))
+(defun joes-ai-default-system-message ()
+	"Return the default system directive string."
+	(concat (alist-get 'default gptel-directives) (joes-ai-project-info) (joes-ai-os-info)))
 
-(defconst joes-ai-programming-instructions "\n[Programming Instructions]
+(gptel-make-preset 'disable-thinking
+	:temperature 1.0
+	:system #'joes-ai-default-system-message
+	:tools nil
+	:request-params '(:eval joes-ai-chat-reasoning-off))
+
+(gptel-make-preset 'chat
+	:tools '("web" "filesystem-read" "filesystem-write")
+	:system #'joes-ai-default-system-message
+	:request-params '(:eval joes-ai-chat-reasoning-on)
+	:temperature 1.0)
+
+(gptel-make-preset 'programming
+	:parents 'chat
+	:tools '(:append ("programming"))
+	:temperature 0.5
+	:system (joes-ai-system-append "\n[Programming Instructions]
 * When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.
 * When creating new features, or functions, look or request for references in the working project and follow its pattern.
-* Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input.")
+* Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input."))
 
-(defconst joes-ai-planning-instructions "\n[Planning]
-You can't write files or modify the system. When a technical task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands.")
-
-(defconst joes-ai-emacs-programming-instructions (format "\n[Emacs Programming Instructions]
+(gptel-make-preset 'emacs-programming
+	:parents 'programming
+	:tools '(:function (lambda (tools)
+						   (cl-remove-if
+							   (lambda (tool)
+								   (equal (gptel-tool-category tool) "programming"))
+							   tools))
+				:append ("emacs" "flymake_diagnostics"))
+	:temperature 0.5
+	:system (joes-ai-system-append
+				(format "\n[Emacs Programming Instructions]
 You're inside a running emacs instance.
 Config root is %s.
 Lisp directory is %s
@@ -95,55 +169,15 @@ System packages directory are %s
 * Use tabs for identation.
 * Prefer built-in Emacs facilities over third-party packages.
 * If a third-party package solves a problem, suggest it and ask the User's input.
-* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell." (file-name-directory user-init-file) lisp-directory package-user-dir package-directory-list))
-
-(gptel-make-preset 'disable-thinking
-	:temperature 1.0
-	:system joes-ai-default-system
-	:request-params '(:eval joes-ai-chat-reasoning-off))
-
-(gptel-make-preset 'chat
-	:tools '("web")
-	:system joes-ai-default-system
-	:request-params '(:eval joes-ai-chat-reasoning-on)
-	:temperature 1.0)
-
-(gptel-make-preset 'pc-helper
-	:parents 'chat
-	:tools '(:append ("filesystem-read" "filesystem-write")))
-
-(gptel-make-preset 'programming-planning
-	:parents 'chat
-	:tools '(:append ("filesystem-read" "programming"))
-	:temperature 0.5
-	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-programming-instructions
-					joes-ai-emacs-programming-instructions
-					joes-ai-planning-instructions)))
-
-(gptel-make-preset 'emacs-programming-planning
-	:parents 'programming-planning
-	:tools '(:append ("emacs"))
-	:system (lambda ()
-				(concat joes-ai-default-system joes-ai-programming-instructions
-					joes-ai-emacs-programming-instructions
-					joes-ai-planning-instructions)))
-
-(gptel-make-preset 'programming
-	:parents '(pc-helper programming-planning)
-	:temperature 0.5)
-
-(gptel-make-preset 'emacs-programming
-	:parents '(pc-helper emacs-programming-planning))
+* Prefer elisp functions call over shell commands, even if internally the lisp function uses shell." (file-name-directory user-init-file) lisp-directory package-user-dir package-directory-list)))
 
 (defvar joes-ai-commit-message-model nil)
 (gptel-make-preset 'commit-message
-	:parents 'base-preset
+	:parents 'disable-thinking
 	:use-context 'system
 	:include-reasoning nil
 	:model (or joes-ai-commit-message-model (default-value 'gptel-model))
-	:system (lambda ()
-				(concat joes-ai-default-system (joes-ai-project-info) "\n[Commit Message Instructions]
+	:system (joes-ai-system-append "\n[Commit Message Instructions]
 * Be concise and direct. Focus on the WHAT, not the WHY.
 * Use precise language, avoid subjective words like better, easier, faster, enhances, improves, etc...
 * Instead of descriptions like 'improved function', just describe what was done.
@@ -167,7 +201,7 @@ test – including new or correcting previous tests
 perf – performance improvements
 ci – continuous integration related
 build – changes that affect the build system or external dependencies
-revert – reverts a previous commit")))
+revert – reverts a previous commit"))
 
 (provide 'joes-ai-directives)
 ;;; joes-ai-directives.el ends here
