@@ -318,7 +318,7 @@ Return \"No results.\" when XREF-FUNC displays none."
 								(xref-location-group location)
 								(or (xref-location-line location) "?")
 								(string-trim (or (xref-item-summary xref) "")))))
-					xrefs "\n"))))
+					xrefs "\n")))))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here

@@ -18,9 +18,8 @@
 ;; along with this program.	 If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; TODO: Skill system.	 Skills are presets.  Create tool to fetch available
-;;; skills and apply preset.
-;;; TODO: Create/add tools to modify files and other Emacs functionality.
+;;; TODO: Test prefill with local model.  If too bad, remove volatile information
+;; from system, like last buffer, and make it a tool.
 ;;; Code:
 
 (require 'joes-keybindings)
