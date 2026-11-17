@@ -245,11 +245,11 @@ Matches are collected by iterating `compilation-next-error'."
 
 (defun joes-split-window-skip-leftmost (&optional window)
 	"Avoid splitting WINDOW if it is leftmost window and not the only window."
-  (let* ((window (or window (selected-window)))
-		 (frame (window-frame window)))
-	(unless (and (= (nth 0 (window-edges window)) 0)
-				 (> (length (window-list frame 'no-minibuf)) 1))
-	  (split-window-sensibly window))))
+	(let* ((window (or window (selected-window)))
+			  (frame (window-frame window)))
+		(unless (and (= (nth 0 (window-edges window)) 0)
+					(> (length (window-list frame 'no-minibuf)) 1))
+			(split-window-sensibly window))))
 
 (provide 'joes-utils)
 ;;; joes-utils.el ends here
