@@ -30,14 +30,31 @@
 (defvar joes-ai-project nil
 	"Project used by the AI directives.	 Set with `joes-ai-set-project'.")
 
-(defun joes-ai-set-project ()
-	"Set `joes-ai-project' to the current project.
-Nil projects are ignored and keep the previous value."
-	(interactive)
-	(when-let* ((project (project-current)))
-		(setq joes-ai-project project)))
+(defun joes-ai--system-append (system)
+	"Return a :system spec that appends SYSTEM to the inherited system message."
+	(list :function
+		(lambda (parent)
+			(lambda ()
+				(concat (if (functionp parent) (funcall parent) parent) system)))))
 
-(defun joes-ai-project-info ()
+(defun joes-ai--buffer-info ()
+	"Return info block of the last visited buffer visiting a file."
+	(if-let* ((buffer (seq-find
+							(lambda (buf)
+								(and (buffer-file-name buf)
+									(not (string-prefix-p " " (buffer-name buf)))
+									(not (with-current-buffer buf (bound-and-true-p gptel-mode)))))
+							(buffer-list))))
+		(with-current-buffer buffer
+			(format "\n[Last Visited Buffer]\nName: %s\nFile: %s\nPoint: %d (line %d, column %d)"
+				(buffer-name)
+				(buffer-file-name)
+				(point)
+				(line-number-at-pos)
+				(current-column)))
+		""))
+
+(defun joes-ai--project-info ()
 	"Return project root and git branch block, or an empty string outside a project."
 	(if-let* ((project joes-ai-project)
 				 (root (expand-file-name (project-root project))))
@@ -49,43 +66,19 @@ Nil projects are ignored and keep the previous value."
 					(or (magit-get-current-branch) "detached"))))
 		""))
 
-(defun joes-ai-system-append (system)
-	"Return a :system spec that appends SYSTEM to the inherited system message."
-	(list :function
-		(lambda (parent)
-			(lambda ()
-				(concat (if (functionp parent) (funcall parent) parent) system)))))
-
-(defvar-local joes-ai--planning-saved nil
-	"Session state saved by `joes-ai-toggle-planning', or nil when planning is off.")
-
-(defconst joes-ai-planning-instructions "\n[Planning Mode]
-You're in Planning mode! You can't write to files or modify the system. When a task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands. Avoid directly generating code or commands unless directly requested.")
-
-(defun joes-ai-toggle-planning ()
-	"Toggle the planning state in the current buffer's gptel session.
-When off, save the system message and tools, then append the planning
-instructions and remove write tools.  When on, restore the saved state."
-	(interactive)
-	(if (and joes-ai--planning-saved
-			(string-search joes-ai-planning-instructions
-				(if (functionp gptel-system-prompt) (funcall gptel-system-prompt) gptel-system-prompt)))
-		(progn
-			(setq-local gptel-system-prompt (plist-get joes-ai--planning-saved :system))
-			(setq-local gptel-tools (plist-get joes-ai--planning-saved :tools))
-			(setq joes-ai--planning-saved nil)
-			(message "Planning off"))
-		(setq joes-ai--planning-saved
-			(list :system gptel-system-prompt :tools gptel-tools))
-		(gptel--apply-preset
-			`(:system ,(joes-ai-system-append joes-ai-planning-instructions)
-				:tools (:function ,(lambda (tools)
-									(cl-remove-if
-										(lambda (tool)
-											(equal (gptel-tool-category tool) "filesystem-write"))
-										tools))))
-			(lambda (sym val) (set (make-local-variable sym) val)))
-		(message "Planning on")))
+(defun joes-ai--os-info ()
+	"Return operating system block."
+	(format "\n[Operating System]\nName: %s\nType: %s\nConfiguration: %s"
+		(pcase system-type
+			('darwin "macOS")
+			('gnu/linux "Linux")
+			('windows-nt "Windows")
+			('cygwin "Windows (Cygwin)")
+			('android "Android")
+			('berkeley-unix "BSD")
+			(_ (symbol-name system-type)))
+		system-type
+		system-configuration))
 
 (setopt gptel-directives
 	`((default . "[General Instruction]
@@ -110,33 +103,20 @@ Use available tools to confirm temporal information that were not provided. You 
 * Output exclusivelly the new text, without any explanations or comments.
 * Follow the instructions to rewrite the provided snippet.")))
 
-(defun joes-ai-os-info ()
-	"Return operating system block."
-	(format "\n[Operating System]\nName: %s\nType: %s\nConfiguration: %s"
-		(pcase system-type
-			('darwin "macOS")
-			('gnu/linux "Linux")
-			('windows-nt "Windows")
-			('cygwin "Windows (Cygwin)")
-			('android "Android")
-			('berkeley-unix "BSD")
-			(_ (symbol-name system-type)))
-		system-type
-		system-configuration))
 
-(defun joes-ai-default-system-message ()
+(defun joes-ai--default-system-message ()
 	"Return the default system directive string."
-	(concat (alist-get 'default gptel-directives) (joes-ai-project-info) (joes-ai-os-info)))
+	(concat (alist-get 'default gptel-directives) (joes-ai--project-info) (joes-ai--buffer-info) (joes-ai--os-info)))
 
 (gptel-make-preset 'disable-thinking
 	:temperature 1.0
-	:system #'joes-ai-default-system-message
+	:system #'joes-ai--default-system-message
 	:tools nil
 	:request-params '(:eval joes-ai-chat-reasoning-off))
 
 (gptel-make-preset 'chat
 	:tools '("web" "filesystem-read" "filesystem-write")
-	:system #'joes-ai-default-system-message
+	:system #'joes-ai--default-system-message
 	:request-params '(:eval joes-ai-chat-reasoning-on)
 	:temperature 1.0)
 
@@ -144,7 +124,7 @@ Use available tools to confirm temporal information that were not provided. You 
 	:parents 'chat
 	:tools '(:append ("programming"))
 	:temperature 0.5
-	:system (joes-ai-system-append "\n[Programming Instructions]
+	:system (joes-ai--system-append "\n[Programming Instructions]
 * When answering a question about code or other technical content, explain usage, and warnings, but not implementation details.
 * When creating new features, or functions, look or request for references in the working project and follow its pattern.
 * Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input.
@@ -159,7 +139,7 @@ Use available tools to confirm temporal information that were not provided. You 
 							   tools))
 				:append ("emacs" "flymake_diagnostics"))
 	:temperature 0.5
-	:system (joes-ai-system-append
+	:system (joes-ai--system-append
 				(format "\n[Emacs Programming Instructions]
 You're inside a running emacs instance.
 Config root is %s.
@@ -178,7 +158,7 @@ System packages directory are %s
 	:use-context 'system
 	:include-reasoning nil
 	:model (or joes-ai-commit-message-model (default-value 'gptel-model))
-	:system (joes-ai-system-append "\n[Commit Message Instructions]
+	:system (joes-ai--system-append "\n[Commit Message Instructions]
 * Be concise and direct. Focus on the WHAT, not the WHY.
 * Use precise language, avoid subjective words like better, easier, faster, enhances, improves, etc...
 * Instead of descriptions like 'improved function', just describe what was done.
@@ -203,6 +183,45 @@ perf – performance improvements
 ci – continuous integration related
 build – changes that affect the build system or external dependencies
 revert – reverts a previous commit"))
+
+
+(defun joes-ai-set-project ()
+	"Set `joes-ai-project' to the current project.
+Nil projects are ignored and keep the previous value."
+	(interactive)
+	(when-let* ((project (project-current)))
+		(setq joes-ai-project project)))
+
+(defvar-local joes-ai--planning-saved nil
+	"Session state saved by `joes-ai-toggle-planning', or nil when planning is off.")
+
+(defconst joes-ai-planning-instructions "\n[Planning Mode]
+You're in Planning mode! You can't write to files or modify the system. When a task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands. Avoid directly generating code or commands unless directly requested.")
+
+(defun joes-ai-toggle-planning ()
+	"Toggle the planning state in the current buffer's gptel session.
+When off, save the system message and tools, then append the planning
+instructions and remove write tools.  When on, restore the saved state."
+	(interactive)
+	(if (and joes-ai--planning-saved
+			(string-search joes-ai-planning-instructions
+				(if (functionp gptel-system-prompt) (funcall gptel-system-prompt) gptel-system-prompt)))
+		(progn
+			(setq-local gptel-system-prompt (plist-get joes-ai--planning-saved :system))
+			(setq-local gptel-tools (plist-get joes-ai--planning-saved :tools))
+			(setq joes-ai--planning-saved nil)
+			(message "Planning off"))
+		(setq joes-ai--planning-saved
+			(list :system gptel-system-prompt :tools gptel-tools))
+		(gptel--apply-preset
+			`(:system ,(joes-ai--system-append joes-ai-planning-instructions)
+				:tools (:function ,(lambda (tools)
+									(cl-remove-if
+										(lambda (tool)
+											(equal (gptel-tool-category tool) "filesystem-write"))
+										tools))))
+			(lambda (sym val) (set (make-local-variable sym) val)))
+		(message "Planning on")))
 
 (provide 'joes-ai-directives)
 ;;; joes-ai-directives.el ends here
