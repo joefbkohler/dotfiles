@@ -201,14 +201,18 @@ Nil projects are ignored and keep the previous value."
 (defconst joes-ai-planning-instructions "\n[Planning Mode]
 You're in Planning mode! You can't write to files or modify the system. When a task is requested, create a step by step plan, outline the features, functions, algorithm, main function calls, or commands. Avoid directly generating code or commands unless directly requested.")
 
+(defun joes-ai--planning-saved-p ()
+	"Return t is in planning state."
+	(and joes-ai--planning-saved
+			(string-search joes-ai-planning-instructions
+				(if (functionp gptel-system-prompt) (funcall gptel-system-prompt) gptel-system-prompt))))
+
 (defun joes-ai-toggle-planning ()
 	"Toggle the planning state in the current buffer's gptel session.
 When off, save the system message and tools, then append the planning
 instructions and remove write tools.  When on, restore the saved state."
 	(interactive)
-	(if (and joes-ai--planning-saved
-			(string-search joes-ai-planning-instructions
-				(if (functionp gptel-system-prompt) (funcall gptel-system-prompt) gptel-system-prompt)))
+	(if (joes-ai--planning-saved-p)
 		(progn
 			(setq-local gptel-system-prompt (plist-get joes-ai--planning-saved :system))
 			(setq-local gptel-tools (plist-get joes-ai--planning-saved :tools))

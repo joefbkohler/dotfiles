@@ -25,8 +25,7 @@
 
 (require 'gptel)
 (require 'gptel-context)
-
-(defvar joes-ai--planning-saved)
+(require 'joes-ai-directives)
 
 (defvar-local joes-ai-gptel--turn-usage nil
 	"Token usage plist of the last turn in this gptel buffer.")
@@ -73,7 +72,7 @@
 						   (if gptel--preset
 							   (format "[Preset: %s%s]"
 								   gptel--preset
-								   (if joes-ai--planning-saved "(P)" ""))
+								   (if (joes-ai--planning-saved-p) "(p)" ""))
 							   "[No Preset]")
 						   'mouse-face 'highlight
 						   'help-echo "Preset applied to this buffer"))
