@@ -89,8 +89,6 @@ nil sends nothing."
 
 (setq gptel-default-mode #'org-mode)
 (setq gptel-expert-commands t)
-(defvar gptel--set-buffer-locally)
-(setq gptel--set-buffer-locally t) ;; Menu scope defaults to buffer-local
 (setq-default gptel-model
 	(let ((model (car joes-ai-chat-models))) ;; Default to the first model
 		(if (consp model)					 ;; Check if the model is a list eg. (qwen3.5 . capabilities)
