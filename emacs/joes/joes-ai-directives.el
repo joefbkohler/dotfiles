@@ -129,7 +129,7 @@ Use available tools to confirm temporal information that were not provided. You 
 * Check for errors after editing a file. If issues are found, tell the User, offer possible solutions and request input.
 * Prefer using specialized tools (like find_references) instead of rgrep when navigating code."))
 
-(gptel-make-preset 'emacs-programming
+(gptel-make-preset 'emacs
 	:parents 'programming
 	:tools '(:function (lambda (tools)
 						   (cl-remove-if
