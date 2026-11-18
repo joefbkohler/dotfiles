@@ -48,6 +48,7 @@
     compilation-save-buffers-predicate 'ignore
     grep-save-buffers nil
     completions-detailed t
+    imenu-max-item-length nil
     treesit-font-lock-level 4
     split-window-preferred-function #'joes-split-window-skip-leftmost
     ;; Allow flymake to run in my init secondary files.
@@ -220,9 +221,18 @@
     (setopt completion-styles '(basic orderless partial-completion)))
 
 (use-package marginalia
+    :init
+    (defun joes-marginalia-annotate-imenu (cand)
+        "Annotate imenu CAND with its LSP kind, else with the Marginalia annotation."
+        (if-let* ((kind (get-text-property (1- (length cand)) 'imenu-kind cand)))
+            (concat #(" " 0 1 (marginalia--align t)) marginalia-separator (propertize kind 'face 'marginalia-type))
+            (marginalia-annotate-imenu cand)))
     :config
     (declare-function marginalia-mode "marginalia")
+    (declare-function marginalia-annotate-imenu "marginalia")
     (marginalia-mode)
+    (setf (alist-get 'imenu marginalia-annotators)
+        (list 'joes-marginalia-annotate-imenu 'builtin 'none))
     (setopt marginalia-separator "  "))
 
 (use-package nerd-icons-completion
