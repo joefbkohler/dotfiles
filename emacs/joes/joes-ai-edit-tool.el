@@ -18,29 +18,52 @@
 
 (gptel-make-tool
 	:name "write_files"
-	:description "Edit or create files by exact text replacement. Each edit replaces the single exact occurrence of text_to_replace in file_path with new_text. text_to_replace must match exactly once (including whitespace and indentation); add surrounding lines to make it unique. To insert, use nearby text as an anchor and repeat it in new_text. To delete text, use an empty new_text. To create a file, use an empty text_to_replace on a non-existent file. Multiple edits on the same file are applied in order. Nothing is changed if any edit fails."
+	:description "Edit or create one file by exact text replacement. Replaces the single exact occurrence of text_to_replace in file_path with new_text. text_to_replace must match exactly once (including whitespace and indentation); add surrounding lines to make it unique. To insert, use nearby text as an anchor and repeat it in new_text. To delete text, use an empty new_text. To create a file, use an empty text_to_replace on a non-existent file."
 	:category "filesystem-write"
-	:function (lambda (edits)
-			(condition-case err
-				(progn
-				  (joes-ai--write-edits edits)
-				  (ignore-errors (joes-ai-show-edits))
-				  "Edits applied and saved.")
-			  (error (format "Error: %s" (error-message-string err)))))
-	:args (list '(:name "edits"
-					 :type array
-					 :description "List of edits to apply atomically."
-					 :items (:type object
-								:properties (:file_path
-												(:type string
-													:description "Absolute path of the file to edit or create.")
-												:text_to_replace
-												(:type string
-													:description "Exact existing text to replace, matching once. Empty to create a new file.")
-												:new_text
-												(:type string
-													:description "Replacement text. Empty to delete text_to_replace."))
-								:required ["file_path" "text_to_replace" "new_text"]))))
+	:function (lambda (file-path text-to-replace new-text)
+				  (condition-case err
+					  (let* ((path (expand-file-name file-path))
+								(base (joes-ai--base-path path))
+								(work nil)
+								(created nil)
+								(done nil))
+						  (joes-ai--check-not-in-base-dir (list path))
+						  (joes-ai--save-visiting-buffers (list path))
+						  (joes-ai--check-writable (list path))
+						  (unwind-protect
+							  (progn
+								  (setq work (joes-ai--make-work-buffer path))
+								  (with-current-buffer work
+									  (joes-ai--replace-text path text-to-replace new-text))
+								  (unless (file-exists-p base)
+									  (setq created t)
+									  (make-directory (file-name-directory base) t)
+									  (if (file-exists-p path)
+										  (copy-file path base nil t)
+										  (write-region "" nil base nil 'silent)))
+								  (joes-ai--guard-work-buffers (list (cons path work)))
+								  (make-directory (file-name-directory path) t)
+								  (with-current-buffer work
+									  (write-region nil nil path nil 'silent))
+								  (with-demoted-errors "joes-ai: %S"
+									  (joes-ai--sync-visiting-buffer path))
+								  (setq done t))
+							  (when work
+								  (kill-buffer work))
+							  (when (and created (not done))
+								  (ignore-errors (delete-file base))))
+						  (ignore-errors (joes-ai-show-edits))
+						  "Edit applied and saved.")
+					  (error (format "Error: %s" (error-message-string err)))))
+	:args (list '(:name "file_path"
+				 :type string
+				 :description "Absolute path of the file to edit or create.")
+			  '(:name "text_to_replace"
+				   :type string
+				   :description "Exact existing text to replace, matching once. Empty to create a new file.")
+			  '(:name "new_text"
+				   :type string
+				   :description "Replacement text. Empty to delete text_to_replace.")))
 
 ;; -- Base copies
 
@@ -57,70 +80,6 @@ Before the write_files tool first edits a file, it copies the file to
 (defun joes-ai--base-target (base)
 	"Return the real file path of the BASE copy."
 	(substring base (length (directory-file-name (joes-ai-base-dir)))))
-
-;; -- Write path
-
-(defun joes-ai--write-edits (edits)
-	"Apply EDITS to their files, saving a base copy of each first.
-All edits are applied to work buffers first; files are written only if
-every edit succeeds.  On failure, the work buffers are discarded and any
-base copy created by this call is deleted."
-	(let* ((groups (joes-ai--group-edits edits))
-			  (paths (mapcar #'car groups))
-			  (works nil)
-			  (created nil)
-			  (done nil))
-		(unless groups
-			(error "No edits given"))
-		(joes-ai--check-not-in-base-dir paths)
-		(joes-ai--save-visiting-buffers paths)
-		(joes-ai--check-writable paths)
-		(unwind-protect
-			(progn
-				(dolist (group groups)
-					(let ((buffer (joes-ai--make-work-buffer (car group))))
-						(push (cons (car group) buffer) works)
-						(with-current-buffer buffer
-							(dolist (edit (cdr group))
-								(joes-ai--replace-text (car group)
-									(plist-get edit :text_to_replace)
-									(plist-get edit :new_text))))))
-				(setq works (nreverse works))
-				(dolist (path paths)
-					(let ((base (joes-ai--base-path path)))
-						(unless (file-exists-p base)
-							(push path created)
-							(make-directory (file-name-directory base) t)
-							(if (file-exists-p path)
-								(copy-file path base nil t)
-								(write-region "" nil base nil 'silent)))))
-				(joes-ai--guard-work-buffers works)
-				(pcase-dolist (`(,path . ,buffer) works)
-					(make-directory (file-name-directory path) t)
-					(with-current-buffer buffer
-						(write-region nil nil path nil 'silent)))
-				(dolist (path paths)
-					(with-demoted-errors "joes-ai: %S"
-						(joes-ai--sync-visiting-buffer path)))
-				(setq done t))
-			(pcase-dolist (`(,_ . ,buffer) works)
-				(kill-buffer buffer))
-			(unless done
-				(dolist (path created)
-					(ignore-errors (delete-file (joes-ai--base-path path))))))))
-
-(defun joes-ai--group-edits (edits)
-	"Group EDITS by absolute file path, preserving order.
-Return a list of (PATH EDIT...)."
-	(let (groups)
-		(seq-doseq (edit edits)
-			(let* ((path (expand-file-name (plist-get edit :file_path)))
-				  (cell (assoc path groups)))
-				(unless cell
-					(setq cell (list path))
-					(push cell groups))
-				(setcdr cell (append (cdr cell) (list edit)))))
-		(nreverse groups)))
 
 (defun joes-ai--check-not-in-base-dir (paths)
 	"Signal an error if any of PATHS is inside `joes-ai-base-dir'."
@@ -254,17 +213,6 @@ forbidden form in it is refused."
 								(with-current-buffer buffer (buffer-string))))
 					(error "Guard: %s changes a top-level form containing a forbidden form; no files changed"
 						path))))))
-
-(defun joes-ai--guard-elisp-form (form)
-	"Signal an error if FORM, or any subform, has a forbidden head."
-	(when (consp form)
-		(let ((head (car form)))
-			(when (memq head joes-ai--elisp-guard-forbidden-heads)
-				(error "Guard: forbidden form `%s'" head)))
-		(let ((rest form))
-			(while (consp rest)
-				(joes-ai--guard-elisp-form (car rest))
-				(setq rest (cdr rest))))))
 
 ;; -- Review commands
 
