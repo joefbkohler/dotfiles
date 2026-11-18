@@ -18,7 +18,7 @@
 
 (gptel-make-tool
 	:name "write_files"
-	:description "Edit or create one file by exact text replacement. Replaces the single exact occurrence of text_to_replace in file_path with new_text. text_to_replace must match exactly once (including whitespace and indentation); add surrounding lines to make it unique. To insert, use nearby text as an anchor and repeat it in new_text. To delete text, use an empty new_text. To create a file, use an empty text_to_replace on a non-existent file."
+	:description "Edit or create one file by replacing whole lines. To create a file, use an empty text_to_replace on a non-existent file."
 	:category "filesystem-write"
 	:function (lambda (file-path text-to-replace new-text)
 				  (condition-case err
@@ -60,10 +60,10 @@
 				 :description "Absolute path of the file to edit or create.")
 			  '(:name "text_to_replace"
 				   :type string
-				   :description "Exact existing text to replace, matching once. Empty to create a new file.")
+				   :description "Exact existing text to replace, the text must match exactly once. Identation is not a factor. To insert, use nearby text as an anchor and repeat it in new_text. Empty to create a new file. Must be composed of whole lines.")
 			  '(:name "new_text"
 				   :type string
-				   :description "Replacement text. Empty to delete text_to_replace.")))
+				   :description "Replacement text. Empty to delete text_to_replace. Must be composed of whole lines.")))
 
 ;; -- Base copies
 
@@ -134,29 +134,68 @@ The buffer is empty if PATH does not exist."
 				(setq-local buffer-file-coding-system last-coding-system-used)))
 		buffer))
 
+(defun joes-ai--line-regexp (line)
+	"Return an unanchored regexp for LINE, ignoring leading and trailing whitespace.
+A blank LINE matches any run of whitespace, including none."
+	(let ((core (string-trim line "[ \t]+" "[ \t]+")))
+		(concat "[ \t]*" (regexp-quote core) "[ \t]*")))
+
+(defun joes-ai--text-regexp (text)
+	"Return a regexp matching the whole lines of TEXT.
+TEXT must be non-empty. One trailing newline is removed before splitting, so
+the final line of the match does not require a newline in the buffer."
+	(let* ((body (if (string-suffix-p "\n" text)
+					 (substring text 0 -1)
+				   text))
+		   (lines (if (string-empty-p body)
+					  '("")
+					(split-string body "\n"))))
+		(concat "^"
+				(mapconcat #'joes-ai--line-regexp lines "\n")
+				"$")))
+
+(defun joes-ai--text-region (text)
+	"Return a list of (START . END), one per whole-line match of TEXT.
+Matches may overlap. END is after the newline of the last matched line, or
+at the end of that line if it has no newline. Return nil if TEXT does not match."
+	(let ((case-fold-search nil)
+		  (regexp (joes-ai--text-regexp text))
+		  (regions nil))
+		(save-excursion
+			(goto-char (point-min))
+			(while (and (< (point) (point-max))
+						(re-search-forward regexp nil t))
+				(let ((beg (match-beginning 0))
+					  (end (match-end 0)))
+					(push (cons beg
+								(if (eq (char-after end) ?\n)
+									(1+ end)
+								  end))
+						  regions)
+					(goto-char (1+ beg)))))
+		(nreverse regions)))
+
 (defun joes-ai--replace-text (path old new)
 	"Replace the unique occurrence of OLD with NEW in the current buffer.
 An empty OLD inserts NEW, and is only allowed if the buffer is empty.
 PATH is used in error messages."
-	(let ((case-fold-search nil)
-			 (new (or new "")))
-		(goto-char (point-min))
+	(let ((new (or new "")))
+		(when (and (not (string-empty-p new))
+				   (not (string-suffix-p "\n" new)))
+			(setq new (concat new "\n")))
 		(if (or (null old) (string-empty-p old))
 			(if (> (buffer-size) 0)
 				(error "%s: empty text_to_replace is only allowed for new or empty files" path)
 				(insert new))
-			(unless (search-forward old nil t)
-				(error "%s: text_to_replace not found: %S" path
-					(truncate-string-to-width old 80 nil nil "...")))
-			(let ((beg (match-beginning 0))
-					 (end (match-end 0)))
-				(goto-char (1+ beg))
-				(when (search-forward old nil t)
-					(error "%s: text_to_replace matches more than once, add context: %S" path
-						(truncate-string-to-width old 80 nil nil "...")))
-				(delete-region beg end)
-				(goto-char beg)
-				(insert new)))))
+			(let ((regions (joes-ai--text-region old)))
+				(unless regions
+					(error "%s: text_to_replace not found" path))
+				(when (cdr regions)
+					(error "%s: text_to_replace matches more than once, add surrounding lines to make it unique" path))
+				(let ((region (car regions)))
+					(delete-region (car region) (cdr region))
+					(goto-char (car region))
+					(insert new))))))
 
 ;; -- Forbidden-form guard
 
