@@ -26,6 +26,8 @@
 (require 'flymake)
 (require 'joes-ai-edit-tool)
 (require 'package)
+(require 'imenu)
+(require 'json)
 
 (defcustom joes-ai-read-url-max-chars 16000
 	"Maximum characters returned by the read_url tool.
@@ -346,6 +348,105 @@ Avoids context overloading.	 nil means no limit."
 				   :type integer
 				   :optional t
 				   :description "1-based line number. Set it when a previous call reported more than one matching line.")))
+
+(defun joes-ai-outline--collect (entries)
+	"Convert imenu ENTRIES into a flat list of nodes, descending into submenus.
+Each node is a plist with :kind, :name, :start, :end (positions) and :children.
+Entries without a position are dropped, their children are kept."
+	(mapcan
+		(lambda (entry)
+			(let* ((name (car entry))
+				   (value (cdr entry))
+				   (name-str (substring-no-properties name))
+				   (kind (get-text-property 0 'imenu-kind name))
+				   (region (get-text-property 0 'imenu-region name))
+				   (submenu-p (and (consp value) (consp (car value))))
+				   (pos (cond ((let ((v value)) (cond ((markerp v) (marker-position v))
+													  ((integerp v) v))))
+							  ((consp value) (let ((v (car value)))
+											   (cond ((markerp v) (marker-position v))
+													 ((integerp v) v))))))
+				   (children (and submenu-p (joes-ai-outline--collect value)))
+				   (start (or (and (consp region)
+								   (let ((v (car region)))
+									 (cond ((markerp v) (marker-position v))
+										   ((integerp v) v))))
+							  pos)))
+				(if start
+					(list (list :kind kind
+								:name name-str
+								:start start
+								:end (and (consp region)
+										  (let ((v (cdr region)))
+											(cond ((markerp v) (marker-position v))
+												  ((integerp v) v))))
+								:children children))
+					children)))
+		entries))
+
+(defun joes-ai-outline--finalize (nodes parent-end)
+	"Sort NODES by start and fill missing end positions, recursing into children.
+A missing end is taken from the next sibling, or PARENT-END for the last one."
+	(let ((sorted (sort nodes (lambda (a b)
+								(< (plist-get a :start) (plist-get b :start))))))
+		(cl-loop for (node . more) on sorted
+				 collect (let* ((end (or (plist-get node :end)
+										 (if more
+											 (1- (plist-get (car more) :start))
+										   (or parent-end (point-max)))))
+								(children (joes-ai-outline--finalize
+										   (plist-get node :children) end)))
+						   (list :kind (plist-get node :kind)
+								 :name (plist-get node :name)
+								 :start (plist-get node :start)
+								 :end end
+								 :children children)))))
+
+(gptel-make-tool
+	:name "file_outline"
+	:description "Return the symbol outline of a file (classes, functions, methods, etc...) as JSON, Each entry has kind (or null), name, start_line, end_line and children. Returns \"no symbols\" when it couldn't fine entries."
+	:category "programming"
+	:confirm nil
+	:function (lambda (file)
+				  (condition-case err
+					  (progn
+						  (unless (file-name-absolute-p file)
+							  (user-error "File must be an absolute path: %s" file))
+						  (let* ((path (expand-file-name file))
+								 (created (not (find-buffer-visiting path)))
+								 (buffer (find-file-noselect path)))
+							  (unwind-protect
+								  (with-current-buffer buffer
+									  (save-excursion
+										  (let* ((index (let ((imenu-auto-rescan t)
+																  (imenu-max-item-length nil))
+														  (imenu--make-index-alist t)))
+												 (nodes (joes-ai-outline--finalize
+														 (joes-ai-outline--collect index) nil)))
+											  (if (null nodes)
+												  "no symbols"
+											  (cl-labels
+												  ((to-json (nodes)
+													 (apply #'vector
+															(mapcar
+															 (lambda (node)
+															   `((kind . ,(plist-get node :kind))
+																 (name . ,(plist-get node :name))
+																 (start_line . ,(line-number-at-pos
+																				 (max (point-min) (min (plist-get node :start) (point-max)))
+																				 t))
+																 (end_line . ,(line-number-at-pos
+																			   (max (point-min) (min (plist-get node :end) (point-max)))
+																			   t))
+																 (children . ,(to-json (plist-get node :children)))))
+															 nodes))))
+												(json-encode (to-json nodes)))))))
+								(when (and created (buffer-live-p buffer))
+									(kill-buffer buffer)))))
+					(error (format "Error: %s" (error-message-string err)))))
+	:args (list '(:name "file"
+					 :type string
+					 :description "Absolute path of the file to outline.")))
 
 (provide 'joes-ai-tools)
 ;;; joes-ai-tools.el ends here.

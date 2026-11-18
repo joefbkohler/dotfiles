@@ -118,7 +118,7 @@ Use available tools to confirm temporal information that were not provided. You 
 							   (lambda (tool)
 								   (equal (gptel-tool-category tool) "programming"))
 							   tools))
-				:append ("emacs" "flymake_diagnostics"))
+				:append ("emacs" "flymake_diagnostics" "file_outline"))
 	:temperature 0.5
 	:system (joes-ai--system-append
 				(format "\n[Emacs Programming Instructions]
