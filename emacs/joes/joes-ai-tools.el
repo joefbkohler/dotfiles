@@ -254,7 +254,7 @@ Avoids context overloading.	 nil means no limit."
 
 (gptel-make-tool
 	:name "find_references"
-	:description "Find references to a symbol. The symbol is located by line-text, the full text of the line that contains it (leading and trailing whitespace ignored), and symbol-name. If more than one line matches, returns an error listing the candidate lines with context; call again with line set to the chosen line number. Returns the number of references, and one file:line: text entry per reference."
+	:description "Find references to a symbol. Returns the number of references, and one file:line: text entry per reference."
 	:category "programming"
 	:confirm nil
 	:function (lambda (file symbol-name line-text &optional line)
@@ -284,7 +284,7 @@ Avoids context overloading.	 nil means no limit."
 
 (gptel-make-tool
 	:name "find_implementations"
-	:description "Find implementations or derived classes of a symbol. Use it to find implementation of interfaces, inheritance of classes, and such.  The symbol is located by line-text, the full text of the line that contains it (leading and trailing whitespace ignored), and symbol-name. If more than one line matches, returns an error listing the candidate lines with context; call again with line set to the chosen line number. Returns the number of implementations, and one file:line: text entry per implementation."
+	:description "Find implementations or derived classes of a symbol (interface, class, etc...). It returns indirect implementations/inheritance as well as direct implementation/inheritance. Returns the number of implementations, and one file:line: text entry per implementation."
 	:category "programming"
 	:confirm nil
 	:function (lambda (file symbol-name line-text &optional line)
@@ -311,7 +311,7 @@ Avoids context overloading.	 nil means no limit."
 				   :description "Identifier to look up, e.g. foo-bar.")
 			  '(:name "line-text"
 				   :type string
-				   :description "Full text of the line containing the symbol, without leading or trailing whitespace.")
+				   :description "Full text of the line containing the symbol, without leading or trailing whitespace. Must be unique within the file.")
 			  '(:name "line"
 				   :type integer
 				   :optional t
@@ -319,7 +319,7 @@ Avoids context overloading.	 nil means no limit."
 
 (gptel-make-tool
 	:name "find_definition"
-	:description "Find the definition/declaration of a symbol. The symbol is located by line-text, the full text of the line that contains it (leading and trailing whitespace ignored), and symbol-name. If more than one line matches, returns an error listing the candidate lines with context; call again with line set to the chosen line number. Returns one file:line: text entry per definition."
+	:description "Find the definition/declaration file and position of a symbol (function, class, variable, etc...). Returns file:line: text entry."
 	:category "programming"
 	:confirm nil
 	:function (lambda (file symbol-name line-text &optional line)
@@ -341,7 +341,7 @@ Avoids context overloading.	 nil means no limit."
 				   :description "Identifier to look up, e.g. foo-bar.")
 			  '(:name "line-text"
 				   :type string
-				   :description "Full text of the line containing the symbol, without leading or trailing whitespace.")
+				   :description "Full text of the line containing the symbol, without leading or trailing whitespace. Must be unique within the file.")
 			  '(:name "line"
 				   :type integer
 				   :optional t
